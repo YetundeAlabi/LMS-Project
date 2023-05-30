@@ -1,5 +1,15 @@
 # LMS-Project
 
+## Setup
+
+1. Clone this repository on your computer.
+
+```
+git clone https://github.com/YetundeAlabi/LMS-Project.git
+```
+
+---
+
 ## Contribution Guide
 
 1. **Create your own branch on this repository. This can be done from the terminal on your computer or from the repo**
@@ -40,7 +50,7 @@
    > Note: At least one person must approve your PR before it can be merged.
 
 
-##Setup
+##Setting up environment
 1. Create a virtual environment with `python -m venv venv`
 2. Activate the virtual environment using `.\venv\bin\Activate.ps1` (windows) or `source /path/to/venv/bin/activate` (linux/mac)
 3. run `pip install -r requirements.txt`
