@@ -7,6 +7,23 @@
 ```
 git clone https://github.com/YetundeAlabi/LMS-Project.git
 ```
+2. Change your working directory to the cloned project.
+
+```
+ cd LMS-Project
+```
+3. Setup environment
+1. Create a virtual environment with `python -m venv venv`
+2. Activate the virtual environment using `.\venv\bin\Activate.ps1` (windows) or `source /path/to/venv/bin/activate` (linux/mac)
+3. run `pip install -r requirements.txt`
+
+3. Run `python manage.py runserver` to run the local development environment.
+
+```
+LMS-Project~$ python manage.py runserver
+```
+
+Your development environment can be accessed on the browser with `http://localhost:8000`.
 
 ---
 
@@ -50,8 +67,4 @@ git clone https://github.com/YetundeAlabi/LMS-Project.git
    > Note: At least one person must approve your PR before it can be merged.
 
 
-##Setting up environment
-1. Create a virtual environment with `python -m venv venv`
-2. Activate the virtual environment using `.\venv\bin\Activate.ps1` (windows) or `source /path/to/venv/bin/activate` (linux/mac)
-3. run `pip install -r requirements.txt`
 
