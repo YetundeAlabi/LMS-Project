@@ -1,2 +1,3 @@
-virtualenv/
+lmsvenv/
 .env
+db.sqlite3
