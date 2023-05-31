@@ -28,7 +28,7 @@ class BaseContent(models.Model):
 
         
 class Course(BaseContent):
-    # course_tutor=models.ForeignKey('Tutor_User', on_delete=models.SET_NULL, null=True)
+    coursetutor=models.ForeignKey('Tutor_User', on_delete=models.SET_NULL, null=True)
     # track=models.ForeignKey('Track', on_delete=models.SET_NULL, null=True)
     slug= models.SlugField(blank=True, null=True)
 
