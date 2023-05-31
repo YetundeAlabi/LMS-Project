@@ -3,3 +3,4 @@ lmsvenv/
 *.db.sqlite3
 *.sqlite
 *.db
+db.sqlite3
