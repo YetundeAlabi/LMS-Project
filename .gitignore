@@ -1,9 +1,3 @@
-virtualenv/
-.envvenv/
-db.sqlite3
-.env
-*/migrations/
-!**/migrations/__init__.py
 venv/
 .env
 db.sqlite3
