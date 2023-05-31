@@ -1,4 +1,5 @@
-venv/
+virtualenv/
+.envvenv/
 db.sqlite3
 .env
 */migrations/
