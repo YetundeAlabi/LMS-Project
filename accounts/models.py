@@ -26,6 +26,8 @@ class User(AbstractUser):
         (STUDENT, "Student")
     ]
     email = models.EmailField(max_length=255, unique=True)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
     role = models.PositiveSmallIntegerField(max_length=20, choices=ROLE_CHOICES, default=ADMIN)
 
     USERNAME_FIELD = "email"
@@ -37,8 +39,6 @@ class User(AbstractUser):
 
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
     last_login = models.DateTimeField(auto_now=True)
     is_verified = models.BooleanField(default=False)
     is_suspended = models.BooleanField(default=False)
@@ -54,8 +54,6 @@ class Student(models.Model):
 
 class Tutor(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
     is_verified = models.BooleanField(default=False)
     is_suspended = models.BooleanField(default=False)
     picture = models.ImageField(upload_to='accounts/media', blank=True)
