@@ -14,6 +14,13 @@ class MyUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
     
+    def create_superuser(self, email, password=None, **extra_fields):
+        """ create superuser """
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+
+        return self.create_user(email, password, **extra_fields)
+
 
 class User(AbstractUser):
     """ Custom user model that supports using email instead of username"""
@@ -25,12 +32,15 @@ class User(AbstractUser):
         (TUTOR, "Tutor"),
         (STUDENT, "Student")
     ]
-    email = models.EmailField(max_length=255, unique=True)
+    
+    email = models.EmailField(max_length=255, unique=True, verbose_name="email address")
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    role = models.PositiveSmallIntegerField(max_length=20, choices=ROLE_CHOICES, default=ADMIN)
+    role = models.PositiveSmallIntegerField(choices=ROLE_CHOICES, default=ADMIN)
 
+    REQUIRED_FIELDS = []
     USERNAME_FIELD = "email"
+    
     objects = MyUserManager()
 
     def __str__(self):
