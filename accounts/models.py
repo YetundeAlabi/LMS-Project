@@ -17,13 +17,16 @@ class MyUserManager(BaseUserManager):
 
 class User(AbstractUser):
     """ Custom user model that supports using email instead of username"""
+    ADMIN = 0
+    TUTOR = 1
+    STUDENT = 2
     ROLE_CHOICES = [
-        ("ADMIN", "Admin"),
-        ("TUTOR", "Tutor"),
-        ("STUDENT", "Student")
+        (ADMIN, "Admin"),
+        (TUTOR, "Tutor"),
+        (STUDENT, "Student")
     ]
     email = models.EmailField(max_length=255, unique=True)
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="ADMIN")
+    role = models.PositiveSmallIntegerField(max_length=20, choices=ROLE_CHOICES, default=ADMIN)
 
     USERNAME_FIELD = "email"
     objects = MyUserManager()
@@ -32,15 +35,32 @@ class User(AbstractUser):
         return self.email 
     
 
-class Student(User):
+class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    is_verify = models.BooleanField(default=False)
-    # add profile picture 
+    last_login = models.DateTimeField(auto_now=True)
+    is_verified = models.BooleanField(default=False)
+    is_suspended = models.BooleanField(default=False)
+    picture = models.ImageField(upload_to='accounts/media', blank=True)
+    is_deleted = models.BooleanField(default=False)
+    
     def get_full_name(self) -> str:
         return f'{self.first_name} {self.last_name}'
     
+    def __str__(self):
+        return self.user.email
 
-# create tutor and admin class
-# change auth user model in settings
+
+class Tutor(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    is_verified = models.BooleanField(default=False)
+    is_suspended = models.BooleanField(default=False)
+    picture = models.ImageField(upload_to='accounts/media', blank=True)
+    is_deleted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.user.email
+    
