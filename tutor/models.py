@@ -22,7 +22,6 @@ class BaseContent(models.Model):
     objects = models.Manager()
     active_objects=ActiveManager()
 
-
     class Meta:
          abstract = True
          ordering= ['created_at']

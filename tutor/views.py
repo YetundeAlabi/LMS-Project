@@ -1,3 +1,4 @@
+from django.forms.models import BaseModelForm
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Course, Topic, SubTopic
@@ -5,7 +6,7 @@ from django.contrib import messages
 from .forms import CourseForm
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 
 class OwnerMixin():
     def get_queryset(self):
@@ -29,20 +30,28 @@ class CourseDetail(OwnerMixin, DetailView):
 
 class CourseCreateView(OwnerMixin, CreateView):    
     model=Course
-    success_url = 'course:course_list'
+    form_class= CourseForm
+    success_url = reverse_lazy('course:course_list')
     success_message= "Course Created Successfully" 
     template_name = 'tutor/course_create_update.html'
-    form_class= CourseForm
+
+    def form_valid(self, form):
+        form.instance.course_tutor=self.request.user
+        return super().form_valid(form)
 
 class CourseUpdateView(OwnerMixin, SuccessMessageMixin, UpdateView):    
     model = Course
-    success_url = 'course:course_list'
+    slug_field= 'slug'
+    slug_url_kwarg= 'course_slug'
+    success_url = reverse_lazy('course:course_list')
     success_message = "Course Updated Successfully"
     template_name ='tutor/course_create_update.html'
     form_class = CourseForm
 
 class CourseDeleteView(OwnerMixin, DeleteView):
     model = Course
+    slug_field= 'slug'
+    slug_url_kwarg= 'course_slug'
     success_url = reverse_lazy('course:course_list')
     template_name = 'tutor/course_delete_confirm.html'
 
