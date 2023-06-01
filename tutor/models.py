@@ -4,9 +4,10 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import User
 
 # Create your models here.
-class IsActiveManager(models.Manager):
+class ActiveManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(is_active=True)
 
@@ -19,8 +20,7 @@ class BaseContent(models.Model):
     updated_at=models.DateTimeField(auto_now=True)
 
     objects = models.Manager()
-    active_objects=IsActiveManager()
-
+    active_objects=ActiveManager()
 
     class Meta:
          abstract = True
@@ -28,7 +28,7 @@ class BaseContent(models.Model):
 
         
 class Course(BaseContent):
-    # course_tutor=models.ForeignKey('Tutor_User', on_delete=models.SET_NULL, null=True)
+    course_tutor=models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     # track=models.ForeignKey('Track', on_delete=models.SET_NULL, null=True)
     slug= models.SlugField(blank=True, null=True)
 
