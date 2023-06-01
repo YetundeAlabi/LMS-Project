@@ -37,6 +37,8 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     role = models.CharField(max_length= 50, choices=ROLE_CHOICES)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
 
     REQUIRED_FIELDS = []
     USERNAME_FIELD = "email"
