@@ -1,5 +1,10 @@
 venv/
 .env
 db.sqlite3
-**/migrations/*
-!**/migrations/__init__.py
+.env
+*/migrations/*
+**/migrations/**
+!**/migrations
+!*/migrations/__init__.py
+venv/
+__pycache__/*
