@@ -24,19 +24,19 @@ class MyUserManager(BaseUserManager):
 
 class User(AbstractUser):
     """ Custom user model that supports using email instead of username"""
-    ADMIN = 0
-    TUTOR = 1
-    STUDENT = 2
+    # ADMIN = 0
+    # TUTOR = 1
+    # STUDENT = 2
     ROLE_CHOICES = [
-        (ADMIN, "Admin"),
-        (TUTOR, "Tutor"),
-        (STUDENT, "Student")
+        ("ADMIN", "Admin"),
+        ("TUTOR", "Tutor"),
+        ("STUDENT", "Student")
     ]
     
     email = models.EmailField(max_length=255, unique=True, verbose_name="email address")
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    role = models.PositiveSmallIntegerField(choices=ROLE_CHOICES, default=ADMIN)
+    role = models.CharField(max_length= 50, choices=ROLE_CHOICES)
 
     REQUIRED_FIELDS = []
     USERNAME_FIELD = "email"
