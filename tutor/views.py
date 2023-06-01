@@ -189,10 +189,35 @@ class TopicList(LoginRequiredMixin, ListView):
 
 class TopicUpdateView(SuccessMessageMixin, UpdateView):
     model = Topic
-    # success_url = reverse_lazy('course: topic_list')
+    success_url = reverse_lazy('course:topic_list')
     success_message = 'Subtopic created successfully'
-    template_name = 'tutor/topic_create_update.html'
+    template_name = 'tutor/update_topic_form.html'
     form_class = TopicForm
+    pk_url_kwarg='pk'
+
+    def get_success_url(self):
+        course_slug = self.kwargs['course_slug']
+        return reverse_lazy('course:topic_list', kwargs={'course_slug': course_slug})
+    
+
+class TopicDeleteView(LoginRequiredMixin, UpdateView):
+    model = Topic
+    pk_url_kwarg ='pk'
+    template_name = 'tutor/course_delete_confirm.html'
+    fields=[]
+
+    def update(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.is_active = False
+
+        self.object.save()
+        messages.info(request, 'Course deleted successfully')
+        return HttpResponseRedirect(self.get_success_url())
+    
+    def get_success_url(self):
+        course_slug = self.kwargs['course_slug']
+        return reverse_lazy('course:topic_list', kwargs={'course_slug': course_slug})
+
 
 
 # class TopicDeleteView(OwnerMixin, DeleteView):
