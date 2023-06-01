@@ -8,3 +8,5 @@ db.sqlite3
 !*/migrations/__init__.py
 venv/
 __pycache__/*
+*.pyc
+__pycache__/
