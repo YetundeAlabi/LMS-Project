@@ -3,6 +3,8 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField, UserCreationFor
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 
+from .models import Applicant 
+
 User = get_user_model()
 
 class SignUpForm(UserCreationForm):
@@ -31,3 +33,10 @@ class StudentCreationForm(forms.Form):
 class LoginForm(AuthenticationForm):
     Email = forms.EmailField(max_length=150, help_text='Email')
     password = forms.CharField(widget=forms.PasswordInput())
+
+
+class AppliantForm(forms.ModelForm):
+
+    class Meta:
+        model = Applicant
+        exclude = ("is_approved",)

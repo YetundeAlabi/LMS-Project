@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
+from django.db.models.query import QuerySet
 
 
 class MyUserManager(BaseUserManager):
@@ -75,4 +76,23 @@ class Tutor(models.Model):
 
     def __str__(self):
         return self.user.email
+
+
+class ApprovedApplicantManager(models.Manager):
+
+    def get_queryset(self):
+        return super().get_queryset().filter(is_approved=True)
     
+
+class Applicant(models.Model):
+    GENDER_CHOICES =(
+        ("FEMALE", "Female"),
+        ("MALE", "Male"),
+    )
+    first_name = models.CharField(max_length=150)
+    last_name = models.CharField(max_length=150)
+    email = models.EmailField(max_length=150, unique=True)
+    gender = models.CharField(max_length=20, choices=GENDER_CHOICES)
+    is_approved = models.BooleanField(default=False)
+    objects = models.Manager()
+    approved = ApprovedApplicantManager()
