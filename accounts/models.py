@@ -54,6 +54,7 @@ class Student(models.Model):
     is_suspended = models.BooleanField(default=False)
     picture = models.ImageField(upload_to='accounts/media', blank=True)
     is_deleted = models.BooleanField(default=False)
+    track = models.ForeignKey("Track", on_delete=models.SET_NULL, related_name="students")
     
     def get_full_name(self) -> str:
         return f'{self.first_name} {self.last_name}'
@@ -67,6 +68,7 @@ class Tutor(models.Model):
     is_verified = models.BooleanField(default=False)
     is_suspended = models.BooleanField(default=False)
     picture = models.ImageField(upload_to='accounts/media', blank=True)
+    track = models.ForeignKey("Track", on_delete=models.SET_NULL, related_name="Tutors")
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
