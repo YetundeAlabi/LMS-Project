@@ -1,0 +1,11 @@
+<!-- <h1>Edit "{{ course.title }}"</h1> -->
+<h1>Create Topic</h1>
+<div class="module">
+
+<form method="POST">
+    {% csrf_token %}
+{{ formset.as_p }}
+{{ formset.management_form }}
+<input type="submit" value="Save Topics">
+</form>
+</div>

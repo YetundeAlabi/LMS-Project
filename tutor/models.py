@@ -4,9 +4,12 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import User
+from accounts.models import Tutor
+import uuid
 
 # Create your models here.
-class IsActiveManager(models.Manager):
+class ActiveManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(is_active=True)
 
@@ -19,8 +22,7 @@ class BaseContent(models.Model):
     updated_at=models.DateTimeField(auto_now=True)
 
     objects = models.Manager()
-    active_objects=IsActiveManager()
-
+    active_objects=ActiveManager()
 
     class Meta:
          abstract = True
@@ -28,7 +30,7 @@ class BaseContent(models.Model):
 
         
 class Course(BaseContent):
-    coursetutor=models.ForeignKey('Tutor_User', on_delete=models.SET_NULL, null=True)
+    course_tutor=models.ForeignKey(Tutor, on_delete=models.SET_NULL, null=True)
     # track=models.ForeignKey('Track', on_delete=models.SET_NULL, null=True)
     slug= models.SlugField(blank=True, null=True)
 
@@ -42,7 +44,7 @@ class Course(BaseContent):
 
 class Topic(BaseContent):
     course=models.ForeignKey(Course, on_delete=models.CASCADE, blank=True, null=True)
-    id=models.UUIDField(primary_key=True, unique=True)
+    id=models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
 
 
     def __str__(self):
@@ -51,7 +53,7 @@ class Topic(BaseContent):
 
 class SubTopic(BaseContent):
     topic=models.ForeignKey(Topic, on_delete=models.CASCADE, blank=True, null=True)
-    id=models.UUIDField(primary_key=True, unique=True)
+    id=models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
     content_type=models.ForeignKey(ContentType,
                                    on_delete=models.CASCADE,
                                    limit_choices_to={'model__in':(
