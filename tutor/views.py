@@ -1,3 +1,5 @@
+from typing import Any
+from django.db.models.query import QuerySet
 from django.forms.models import BaseModelForm
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
@@ -11,39 +13,59 @@ from django.forms import formset_factory
 from django.views.generic.base import TemplateResponseMixin, View
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
+from accounts.models import Student
 
-class OwnerMixin():
+class TutorOwnerMixin:
+    def get_track(self):
+        raise NotImplementedError("Subclasses of TutorOwnerMixin must implement the get_track() method.")
     def get_queryset(self):
-        queryset= super().get_queryset()
-        # if self.request.user_role == "tutor":
-        # return queryset.filter(tutor=self.request.user_role)
-        return queryset.filter(course_tutor=self.request.user)
-        # return(messages.error, "You do not have the permission to view this")
+        queryset = super().get_queryset()
+        track = self.get_track()
+        if self.request.user.tutor and self.request.user.tutor.track == track:
+            return queryset.filter(course_tutor=self.request.user)
 
-class CourseListView(OwnerMixin, ListView):
+        return queryset.none()
+    
+
+class CourseListView(TutorOwnerMixin, ListView):
     model = Course
     queryset = Course.active_objects.all()
     context_object_name = 'courses'
 
-class CourseDetail(OwnerMixin, DetailView):
+    def get_track(self):
+        course = self.get_object()
+        return course.track
+
+
+class CourseDetail(TutorOwnerMixin, DetailView):
     model = Course
     context_object_name = 'course'
     slug_field= 'slug'
     slug_url_kwarg= 'course_slug'
     template_name = 'tutor/course_detail.html'
 
-class CourseCreateView(OwnerMixin, CreateView):    
+    def get_track(self):
+        course = self.get_object()
+        return course.track
+
+class CourseCreateView(TutorOwnerMixin, CreateView):    
     model=Course
     form_class= CourseForm
     success_url = reverse_lazy('course:course_list')
     success_message= "Course Created Successfully" 
     template_name = 'tutor/course_create_update.html'
 
+    def get_track(self):
+        course = self.get_object()
+        return course.track
+
     def form_valid(self, form):
         form.instance.course_tutor=self.request.user
         return super().form_valid(form)
+    
+    
 
-class CourseUpdateView(OwnerMixin, SuccessMessageMixin, UpdateView):    
+class CourseUpdateView(TutorOwnerMixin, SuccessMessageMixin, UpdateView):    
     model = Course
     slug_field= 'slug'
     slug_url_kwarg= 'course_slug'
@@ -52,12 +74,20 @@ class CourseUpdateView(OwnerMixin, SuccessMessageMixin, UpdateView):
     template_name ='tutor/course_create_update.html'
     form_class = CourseForm
 
-class CourseDeleteView(OwnerMixin, DeleteView):
+    def get_track(self):
+        course = self.get_object()
+        return course.track
+
+class CourseDeleteView(TutorOwnerMixin, DeleteView):
     model = Course
     slug_field= 'slug'
     slug_url_kwarg= 'course_slug'
     success_url = reverse_lazy('course:course_list')
     template_name = 'tutor/course_delete_confirm.html'
+
+    def get_track(self):
+        course = self.get_object()
+        return course.track
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -67,11 +97,15 @@ class CourseDeleteView(OwnerMixin, DeleteView):
         return HttpResponseRedirect(self.get_success_url())
     
 
-class TopicList(LoginRequiredMixin, ListView):
+class TopicList(LoginRequiredMixin,TutorOwnerMixin, ListView):
     model=Topic
     queryset =Topic.active_objects.all()
     context_object_name = 'topics'
     template_name = 'tutor/topiclist.html'
+
+    def get_track(self):
+        topic = self.get_object()
+        return topic.course.track
 
 # class TopicCreateUpdateView(LoginRequiredMixin, CreateView):
 #     template_name = 'tutor/topic_create_update.html'
@@ -187,7 +221,7 @@ class TopicList(LoginRequiredMixin, ListView):
 #         return super().form_valid(form)
     
 
-class TopicUpdateView(SuccessMessageMixin, UpdateView):
+class TopicUpdateView(TutorOwnerMixin, SuccessMessageMixin, UpdateView):
     model = Topic
     success_url = reverse_lazy('course:topic_list')
     success_message = 'Subtopic created successfully'
@@ -195,21 +229,29 @@ class TopicUpdateView(SuccessMessageMixin, UpdateView):
     form_class = TopicForm
     pk_url_kwarg='pk'
 
+    def get_track(self):
+        topic = self.get_object()
+        return topic.course.track
+
     def get_success_url(self):
         course_slug = self.kwargs['course_slug']
         return reverse_lazy('course:topic_list', kwargs={'course_slug': course_slug})
     
 
-class TopicDeleteView(LoginRequiredMixin, UpdateView):
+class TopicDeleteView(LoginRequiredMixin, TutorOwnerMixin, UpdateView):
     model = Topic
     pk_url_kwarg ='pk'
     template_name = 'tutor/course_delete_confirm.html'
     fields=[]
 
+    def get_track(self):
+        topic = self.get_object()
+        return topic.course.track
+
+
     def update(self, request, *args, **kwargs):
         self.object = self.get_object()
         self.object.is_active = False
-
         self.object.save()
         messages.info(request, 'Course deleted successfully')
         return HttpResponseRedirect(self.get_success_url())
@@ -217,6 +259,16 @@ class TopicDeleteView(LoginRequiredMixin, UpdateView):
     def get_success_url(self):
         course_slug = self.kwargs['course_slug']
         return reverse_lazy('course:topic_list', kwargs={'course_slug': course_slug})
+    
+
+class TrackStudentListView(LoginRequiredMixin, TutorOwnerMixin, ListView):
+    model = Student
+    context_object_name = 'students'
+
+    def get_queryset(self):
+        track = self.request.user.tutor.track
+        return super().get_queryset().filter(track=track)
+    
 
 
 

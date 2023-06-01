@@ -20,5 +20,8 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('course/', include('tutor.urls', namespace="course"))
+    path('course/', include('tutor.urls', namespace="course")),
+    path('LMS/admin/', include('lms_admin.urls')),
+    
+
 ]
