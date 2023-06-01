@@ -20,3 +20,4 @@ class CohortCreateForm(forms.ModelForm):
         year = self.cleaned_data.get('year')
         validate_current_year(year)
         return year
+    
