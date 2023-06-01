@@ -4,7 +4,9 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import User
 from accounts.models import Tutor
+import uuid
 
 # Create your models here.
 class ActiveManager(models.Manager):
@@ -15,7 +17,7 @@ class ActiveManager(models.Manager):
 class BaseContent(models.Model):
     title=models.CharField(max_length=225, blank=True, null=True)
     description=models.TextField(blank=True, null=True)
-    is_active=models.BooleanField(default=True, blank=True, null=True)
+    is_active=models.BooleanField(default=True)
     created_at= models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
 
@@ -41,16 +43,14 @@ class Course(BaseContent):
 
 class Topic(BaseContent):
     course=models.ForeignKey(Course, on_delete=models.CASCADE, blank=True, null=True)
-    id=models.UUIDField(primary_key=True, unique=True)
-
+    id=models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
 
     def __str__(self):
          return f"{self.title}"
-    
 
 class SubTopic(BaseContent):
     topic=models.ForeignKey(Topic, on_delete=models.CASCADE, blank=True, null=True)
-    id=models.UUIDField(primary_key=True, unique=True)
+    id=models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
     content_type=models.ForeignKey(ContentType,
                                    on_delete=models.CASCADE,
                                    limit_choices_to={'model__in':(
