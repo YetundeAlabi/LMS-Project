@@ -7,4 +7,4 @@ db.sqlite3
 !**/migrations
 !*/migrations/__init__.py
 venv/
-__pycache__/*
+__pycache__/
