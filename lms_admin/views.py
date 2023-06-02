@@ -129,12 +129,24 @@ class StudentImportView(FormView):
             )
 
             if created:
-                # Send email to new student for account setup or login
-                subject = 'Account Setup' if is_verified else 'Login Instructions'
-                message = f"Dear {username}, please click the following link to create your password and login." if is_verified else f"Dear {username}, please use your existing login credentials to access your account."
+                subject = 'Login Instructions' if is_verified else 'Account Setup'
+                context = {
+                    'username': username,
+                    'verification_url': self._get_verification_url(student),
+                    'login_url': self._get_login_url(student),
+                }
+                message = render_to_string('email_template.html', context)
                 send_mail(subject, message, 'sender@example.com', [email])
 
         return super().form_valid(form)
+
+    def _get_verification_url(self, student):
+            return self.request.build_absolute_uri(reverse('account_setup', args=[student.id]))
+
+    def _get_login_url(self, student):
+        if student.is_verified:
+            return self.request.build_absolute_uri(reverse('login'))
+
 
 from accounts.models import Tutor
 
