@@ -10,3 +10,4 @@ venv/
 __pycache__/*
 *.pyc
 __pycache__/
+lms_admin/student.csv

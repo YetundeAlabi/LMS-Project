@@ -10,7 +10,7 @@ from .models import User, Student, Tutor
 from django.contrib.auth.views import PasswordChangeView
 from django.views.generic.edit import UpdateView
 from django.contrib.auth.views import LogoutView
-from .forms import UpdateUserForm, LoginForm,SignUpForm 
+from .forms import LoginForm,SignUpForm 
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View

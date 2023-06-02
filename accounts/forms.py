@@ -44,12 +44,14 @@ class ApplicantForm(forms.ModelForm):
 
 
 class TutorProfileUpdateForm(forms.ModelForm):
+    
     class Meta:
         model = Tutor
-        fields = ['email', 'first_name', 'last_name', 'track', 'picture']
+        exclude = ("is_verified", "is_suspended")
 
 
 class StudentProfileUpdateForm(forms.ModelForm):
+
     class Meta:
         model = Student
-        fields = ['email', 'first_name', 'last_name', 'track',  'picture']
+        exclude = ("is_verified", "is_suspended")
