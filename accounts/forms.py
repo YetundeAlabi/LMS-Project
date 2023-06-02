@@ -31,11 +31,12 @@ class StudentCreationForm(forms.Form):
     
 
 class LoginForm(AuthenticationForm):
-    Email = forms.EmailField(max_length=150, help_text='Email')
-    password = forms.CharField(widget=forms.PasswordInput())
+    Email = forms.EmailField(max_length=150, 
+                             widget=forms.EmailInput(attrs={'class': 'form-control form-control-lg', 'id': 'email', 'placeholder': 'Enter Email Address'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control form-control-lg', 'id': 'password', 'placeholder': 'Enter Password'}))
 
 
-class AppliantForm(forms.ModelForm):
+class ApplicantForm(forms.ModelForm):
 
     class Meta:
         model = Applicant
