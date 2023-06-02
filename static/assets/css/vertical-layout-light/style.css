@@ -11083,14 +11083,14 @@ fieldset:disabled .wizard > .actions a,
 
 .btn-primary, .wizard > .actions a {
   color: #fff;
-  background-color: #4B49AC;
-  border-color: #4B49AC;
+  background-color: #e1261c;
+  border-color: #e1261c;
 }
 
 .btn-primary:hover, .wizard > .actions a:hover {
   color: #fff;
-  background-color: #3f3e91;
-  border-color: #3b3a88;
+  background-color: #871711;
+  border-color: #871711;
 }
 
 .btn-primary:focus, .wizard > .actions a:focus, .btn-primary.focus, .wizard > .actions a.focus {
