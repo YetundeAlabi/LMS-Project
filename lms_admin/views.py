@@ -7,6 +7,12 @@ from lms_admin.models import Track
 from lms_admin.forms import TrackForm
 from accounts.models import Student
 from accounts.forms import StudentCreationForm
+import csv
+from django.shortcuts import render
+from django.db.models.query import QuerySet
+from django.shortcuts import get_object_or_404
+from django.views import View
+from .forms import StudentImportForm
 # Create your views here.
 
 class TrackCreateView(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
@@ -23,6 +29,9 @@ class TrackListView(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     model = Track
     template_name = 'lms_admin/track_list.html'
     context_object_name = 'tracks'
+
+    def get_queryset(self):
+            return Track.active_objects.all()
     
 
 class TrackDetailView(DetailView, LoginRequiredMixin, PermissionRequiredMixin): 
@@ -64,8 +73,11 @@ class StudentListView(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     template_name = 'lms_admin/student_list.html'
     context_object_name = 'students'
 
+    def get_queryset(self):
+            return Student.objects.all()
 
-class SudentDetailView(DetailView, LoginRequiredMixin, PermissionRequiredMixin): 
+
+class StudentDetailView(DetailView, LoginRequiredMixin, PermissionRequiredMixin): 
     model = Student 
     template_name = 'lms_admin/student_detail.html'
     context_object_name = 'student'
@@ -85,3 +97,106 @@ class StudentDeleteView(View, LoginRequiredMixin, PermissionRequiredMixin):
         student = Student.objects.get(id=id)
         student.is_deleted = not student.is_deleted
         student.save()
+
+
+from django.views.generic import FormView
+from django.core.mail import send_mail
+from .forms import StudentImportForm
+from accounts.models import Student
+
+class StudentImportView(FormView):
+    template_name = 'import_students.html'
+    form_class = StudentImportForm
+    success_url = '/import/success/'
+
+    def form_valid(self, form):
+        students = form.process_csv()
+        for student in students:
+            username = student['username']
+            email = student['email']
+            is_verified = student['is_verified']
+            is_suspended = student['is_suspended']
+            is_deleted = student['is_deleted']
+
+            student, created = Student.objects.get_or_create(
+                username=username,
+                email=email,
+                defaults={
+                    'is_verified': is_verified,
+                    'is_suspended': is_suspended,
+                    'is_deleted': is_deleted
+                }
+            )
+
+            if created:
+                # Send email to new student for account setup or login
+                subject = 'Account Setup' if is_verified else 'Login Instructions'
+                message = f"Dear {username}, please click the following link to create your password and login." if is_verified else f"Dear {username}, please use your existing login credentials to access your account."
+                send_mail(subject, message, 'sender@example.com', [email])
+
+        return super().form_valid(form)
+
+from accounts.models import Tutor
+
+from .models import Cohort
+from .forms import CohortCreateForm
+
+
+class CohortCreateFormView(LoginRequiredMixin,PermissionRequiredMixin, CreateView):
+    form_class = CohortCreateForm
+    template_name = "admin/cohort_create_form.html"
+
+
+class CohortListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    model = Cohort
+    template_name = "admin/cohort_list.html"
+    context_object_name = "cohort_list"
+
+    def get_queryset(self):
+        queryset = Cohort.objects.all()
+        return queryset
+    
+    
+class TutorCreateFormView(LoginRequiredMixin,PermissionRequiredMixin,CreateView):
+    # form_class = TutorCreationForm
+    template_name = "admin/tutor_create_form.html"
+
+
+class TutorListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    model = Tutor
+    template_name = "admin/tutor_list.html"
+    context_object_name = 'tutor_list'
+
+    def get_queryset(self):
+        return Tutor.objects.all()
+
+
+class TutorUpdateView(LoginRequiredMixin,PermissionRequiredMixin, UpdateView):
+    model = Tutor
+    template_name = "admin/tutor_update_form.html"
+    fields = "__all__"
+
+    def form_valid(self, form):
+        return super().form_valid(form)
+    
+
+class TutorDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+    model = Tutor
+    template_name = "admin/tutor_detail.html"
+
+
+class TutorDeleteView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    
+    def post(self, request, *args, **kwargs):
+        tutor = get_object_or_404(Tutor, id=kwargs['pk'])
+        tutor.is_deleted = True
+        tutor.save() 
+
+
+class ToggleTutorSuspendView(LoginRequiredMixin, PermissionRequiredMixin, View):
+
+    def post(self, request, *args, **kwargs):
+        tutor = get_object_or_404(Tutor, id=kwargs['pk'])
+        suspension_status = tutor.is_suspended
+        tutor.is_suspended = not suspension_status
+        tutor.save()
