@@ -34,4 +34,7 @@ class Track(models.Model):
 
     def get_absolute_url(self):
         return reverse('track_detail', kwargs={'slug': self.slug})
-    
+
+
+class Cohort(models.Model):
+    year = models.PositiveIntegerField()
