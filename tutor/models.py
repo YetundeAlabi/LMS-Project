@@ -7,6 +7,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from accounts.models import Tutor
 import uuid
+from lms_admin.models import Track
+from django.utils.text import slugify
 
 # Create your models here.
 class ActiveManager(models.Manager):
@@ -31,7 +33,7 @@ class BaseContent(models.Model):
         
 class Course(BaseContent):
     course_tutor=models.ForeignKey(Tutor, on_delete=models.SET_NULL, null=True)
-    # track=models.ForeignKey('Track', on_delete=models.SET_NULL, null=True)
+    track=models.ForeignKey(Track, on_delete=models.SET_NULL, null=True)
     slug= models.SlugField(blank=True, null=True)
 
 
@@ -85,6 +87,7 @@ class Video(BaseContent):
 
 @receiver(post_save, sender=Course)
 def course_slug(sender, instance, created, **kwargs):
-    if created:
-        instance.slug=instance.title.replace(' ','-')
+    if created and not instance.slug:
+        slug = slugify(instance.title)
+        instance.slug = slug
         instance.save()

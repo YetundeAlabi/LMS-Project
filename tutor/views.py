@@ -1,3 +1,6 @@
+from typing import Any, Dict
+from django.forms.models import BaseModelForm
+from django.http import HttpResponse
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy, reverse
@@ -7,7 +10,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from .models import Course, Topic
-from .forms import CourseForm, TopicForm
+from .forms import CourseForm, TopicForm, TopicFormSet
 from accounts.models import Student
 
 
@@ -33,19 +36,39 @@ class CourseDetail(TutorUserRequiredMixin, DetailView):
     slug_field= 'slug'
     slug_url_kwarg= 'course_slug'
     template_name = 'tutor/course_detail.html'
+   
 
-
-class CourseCreateView(TutorUserRequiredMixin, CreateView):    
-    model=Course
-    form_class= CourseForm
-    success_url = reverse_lazy('course:course_list')
-    success_message= "Course Created Successfully" 
+class CourseAndTopicCreateView(TutorUserRequiredMixin, CreateView):
+    model = Course
+    form_class = CourseForm
     template_name = 'tutor/course_create_update.html'
+    success_url = reverse_lazy('course_list')
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.request.POST:
+            data['topic_formset'] = TopicFormSet(self.request.POST)
+        else:
+            data['topic_formset'] = TopicFormSet()
+        return data
 
     def form_valid(self, form):
-        form.instance.course_tutor=self.request.user.tutor
+        form.instance.course_tutor = self.request.user.tutor
         form.instance.track = self.request.user.tutor.track
-        return super().form_valid(form)``
+        context = self.get_context_data()
+        topic_formset = context['topic_formset']
+        if topic_formset.is_valid():
+            course = form.save()
+            instances = topic_formset.save(commit=False)
+            for instance in instances:
+                instance.course = course
+                instance.save()
+            for obj in topic_formset.deleted_objects:
+                obj.delete()
+            return super().form_valid(form)
+        else:
+            return self.form_invalid(form)
+
 
 
 class CourseUpdateView(TutorUserRequiredMixin, SuccessMessageMixin, UpdateView):    
@@ -94,120 +117,6 @@ class TopicList(TutorUserRequiredMixin, ListView):
     def get_queryset(self):
         track = self.request.user.tutor.track
         return super().get_queryset().filter(course__track=track)
-
-
-# class TopicCreateUpdateView(LoginRequiredMixin, CreateView):
-#     template_name = 'tutor/topic_create_update.html'
-#     form_class = TopicFormSet
-#     model = Course
-#     course = None
-
-#     def dispatch(self, request, course_slug):
-#         self.course = get_object_or_404(Course, slug=course_slug, course_tutor=self.request.user.tutor)
-#         return super().dispatch(request, course_slug)
-    
-#     def get_formset(self, data=None):
-#         return TopicFormSet(instance=self.course, data=data)
-
-#     def get_context_data(self, **kwargs):
-#         data = super().get_context_data(**kwargs)
-#         data['formset'] = self.form_class(queryset=Topic.objects.none(), instance=self.course)
-#         return data
-
-#     def form_valid(self, form):
-#         formset = self.get_formset(data=self.request.POST)
-#         if formset.is_valid():
-#             formset.save()
-#             return HttpResponse('Topic created')
-#         else:
-#             return self.form_invalid(form)
-    
-#     def post(self, request, *args, **kwargs):
-#         form = self.get_form()
-#         formset = self.get_formset(data=request.POST)
-#         if form.is_valid() and formset.is_valid():
-#             self.object = form.save(commit=False)
-#             self.object.course = self.course
-#             self.object.save()
-#             formset.instance = self.object
-#             formset.save()
-#             return HttpResponse('Topic created')
-#         else:
-#             return self.form_invalid(form)
-
-# class TopicCreateView(LoginRequiredMixin, CreateView):
-#     template_name = 'tutor/topic_create_update.html'
-#     form_class = TopicFormSet
-#     model = Course
-
-#     def dispatch(self, request, course_slug):
-#         self.course = get_object_or_404(Course, slug=course_slug, course_tutor=self.request.user.tutor)
-#         return super().dispatch(request, course_slug)
-
-#     def form_valid(self, form):
-#         form.instance.course = self.course
-#         form.save()
-#         return HttpResponse('Topic created')
-    
-
-# class TopicUpdateView(LoginRequiredMixin, UpdateView):
-#     template_name = 'tutor/topic_create_update.html'
-#     form_class = TopicFormSet
-#     model = Course
-
-#     def dispatch(self, request, course_slug):
-#         self.course = get_object_or_404(Course, slug=course_slug, course_tutor=self.request.user.tutor)
-#         return super().dispatch(request, course_slug)
-
-#     def form_valid(self, form):
-#         form.instance.course = self.course
-#         form.save()
-#         return HttpResponse('Topic updated')
-    
-
-# class TopicCreateUpdateView(TemplateResponseMixin, View):
-#     template_name = 'tutor/topic_create_update.html'
-#     get_formset = TopicFormSet
-
-#     def get_formset(self, data=None):
-#         return TopicFormSet(instance=self.course, data=data)
-    
-#     def dispatch(self, request, course_slug):
-#         self.course = get_object_or_404(Course, slug=course_slug, course_tutor=self.request.user.tutor)
-#         return super().dispatch(request, course_slug)
-    
-#     def get(self, request, *args, **kwargs):
-#         formset = self.get_formset()
-#         return self.render_to_response({'course': self.course, 'formset': formset})
-    
-#     def post(self, request, *args, **kwargs):
-#         formset = self.get_formset(data=request.POST)
-#         if formset.is_valid():
-#             formset.save()
-#             return HttpResponse('Topic created')
-#             # return HttpResponseRedirect('manage_course_list')
-#         return self.render_to_response({'course': self.course,'formset': formset})
-
-
-
-# class TopicCreateView(SuccessMessageMixin, CreateView):
-#     model = Topic
-#     # success_url = reverse_lazy('course: subtopic_list')
-#     success_message = 'Subtopic created successfully'
-#     template_name = 'tutor/topic_create_update.html'
-#     # form_class = TopicForm
-    
-#     def get_form(self, form_class=None):
-#         form = super().get_form(form_class)
-#         form.formsets = TopicFormSet(form_kwargs=self.get_form_kwargs())
-#         return form
-
-
-#     def form_valid(self, form):
-#         course_slug=self.kwargs['slug']
-#         course= get_object_or_404(Course, slug=course_slug)
-#         form.instance.course=course
-#         return super().form_valid(form)
     
 
 class TopicUpdateView(TutorUserRequiredMixin, SuccessMessageMixin, UpdateView):
@@ -265,7 +174,7 @@ class TrackStudentListView(TutorUserRequiredMixin, ListView):
 class SuspendStudent(TutorUserRequiredMixin, View):
     def get(self, request, student_id):
         student = get_object_or_404(Student, id=student_id)
-        return render(request, 'suspend_student.html', {'student': student})
+        return render(request, 'tutor/suspend_student.html', {'student': student})
     
     def dispatch(self, request, student_id, *args, **kwargs):
         student = get_object_or_404(Student, id=student_id)
