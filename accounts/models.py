@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from django.db.models.query import QuerySet
+from django.urls import reverse
 
 
 class MyUserManager(BaseUserManager):
@@ -54,15 +55,20 @@ class Student(models.Model):
     last_login = models.DateTimeField(auto_now=True)
     is_verified = models.BooleanField(default=False)
     is_suspended = models.BooleanField(default=False)
-    picture = models.ImageField(upload_to='accounts/media', blank=True)
+    picture = models.ImageField(upload_to='accounts/media', blank=True, null=True)
     is_deleted = models.BooleanField(default=False)
     track = models.ForeignKey("Track", on_delete=models.SET_NULL, related_name="students", null=True)
+    # track = models.ForeignKey("Track", on_delete=models.SET_NULL, related_name="students", null=True)
     
     def get_full_name(self) -> str:
         return f'{self.first_name} {self.last_name}'
     
     def __str__(self):
         return self.user.email
+
+    def get_absolute_url(self):
+        return reverse('student_detail', args=[str(self.id)])
+
 
 
 class Tutor(models.Model):
@@ -71,6 +77,7 @@ class Tutor(models.Model):
     is_suspended = models.BooleanField(default=False)
     picture = models.ImageField(upload_to='accounts/media', blank=True)
     track = models.ForeignKey("Track", on_delete=models.SET_NULL, related_name="Tutors", null=True)
+    # track = models.ForeignKey("Track", on_delete=models.SET_NULL, related_name="Tutors", null=True)
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
