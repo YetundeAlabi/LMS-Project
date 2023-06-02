@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from django.db.models.query import QuerySet
+from django.urls import reverse
 
 
 class MyUserManager(BaseUserManager):
@@ -64,6 +65,10 @@ class Student(models.Model):
     
     def __str__(self):
         return self.user.email
+
+    def get_absolute_url(self):
+        return reverse('student_detail', args=[str(self.id)])
+
 
 
 class Tutor(models.Model):
