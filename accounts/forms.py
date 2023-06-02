@@ -1,9 +1,9 @@
 from django import forms
-from django.contrib.auth.forms import ReadOnlyPasswordHashField, UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import ReadOnlyPasswordHashField, UserCreationForm, AuthenticationForm, UserChangeForm
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
-from .models import Tutor, Student
-from .models import Applicant 
+from .models import Tutor, Student, Applicant
+from lms_admin.models import Track 
 
 User = get_user_model()
 
@@ -16,6 +16,34 @@ class SignUpForm(UserCreationForm):
     class Meta:
         model = User
         fields = ("first_name", "last_name", 'password1', 'password2')
+
+
+class UserForm(UserCreationForm):
+    first_name = forms.CharField(max_length=100, help_text='First Name')
+    last_name = forms.CharField(max_length=100, help_text='Last Name')
+    email = forms.EmailField(max_length=150, help_text='Email')
+    track = forms.ModelMultipleChoiceField(
+        queryset= Track.objects.all(),
+        widget = forms.SelectMultiple(attrs={"class": "input"})
+    )
+
+    class Meta:
+        model = User
+        fields = ("first_name", "last_name", "email", 'password1', 'password2', "track", "picture")
+
+    def save(self, commit=True):
+        user = User.objects.create_user(
+            first_name = self.cleaned_data["first_name"],
+            last_name = self.cleaned_data["last_name"],
+            email = self.cleaned_data["email"],
+            password = self.cleaned_data["password"]
+        )
+
+        tutor = Tutor.objects.create(
+            user=user,
+            track=self.cleaned_data["track"],
+            picture=self.cleaned_data["picture"])
+        tutor.save()
 
 
 class StudentCreationForm(forms.Form):
