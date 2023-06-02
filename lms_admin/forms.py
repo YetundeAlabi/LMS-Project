@@ -2,6 +2,11 @@ from django import forms
 
 from lms_admin.models import Track
 import csv
+from django.core.exceptions import ValidationError
+from django.utils import timezone
+
+from .models import Cohort
+
 
 class TrackForm(forms.ModelForm):
     
@@ -19,20 +24,16 @@ class StudentImportForm(forms.Form):
         reader = csv.DictReader(csv_file)
         for row in reader:
             student = {
-                'username': row['Username'],
                 'email': row['Email'],
-                'is_verified': row['Is Verified'].lower() == 'true',
-                'is_suspended': row['Is Suspended'].lower() == 'true',
-                'is_deleted': row['Is Deleted'].lower() == 'true',
+                'first_name': row['first_name'],
+                'last_name': row['last_name']
+                # 'is_verified': row['Is Verified'].lower() == 'true',
+                # 'is_suspended': row['Is Suspended'].lower() == 'true',
+                # 'is_deleted': row['Is Deleted'].lower() == 'true',
             }
             students.append(student)
         return students
 
-
-from django.core.exceptions import ValidationError
-from django.utils import timezone
-
-from .models import Cohort
 
 def validate_current_year(value):
     current_year = timezone.now().year

@@ -25,12 +25,14 @@ class CourseListView(OwnerMixin, ListView):
     queryset = Course.active_objects.all()
     context_object_name = 'courses'
 
+
 class CourseDetail(OwnerMixin, DetailView):
     model = Course
     context_object_name = 'course'
     slug_field= 'slug'
     slug_url_kwarg= 'course_slug'
     template_name = 'tutor/course_detail.html'
+
 
 class CourseCreateView(OwnerMixin, CreateView):    
     model=Course
@@ -43,6 +45,7 @@ class CourseCreateView(OwnerMixin, CreateView):
         form.instance.course_tutor=self.request.user
         return super().form_valid(form)
 
+
 class CourseUpdateView(OwnerMixin, SuccessMessageMixin, UpdateView):    
     model = Course
     slug_field= 'slug'
@@ -51,6 +54,7 @@ class CourseUpdateView(OwnerMixin, SuccessMessageMixin, UpdateView):
     success_message = "Course Updated Successfully"
     template_name ='tutor/course_create_update.html'
     form_class = CourseForm
+
 
 class CourseDeleteView(OwnerMixin, DeleteView):
     model = Course
@@ -64,8 +68,8 @@ class CourseDeleteView(OwnerMixin, DeleteView):
         self.object.is_active = False
         self.object.save()
         messages.info(request, 'Course deleted successfully')
-        return HttpResponseRedirect(self.get_success_url())
-    
+        return HttpResponseRedirect(self.get_success_url())  
+
 
 class TopicList(LoginRequiredMixin, ListView):
     model=Topic
