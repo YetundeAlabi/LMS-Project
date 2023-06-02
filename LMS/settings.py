@@ -81,7 +81,7 @@ WSGI_APPLICATION = 'LMS.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': ,
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
