@@ -7,6 +7,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from accounts.models import Tutor
 import uuid
+from lms_admin.models import Track
+from django.utils.text import slugify
 
 # Create your models here.
 class ActiveManager(models.Manager):
@@ -17,7 +19,7 @@ class ActiveManager(models.Manager):
 class BaseContent(models.Model):
     title=models.CharField(max_length=225, blank=True, null=True)
     description=models.TextField(blank=True, null=True)
-    is_active=models.BooleanField(default=True, blank=True, null=True)
+    is_active=models.BooleanField(default=True)
     created_at= models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
 
@@ -31,7 +33,7 @@ class BaseContent(models.Model):
         
 class Course(BaseContent):
     course_tutor=models.ForeignKey(Tutor, on_delete=models.SET_NULL, null=True)
-    # track=models.ForeignKey('Track', on_delete=models.SET_NULL, null=True)
+    track=models.ForeignKey(Track, on_delete=models.SET_NULL, null=True)
     slug= models.SlugField(blank=True, null=True)
 
 
@@ -53,7 +55,7 @@ class Topic(BaseContent):
 
 class SubTopic(BaseContent):
     topic=models.ForeignKey(Topic, on_delete=models.CASCADE, blank=True, null=True)
-    id=models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
+    id=models.UUIDField(primary_key=True, unique=True)
     content_type=models.ForeignKey(ContentType,
                                    on_delete=models.CASCADE,
                                    limit_choices_to={'model__in':(
@@ -85,6 +87,7 @@ class Video(BaseContent):
 
 @receiver(post_save, sender=Course)
 def course_slug(sender, instance, created, **kwargs):
-    if created:
-        instance.slug=instance.title.replace(' ','-')
+    if created and not instance.slug:
+        slug = slugify(instance.title)
+        instance.slug = slug
         instance.save()
