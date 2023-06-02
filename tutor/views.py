@@ -1,6 +1,6 @@
 from typing import Any, Dict
 from django.forms.models import BaseModelForm
-from django.http import HttpResponse
+from django.http import HttpResponse,
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy, reverse
@@ -9,6 +9,7 @@ from django.views.generic.base import View
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.shortcuts import redirect
 from .models import Course, Topic
 from .forms import CourseForm, TopicForm, TopicFormSet
 from accounts.models import Student
@@ -87,26 +88,21 @@ class CourseUpdateView(TutorUserRequiredMixin, SuccessMessageMixin, UpdateView):
         return super().dispatch(request, *args, **kwargs)
 
 
-class CourseDeleteView(TutorUserRequiredMixin, UpdateView):
-    model = Course
-    slug_field= 'slug'
-    slug_url_kwarg= 'course_slug'
-    success_url = reverse_lazy('course:course_list')
-    template_name = 'tutor/course_delete_confirm.html'
+class CourseDeleteView(TutorUserRequiredMixin, View):
+    def get(self, request, course_slug):
+        course = Course.objects.get(slug=course_slug)
+        return render(request, 'tutor/course_delete_confirm.html', {'course': course})
 
-    def dispatch(self, request, *args, **kwargs):
-        course= self.get_object()
+    def post(self, request, course_slug):
+        course = Course.objects.get(slug=course_slug)
         if course.course_tutor != self.request.user.tutor:
-            messages.error(self.request, "You cannot delete another tutor's course")
-        return super().dispatch(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        course = self.get_object()
+            messages.error(request, "You cannot delete another tutor's course")
+            return redirect('course:course_list')    
         course.is_active = False
         course.save()
         messages.info(request, 'Course deleted successfully')
-        return HttpResponseRedirect(self.get_success_url())
-    
+        return redirect('course:course_list')
+
 
 class TopicList(TutorUserRequiredMixin, ListView):
     model=Topic
@@ -138,16 +134,14 @@ class TopicUpdateView(TutorUserRequiredMixin, SuccessMessageMixin, UpdateView):
         return reverse_lazy('course:topic_list', kwargs={'course_slug': course_slug})
     
 
+
 class TopicDeleteView(TutorUserRequiredMixin, View):
-    model = Topic
-    pk_url_kwarg ='pk'
-    template_name = 'tutor/course_delete_confirm.html'
-    fields=[]
 
     def dispatch(self, request, *args, **kwargs):
-        topic= self.get_object()
+        topic = self.get_object()
         if topic.course.tutor != self.request.user.tutor:
-            messages.error(self.request, "You cannot update topics under another tutor's course")
+            messages.error(request, "You cannot update topics under another tutor's course")
+            return redirect('course:topic_list', course_slug=topic.course.slug)
         return super().dispatch(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
@@ -155,11 +149,15 @@ class TopicDeleteView(TutorUserRequiredMixin, View):
         topic.is_active = False
         topic.save()
         messages.info(request, 'Topic deleted successfully')
-        return HttpResponseRedirect(self.get_success_url())
-    
-    def get_success_url(self):
-        course_slug = self.kwargs['course_slug']
-        return reverse_lazy('course:topic_list', kwargs={'course_slug': course_slug})
+        return redirect('course:topic_list', course_slug=topic.course.slug)
+
+    def get(self, request, *args, **kwargs):
+        topic = self.get_object()
+        return render(request, 'tutor/topic_delete_confirm.html', {'topic': topic})
+
+    def get_object(self):
+        pk = self.kwargs.get('pk')
+        return Topic.objects.get(pk=pk)
     
 
 class TrackStudentListView(TutorUserRequiredMixin, ListView):
