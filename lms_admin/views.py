@@ -1,19 +1,27 @@
-<<<<<<< HEAD
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import CreateView, ListView, DetailView, UpdateView, TemplateView
+from django.views.generic import CreateView, ListView, DetailView, UpdateView
 from lms_admin.models import Track
 from lms_admin.forms import TrackForm
 from accounts.models import Student
 from accounts.forms import StudentCreationForm
-import csv
-from django.shortcuts import render
-from django.db.models.query import QuerySet
+from django.urls import reverse
+from django.template.loader import render_to_string
+from typing import Any
 from django.shortcuts import get_object_or_404
+from accounts.models import Tutor
+from .models import Cohort
+from .forms import CohortCreateForm
+from django.db.models.query import QuerySet
 from django.views import View
 from .forms import StudentImportForm
+from django.views.generic import FormView
+from django.core.mail import send_mail
+from .forms import StudentImportForm
+from accounts.models import Student
+
 # Create your views here.
 
 class TrackCreateView(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
@@ -100,11 +108,6 @@ class StudentDeleteView(View, LoginRequiredMixin, PermissionRequiredMixin):
         student.save()
 
 
-from django.views.generic import FormView
-from django.core.mail import send_mail
-from .forms import StudentImportForm
-from accounts.models import Student
-
 class StudentImportView(FormView):
     template_name = 'import_students.html'
     form_class = StudentImportForm
@@ -137,7 +140,7 @@ class StudentImportView(FormView):
                     'login_url': self._get_login_url(student),
                 }
                 message = render_to_string('email_template.html', context)
-                send_mail(subject, message, 'sender@example.com', [email])
+                send_mail(subject, message, 'adeosunfaith0101@gmail.com', ['adeosunfaith0101@gmail.com', 'otutaiwo1@gmail.com', 'mohamodudaniel39@gmail.com'])
 
         return super().form_valid(form)
 
@@ -148,11 +151,6 @@ class StudentImportView(FormView):
         if student.is_verified:
             return self.request.build_absolute_uri(reverse('login'))
 
-
-from accounts.models import Tutor
-
-from .models import Cohort
-from .forms import CohortCreateForm
 
 
 class CohortCreateFormView(LoginRequiredMixin,PermissionRequiredMixin, CreateView):
@@ -213,21 +211,6 @@ class ToggleTutorSuspendView(LoginRequiredMixin, PermissionRequiredMixin, View):
         suspension_status = tutor.is_suspended
         tutor.is_suspended = not suspension_status
         tutor.save()
-=======
-import csv
-
-from typing import Any
-from django.db.models.query import QuerySet
-from django.shortcuts import render
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.shortcuts import get_object_or_404
-from django.views.generic import (CreateView, DetailView, ListView, TemplateView,
-                                  UpdateView, View)
-
-from accounts.models import Tutor
-
-from .models import Cohort
-from .forms import CohortCreateForm
 
 
 # Create your views here.
@@ -289,4 +272,3 @@ class ToggleTutorSuspendView(LoginRequiredMixin, PermissionRequiredMixin, View):
         suspension_status = tutor.is_suspended
         tutor.is_suspended = not suspension_status
         tutor.save()
->>>>>>> 1568624f1dded75260be81e8b19d4d847485d4ca
