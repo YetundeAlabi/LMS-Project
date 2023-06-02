@@ -43,13 +43,13 @@ class ApplicantForm(forms.ModelForm):
         exclude = ("is_approved",)
 
 
-class TutorForm(forms.ModelForm):
+class TutorProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Tutor
         fields = ['email', 'first_name', 'last_name', 'track', 'picture']
 
 
-class StudentForm(forms.ModelForm):
+class StudentProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Student
         fields = ['email', 'first_name', 'last_name', 'track',  'picture']

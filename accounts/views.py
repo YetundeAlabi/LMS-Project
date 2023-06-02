@@ -15,16 +15,16 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 from .models import Tutor, Student
-from .forms import TutorForm, StudentForm
+from .forms import TutorProfileUpdateForm, StudentProfileUpdateForm
 # Create your views here.
 
 User = get_user_model()
 
 
-class TutorSignUpView(LoginRequiredMixin, CreateView):
+class TutorSignUpView(CreateView):
     model = User
     form_class = SignUpForm
-    template_name = 'signup.html' 
+    template_name = 'accounts/signup.html' 
     success_url = reverse_lazy('login')  
     def form_valid(self, form):
         user = form.save(commit=False)
@@ -60,13 +60,13 @@ class LoginView(views.LoginView):
         
             
 class ChangePasswordView(PasswordChangeView):
-    template_name = 'change_password.html'  
+    template_name = 'accounts/change_password.html'  
     success_url = reverse_lazy('login')
 
 
 class TutorUpdateView(LoginRequiredMixin, UpdateView):
     model = Tutor
-    form_class = TutorForm
+    form_class = TutorProfileUpdateForm
     template_name = 'update_profile.html'
     success_url = reverse_lazy('tutor-home')
 
@@ -82,7 +82,7 @@ class TutorUpdateView(LoginRequiredMixin, UpdateView):
 
 class StudentUpdateView(LoginRequiredMixin, UpdateView):
     model = Student
-    form_class = StudentForm
+    form_class = StudentProfileUpdateForm
     template_name = 'update_profile.html'
     success_url = reverse_lazy('student-home')
 
