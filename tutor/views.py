@@ -14,14 +14,14 @@ from .forms import CourseForm, TopicForm, TopicFormSet
 from accounts.models import Student
 from django.apps import apps
 from django.views.generic.edit import FormView
-
+from django.views.generic.base import TemplateResponseMixin
+from django.forms.models import modelform_factory
 
 
 class TutorUserRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.tutor
     
-
 class CourseListView(TutorUserRequiredMixin, ListView):
     model = Course
     queryset = Course.active_objects.all()
@@ -30,7 +30,6 @@ class CourseListView(TutorUserRequiredMixin, ListView):
     def get_queryset(self):
         track = self.request.user.tutor.track
         return super().get_queryset().filter(track=track)
-
 
 class CourseDetail(TutorUserRequiredMixin, DetailView):
     model = Course
@@ -55,9 +54,6 @@ class CourseAndTopicCreateView(TutorUserRequiredMixin, CreateView):
         return data
 
     def form_valid(self, form):
-        form.instance.course_tutor=self.request.user
-        return super().form_valid(form)
-    
         form.instance.course_tutor = self.request.user.tutor
         form.instance.track = self.request.user.tutor.track
         context = self.get_context_data()
@@ -73,7 +69,6 @@ class CourseAndTopicCreateView(TutorUserRequiredMixin, CreateView):
             return super().form_valid(form)
         else:
             return self.form_invalid(form)
-
 
 
 class CourseUpdateView(TutorUserRequiredMixin, SuccessMessageMixin, UpdateView):    
