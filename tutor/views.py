@@ -170,8 +170,6 @@ class TrackStudentListView(LoginRequiredMixin, TutorOwnerMixin, ListView):
         return super().get_queryset().filter(track=track)
     
 
-
-
 # class TopicDeleteView(OwnerMixin, DeleteView):
 #     model = Topic
 #     # slug_field= 'slug'
