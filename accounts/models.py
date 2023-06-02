@@ -35,16 +35,16 @@ class User(AbstractBaseUser, PermissionsMixin):
     # ADMIN = 0
     # TUTOR = 1
     # STUDENT = 2
-    ROLE_CHOICES = [
-        ("ADMIN", "Admin"),
-        ("TUTOR", "Tutor"),
-        ("STUDENT", "Student")
-    ]
+    # ROLE_CHOICES = [
+    #     ("ADMIN", "Admin"),
+    #     ("TUTOR", "Tutor"),
+    #     ("STUDENT", "Student")
+    # ]
     
     email = models.EmailField(max_length=255, unique=True, verbose_name="email address")
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    role = models.CharField(max_length= 50, choices=ROLE_CHOICES)
+    # role = models.CharField(max_length= 50, choices=ROLE_CHOICES)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
@@ -57,9 +57,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email 
     
+    @property
+    def is_admin(self):
+        return self.is_staff
 
 class Student(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='student')
     last_login = models.DateTimeField(auto_now=True)
     is_verified = models.BooleanField(default=False)
     is_suspended = models.BooleanField(default=False)
@@ -79,11 +82,11 @@ class Student(models.Model):
 
 
 class Tutor(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name="tutor")
     is_verified = models.BooleanField(default=False)
     is_suspended = models.BooleanField(default=False)
     picture = models.ImageField(upload_to='accounts/media', blank=True)
-    track = models.ForeignKey(Track, on_delete=models.SET_NULL, related_name="Tutors", null=True)
+    track = models.ForeignKey(Track, on_delete=models.SET_NULL, related_name="tutors", null=True)
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):

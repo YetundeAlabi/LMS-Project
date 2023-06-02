@@ -50,9 +50,9 @@ class LoginView(views.LoginView):
     def get_success_url(self) -> str:
         user = self.request.user
         if user.is_authenticated:
-            if user.role == "STUDENT":
+            if user.student:
                 return reverse('student-home')
-            elif user.role == 'TUTOR':
+            elif user.tutor:
                 return reverse('tutor-home')
             else:
                 return reverse('admin-home')
