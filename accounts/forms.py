@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField, UserCreationForm, AuthenticationForm
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
-
+from .models import Tutor, Student
 from .models import Applicant 
 
 User = get_user_model()
@@ -40,3 +40,15 @@ class AppliantForm(forms.ModelForm):
     class Meta:
         model = Applicant
         exclude = ("is_approved",)
+
+
+class TutorForm(forms.ModelForm):
+    class Meta:
+        model = Tutor
+        fields = ['email', 'first_name', 'last_name', 'track', 'picture']
+
+
+class StudentForm(forms.ModelForm):
+    class Meta:
+        model = Student
+        fields = ['email', 'first_name', 'last_name', 'track',  'picture']
