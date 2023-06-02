@@ -50,7 +50,7 @@ class Topic(BaseContent):
 
 class SubTopic(BaseContent):
     topic=models.ForeignKey(Topic, on_delete=models.CASCADE, blank=True, null=True)
-    id=models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
+    id=models.UUIDField(primary_key=True, unique=True)
     content_type=models.ForeignKey(ContentType,
                                    on_delete=models.CASCADE,
                                    limit_choices_to={'model__in':(
