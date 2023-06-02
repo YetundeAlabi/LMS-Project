@@ -61,7 +61,7 @@ class TutorDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
 class TutorDeleteView(LoginRequiredMixin, PermissionRequiredMixin, View):
     
     def post(self, request, *args, **kwargs):
-        tutor = get_object_or_404(id=kwargs['pk'])
+        tutor = get_object_or_404(Tutor, id=kwargs['pk'])
         tutor.is_deleted = True
         tutor.save() 
 
@@ -69,7 +69,7 @@ class TutorDeleteView(LoginRequiredMixin, PermissionRequiredMixin, View):
 class ToggleTutorSuspendView(LoginRequiredMixin, PermissionRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
-        tutor = get_object_or_404(id=kwargs['pk'])
+        tutor = get_object_or_404(Tutor, id=kwargs['pk'])
         suspension_status = tutor.is_suspended
         tutor.is_suspended = not suspension_status
         tutor.save()
