@@ -62,7 +62,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.is_staff
 
 class Student(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='student')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='student', null=True, blank=True)
     last_login = models.DateTimeField(auto_now=True)
     is_verified = models.BooleanField(default=False)
     is_suspended = models.BooleanField(default=False)
@@ -82,7 +82,7 @@ class Student(models.Model):
 
 
 class Tutor(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name="tutor")
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name="tutor", null=True, blank=True)
     is_verified = models.BooleanField(default=False)
     is_suspended = models.BooleanField(default=False)
     picture = models.ImageField(upload_to='accounts/media', blank=True)
