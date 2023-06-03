@@ -16,5 +16,4 @@ class TopicForm(ModelForm):
 
 
 TopicFormSet = inlineformset_factory(Course,Topic, fields=['title',
-                                                            'description'],
-                                                              extra=2, can_delete=True)
+                                                            'description'],  extra=2)

@@ -29,7 +29,7 @@ class UserForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ("first_name", "last_name", "email", 'password1', 'password2', "track", "picture")
+        fields = ("first_name", "last_name", "email", 'password1', 'password2', "track")
 
     def save(self, commit=True):
         user = User.objects.create_user(

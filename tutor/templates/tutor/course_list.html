@@ -1,3 +1,4 @@
 {% for course in courses %}
-<l1>{{ course}}</l1>
+<l1>{{ course}}</l1> <a href="{% url 'course:topic_list' course.slug %}">View Topics</a>
+<a href="{% url 'course:course_detail' course.slug %}">View</a><br>
 {% endfor %}

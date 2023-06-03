@@ -1,4 +1,6 @@
 {% for topic in topics %}
-    <h1>{{ topic }}</h1>
-    <a href="{% url 'course:update_topic' topic.course.slug topic.id %}">update</a><br>
+    <h1>{{ topic.course.title }}</h1>
+    {{ topic }}
+    <a href="{% url 'course:update_topic' topic.course.slug topic.id %}">update</a>
+    <a href="{% url 'course:delete_topic' topic.course.slug topic.id %}">delete</a><br>
 {% endfor %}
