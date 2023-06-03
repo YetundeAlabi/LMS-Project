@@ -168,7 +168,6 @@ class TrackStudentListView(TutorUserRequiredMixin, ListView):
         track = self.request.user.tutor.track
         return super().get_queryset().filter(track=track)
     
-
 class SuspendStudent(TutorUserRequiredMixin, View):
     def get(self, request, student_id):
         student = get_object_or_404(Student, id=student_id)
@@ -210,9 +209,9 @@ class SubTopicCreateUpdateView(TemplateResponseMixin, View):
     def dispatch(self, request, topic_id, model_name, id=None):
         self.topic = get_object_or_404(Topic, id=topic_id, course__course_tutor=request.user.tutor)
         self.model = self.get_model(model_name)
-        # check if non-course_tutor can do the below
+        
         if id:
-            self.obj = get_object_or_404(self.model, id=id)
+            self.obj = get_object_or_404(self.model, id=id, tutor=request.user.tutor)
         return super().dispatch(request, topic_id, model_name, id)
     
     def get(self, request, topic_id, model_name, id=None):
