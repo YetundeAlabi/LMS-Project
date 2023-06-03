@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from django.db.models.query import QuerySet
 from django.urls import reverse
-
+from lms_admin.models import Track
 
 class MyUserManager(BaseUserManager):
 
@@ -57,7 +57,7 @@ class Student(models.Model):
     is_suspended = models.BooleanField(default=False)
     picture = models.ImageField(upload_to='accounts/media', blank=True, null=True)
     is_deleted = models.BooleanField(default=False)
-    track = models.ForeignKey("Track", on_delete=models.SET_NULL, related_name="students", null=True)
+    track = models.ForeignKey(Track, on_delete=models.SET_NULL, related_name="students", null=True)
     # track = models.ForeignKey("Track", on_delete=models.SET_NULL, related_name="students", null=True)
     
     def get_full_name(self) -> str:
@@ -76,7 +76,7 @@ class Tutor(models.Model):
     is_verified = models.BooleanField(default=False)
     is_suspended = models.BooleanField(default=False)
     picture = models.ImageField(upload_to='accounts/media', blank=True)
-    track = models.ForeignKey("Track", on_delete=models.SET_NULL, related_name="Tutors", null=True)
+    track = models.ForeignKey(Track, on_delete=models.SET_NULL, related_name="Tutors", null=True)
     # track = models.ForeignKey("Track", on_delete=models.SET_NULL, related_name="Tutors", null=True)
     is_deleted = models.BooleanField(default=False)
 

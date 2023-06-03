@@ -137,7 +137,6 @@ class TopicUpdateView(TutorUserRequiredMixin, SuccessMessageMixin, UpdateView):
         course_slug = self.kwargs['course_slug']
         return reverse_lazy('course:topic_list', kwargs={'course_slug': course_slug})
     
-
 class TopicDeleteView(TutorUserRequiredMixin, View):
     model = Topic
     pk_url_kwarg ='pk'
@@ -160,7 +159,6 @@ class TopicDeleteView(TutorUserRequiredMixin, View):
     def get_success_url(self):
         course_slug = self.kwargs['course_slug']
         return reverse_lazy('course:topic_list', kwargs={'course_slug': course_slug})
-    
 
 class TrackStudentListView(TutorUserRequiredMixin, ListView):
     model = Student
@@ -205,7 +203,8 @@ class SubTopicCreateUpdateView(TemplateResponseMixin, View):
     def get_form(self, model, *args, **kwargs):
         Form = modelform_factory(model, exclude=['course_tutor',
                                         'created_at',
-                                        'updated_at'])
+                                        'updated_at',
+                                        'is_active'])
         return Form(*args, **kwargs)
   
     def dispatch(self, request, topic_id, model_name, id=None):
@@ -233,7 +232,7 @@ class SubTopicCreateUpdateView(TemplateResponseMixin, View):
         return self.render_to_response({'form': form, 'object': self.obj})
 
 class SubTopicDeleteView(View):
-    
+
     def post(self, request, id):
         sub_topic = get_object_or_404(SubTopic, id=id, topic__course__course_tutor=request.user.tutor)
         topic = sub_topic.topic

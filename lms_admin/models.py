@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-from django.db import models
-
-
-# Create your models here.
-
-class Cohort(models.Model):
-    year = models.PositiveIntegerField()
-=======
 from django.db import models
 from django.urls import reverse
 from django.db.models.query import QuerySet
@@ -47,4 +38,3 @@ class Track(models.Model):
 
 class Cohort(models.Model):
     year = models.PositiveIntegerField()
->>>>>>> 1477c0557a52b4a78ce0f1425cabbbc1b8521093
