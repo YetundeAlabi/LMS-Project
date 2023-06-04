@@ -3,6 +3,7 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, Permis
 from django.db.models.query import QuerySet
 from django.urls import reverse
 
+from lms_admin.models import Track
 from lms_admin.models import Cohort
 
 
@@ -26,6 +27,11 @@ class MyUserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 
+class ActiveUserManager(models.Manager):
+   def get_queryset(self) -> QuerySet:
+       return super().get_queryset().filter(is_active=True)
+    
+
 class User(AbstractBaseUser, PermissionsMixin):
     """ Custom user model that supports using email instead of username"""
     
@@ -39,10 +45,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = "email"
     
     objects = MyUserManager()
+    active_objects = ActiveUserManager()
 
     def __str__(self):
         return self.email 
     
+    @property
+    def is_admin(self):
+        return self.is_staff
 
 class Student(models.Model):
     GENDER_CHOICES =(
@@ -58,7 +68,7 @@ class Student(models.Model):
     is_suspended = models.BooleanField(default=False)
     picture = models.ImageField(upload_to='accounts/media', blank=True, null=True)
     is_deleted = models.BooleanField(default=False)
-    track = models.ForeignKey("Track", on_delete=models.SET_NULL, related_name="students", null=True)
+    track = models.ForeignKey(Track, on_delete=models.SET_NULL, related_name="students", null=True)
     
     def get_full_name(self) -> str:
         return f'{self.first_name} {self.last_name}'
@@ -72,11 +82,11 @@ class Student(models.Model):
 
 
 class Tutor(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name="tutor")
     is_verified = models.BooleanField(default=False)
     is_suspended = models.BooleanField(default=False)
     picture = models.ImageField(upload_to='accounts/media', blank=True)
-    track = models.ForeignKey("Track", on_delete=models.SET_NULL, related_name="Tutors", null=True)
+    track = models.ForeignKey(Track, on_delete=models.SET_NULL, related_name="tutors", null=True)
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):

@@ -9,8 +9,8 @@ class UserAdmin(BaseUserAdmin):
     add_form = SignUpForm
 
     ordering = ('email',)  # Set the ordering field to 'email'
-    list_display = ('email', 'first_name', 'last_name', 'role', 'is_staff', 'is_active')  # Add 'role', 'is_staff', and 'is_active' to the list_display field
-    list_filter = ('is_staff', 'is_superuser', 'is_active', 'role')  # Add 'role' to the list_filter field
+    list_display = ('email', 'first_name', 'last_name', 'is_staff', 'is_active')  # Add 'role', 'is_staff', and 'is_active' to the list_display field
+    list_filter = ('is_staff', 'is_superuser', 'is_active')  # Add 'role' to the list_filter field
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         ('Personal Info', {'fields': ('first_name', 'last_name')}),
