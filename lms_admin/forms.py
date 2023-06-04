@@ -1,38 +1,54 @@
-from django import forms
-
-from lms_admin.models import Track
 import csv
+
+from django import forms
+from django.core.exceptions import ValidationError
+from django.utils import timezone
+
+from .models import Cohort
+from .models import Applicant
+from lms_admin.models import Track
+
 
 class TrackForm(forms.ModelForm):
     
     class Meta:
         model = Track
-        fields = ('name', 'slug', 'description', 'is_completed',)
+        fields = ('name', 'slug', 'description',)
+
+
+class ApplicantForm(forms.ModelForm):
+
+    class Meta:
+        model = Applicant
+        exclude = ("is_approved", "cohort")
+
+
+class ApplicantChecklistForm(forms.Form):
+    applicants = forms.ModelMultipleChoiceField(
+        queryset=Applicant.not_approved.filter(cohort__year=timezone.now().year),
+        widget=forms.CheckboxSelectMultiple,
+    )
 
 
 class StudentImportForm(forms.Form):
     csv_file = forms.FileField(label='CSV File')
+    cohort = forms.ModelChoiceField(queryset=Cohort.objects.all(), label="Cohort")
     
     def process_csv(self):
         csv_file = self.cleaned_data['csv_file']
         students = []
         reader = csv.DictReader(csv_file)
+
         for row in reader:
             student = {
-                'username': row['Username'],
                 'email': row['Email'],
-                'is_verified': row['Is Verified'].lower() == 'true',
-                'is_suspended': row['Is Suspended'].lower() == 'true',
-                'is_deleted': row['Is Deleted'].lower() == 'true',
-            }
+                'first_name': row['first_name'],
+                'last_name': row['last_name'],
+                'cohort': self.cleaned_data['cohort'], 
+            } # Add all student user attributes to student dictionary
             students.append(student)
         return students
 
-
-from django.core.exceptions import ValidationError
-from django.utils import timezone
-
-from .models import Cohort
 
 def validate_current_year(value):
     current_year = timezone.now().year
