@@ -64,7 +64,7 @@ class Applicant(models.Model):
         ("MALE", "Male"),
     )
     first_name = models.CharField(max_length=150)
-    cohort = models.ForeignKey('Cohort', on_delete=models.SET_NULL, related_name='applicants')
+    cohort = models.ForeignKey('Cohort', on_delete=models.SET_NULL, related_name='applicants', null=True)
     last_name = models.CharField(max_length=150)
     email = models.EmailField(max_length=150, unique=True)
     gender = models.CharField(max_length=20, choices=GENDER_CHOICES)

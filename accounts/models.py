@@ -60,8 +60,8 @@ class Student(models.Model):
         ("MALE", "Male"),
     )
 
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, primary_key=True)
-    cohort = models.ForeignKey(Cohort, on_delete=models.SET_NULL, related_name='students,')
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    cohort = models.ForeignKey(Cohort, on_delete=models.SET_NULL, related_name='students', null=True)
     gender = models.CharField(max_length=20, choices=GENDER_CHOICES)
     last_login = models.DateTimeField(auto_now=True)
     is_verified = models.BooleanField(default=False)
