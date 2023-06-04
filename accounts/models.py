@@ -3,7 +3,7 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, Permis
 from django.db.models.query import QuerySet
 from django.urls import reverse
 
-from lms_admin.models import Track
+from lms_admin.models import Track, Cohort
 
 class MyUserManager(BaseUserManager):
 
@@ -63,12 +63,13 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='student')
-    last_login = models.DateTimeField(auto_now=True)
+    #last_login = models.DateTimeField(auto_now=True)
     is_verified = models.BooleanField(default=False)
     is_suspended = models.BooleanField(default=False)
     picture = models.ImageField(upload_to='accounts/media', blank=True, null=True)
     is_deleted = models.BooleanField(default=False)
     track = models.ForeignKey(Track, on_delete=models.SET_NULL, related_name="students", null=True)
+    # cohort = models.ManyToManyField(Cohort)
     
     def get_full_name(self) -> str:
         return f'{self.first_name} {self.last_name}'
@@ -109,5 +110,6 @@ class Applicant(models.Model):
     email = models.EmailField(max_length=150, unique=True)
     gender = models.CharField(max_length=20, choices=GENDER_CHOICES)
     is_approved = models.BooleanField(default=False)
+    track = models.ForeignKey(Track, on_delete=models.SET_NULL, related_name="applicants", null=True)
     objects = models.Manager()
     approved = ApprovedApplicantManager()

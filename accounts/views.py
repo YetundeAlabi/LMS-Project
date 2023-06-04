@@ -51,11 +51,11 @@ class LoginView(views.LoginView):
         user = self.request.user
         if user.is_authenticated:
             if user.student:
-                return reverse('student-home')
+                return reverse('student_home')
             elif user.tutor:
-                return reverse('tutor-home')
+                return reverse('tutor_home')
             else:
-                return reverse('admin-home')
+                return reverse('admin_home')
         else:
             return reverse('login')
         
