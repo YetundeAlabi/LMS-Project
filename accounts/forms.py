@@ -3,7 +3,7 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField, UserCreationFor
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 
-from .models import Applicant 
+from lms_admin.models import Cohort, Track
 
 User = get_user_model()
 
@@ -19,6 +19,10 @@ class SignUpForm(UserCreationForm):
 
 
 class StudentCreationForm(forms.Form):
+    cohort = forms.ModelChoiceField(
+        label="Cohort",
+        queryset=Cohort.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Cohort'}))
     email = forms.EmailField(
         label='Email',
         widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}))
@@ -29,6 +33,22 @@ class StudentCreationForm(forms.Form):
         label='Last Name',
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}))
     
+class TutorCreationForm(forms.Form):
+    track = forms.ModelChoiceField(
+        label="Track",
+        queryset=Track.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Track'}))
+    email = forms.EmailField(
+        label='Email',
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}))
+    first_name = forms.CharField(
+        label='First Name',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}))
+    last_name = forms.CharField(
+        label='Last Name',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}))
+    
+    
 
 class LoginForm(AuthenticationForm):
     email = forms.EmailField(max_length=150, 
@@ -36,8 +56,3 @@ class LoginForm(AuthenticationForm):
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control form-control-lg', 'id': 'password', 'placeholder': 'Enter Password'}))
 
 
-class ApplicantForm(forms.ModelForm):
-
-    class Meta:
-        model = Applicant
-        exclude = ("is_approved",)

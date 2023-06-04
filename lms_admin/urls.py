@@ -18,7 +18,7 @@ urlpatterns = [
     path("tutor/<int:pk>/togglesuspend/",
          ToggleTutorSuspendView.as_view(), name="tutor_toggle_suspend"),
     path("cohort/", CohortListView.as_view(), name="cohort_list"),
-    path("cohort/create", CohortCreateFormView.as_view(), name="cohort_create"),
+    path("cohort/create/", CohortCreateFormView.as_view(), name="cohort_create"),
     path("track/", views.TrackListView.as_view(), name="track_list"),
     path("track/create/", views.TrackCreateView.as_view(), name="track_create"),
     path("track/<slug:slug>/", views.TrackDetailView.as_view(), name="track_detail"),
@@ -29,7 +29,11 @@ urlpatterns = [
     path("student/<int:pk>/", views.StudentDetailView.as_view(), name="student_detail"),
     path("student/<int:pk>/update/", views.StudentUpdateView.as_view(), name="student_update"),
     path("student/<int:pk>/delete/", views.StudentDeleteView.as_view(), name="student_delete"),
-    path('import-students/', views.StudentImportView.as_view(), name='import_students'),
+    path("student/<int:pk>/togglesuspend/", views.ToggleStudentSuspendView.as_view(), name="student_toggle_suspend"),
+    path('import_students/', views.StudentImportView.as_view(), name='import_students'),
+    path('apply/', views.ApplicantCreateView.as_view, name="apply"),
+    path('applicants_approval/', views.ApplicantApprovalFormView.as_view(), name="applicants_approval"),
+    path('approved_applicants_export/', views.ExportApprovedApplicantsCSVView.as_view, name="export_approved_applicants"),
 ]
     
 
