@@ -61,8 +61,8 @@ class CourseAndTopicCreateView(TutorUserRequiredMixin, CreateView):
         topic_formset = context['topic_formset']
         if topic_formset.is_valid():
             course = form.save()
-            instances = topic_formset.save(commit=False)
-            for instance in instances:
+            topic_formset = topic_formset.save(commit=False)
+            for instance in topic_formset:
                 instance.course = course
                 instance.save()
             for obj in topic_formset.deleted_objects:
@@ -141,10 +141,21 @@ class TopicUpdateView(TutorUserRequiredMixin, SuccessMessageMixin, UpdateView):
         return reverse_lazy('course:topic_list', kwargs={'course_slug': course_slug})
     
 class TopicDeleteView(TutorUserRequiredMixin, View):
+<<<<<<< HEAD
     model = Topic
     pk_url_kwarg ='pk'
     template_name = 'tutor/course_delete_confirm.html'
     fields=[]
+=======
+    
+    def get_object(self):
+        pk = self.kwargs['pk']
+        return get_object_or_404(Topic, id=pk)
+    
+    def get(self, request, *args, **kwargs):
+        topic = self.get_object()
+        return render(request, 'tutor/course_delete_confirm.html', {'topic': topic})
+>>>>>>> fee5d8456ae1640ae1c0a2017d662cffc891440d
 
     def dispatch(self, request, *args, **kwargs):
         topic= self.get_object()
