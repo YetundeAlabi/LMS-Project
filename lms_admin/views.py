@@ -1,10 +1,11 @@
 import csv
 
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 from django.contrib import messages
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.views import PasswordResetView
 from django.core.mail import send_mail
+from django.db import models
 from django.db.models.query import QuerySet
 from django.forms.models import BaseModelForm
 from django.http import HttpResponse, HttpResponseRedirect
@@ -37,14 +38,14 @@ class DashboardView(TemplateView):
         return context
 
 # Track Views
-class TrackCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+class TrackCreateView(CreateView):
     """Track Create View"""
-    model = Track
-    form = TrackForm
+    form_class = TrackForm
     template_name = 'lms_admin/track_create.html'
-    success_url = reverse_lazy('track_list')
+    success_url = reverse_lazy('lms_admin:track_list')
 
     def form_valid(self, form):
+        messages.success(self.request, "Track created successfully")
         return super().form_valid(form)
     
 
@@ -68,30 +69,32 @@ class TrackDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         obj = self.get_object()
         context['track_students'] = Student.objects.filter(track=obj)
-        print(context['track_students'])
-        print(obj)
         return context
 
 
-class TrackUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+class TrackUpdateView(UpdateView):
     """Generic Track Update View"""
-    model = Track
-    form = TrackForm
-    template_name = 'lms_admin/track_update.html'
+    form_class = TrackForm
+    template_name = 'lms_admin/track_create.html'
     slug_url_kwarg = 'slug'
-    slug_field = 'slug' 
+    slug_field = 'slug'
+    queryset = Track.active_objects.all()
+    
+    def get_object(self, queryset=None):
+        return Track.objects.get(slug=self.kwargs['slug'])
 
     def get_success_url(self):
         return self.object.get_absolute_url()
 
 
-class TrackDeleteView(LoginRequiredMixin, PermissionRequiredMixin, View):
-    """Track dlete view to set is_deleted attribute to True"""
+class TrackDeleteView(View):
+    """Track delete view to set is_deleted attribute to True"""
 
-    def post (self, request, slug):
+    def get(self, request, slug):
         track = Track.active_objects.get(slug=slug)
         track.is_deleted = True
         track.save()
+        return HttpResponseRedirect(reverse("lms_admin:track_list"))
 
 
 # Student Views
@@ -354,9 +357,9 @@ class ExportApprovedApplicantsCSVView(View):
         response['Content-Disposition'] = 'attachment; filename="approved_applicants.csv"'
 
         writer = csv.writer(response)
-        writer.writerow(['First Name', 'Last Name', 'Email'])
+        writer.writerow(['First Name', 'Last Name', 'Email', 'Gender'])
 
         for applicant in approved_applicants:
-            writer.writerow([applicant.first_name, applicant.last_name, applicant.email])
+            writer.writerow([applicant.first_name, applicant.last_name, applicant.email, applicant.gender])
 
         return response
