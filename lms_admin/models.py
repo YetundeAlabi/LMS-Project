@@ -42,7 +42,7 @@ class Cohort(models.Model):
         return f'Cohort of {self.year}'
     
     def __str__(self):
-        return self.get_name
+        return self.get_name()
 
 
 

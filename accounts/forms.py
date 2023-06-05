@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import ReadOnlyPasswordHashField, UserCreationForm, AuthenticationForm, UserChangeForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UserChangeForm
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 
@@ -17,20 +17,38 @@ class SignUpForm(UserCreationForm):
     class Meta:
         model = User
         fields = ("first_name", "last_name", 'password1', 'password2')
+        
 
-
-class UserForm(UserCreationForm):
-    first_name = forms.CharField(max_length=100, help_text='First Name')
-    last_name = forms.CharField(max_length=100, help_text='Last Name')
-    email = forms.EmailField(max_length=150, help_text='Email')
+class UserForm(forms.ModelForm):
+    first_name = forms.CharField(max_length=100,
+                                 widget=forms.TextInput(attrs={'class': 'form-control form-control-lg', 'placeholder': 'First Name'}))
+    last_name = forms.CharField(max_length=100,
+                                 widget=forms.TextInput(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Last Name'}))
+    email = forms.EmailField(max_length=150,
+                              widget=forms.EmailInput(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Email'}))
     track = forms.ModelMultipleChoiceField(
         queryset= Track.objects.all(),
-        widget = forms.SelectMultiple(attrs={"class": "input"})
+        widget = forms.SelectMultiple(attrs={"class": "form-control"})
     )
+    password = forms.CharField(label="Password",
+        widget=forms.PasswordInput(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Enter Password'}))
+    password2 = forms.CharField(label="Password confirmation",
+        widget=forms.PasswordInput(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Enter Password'}))
+    
 
     class Meta:
         model = User
-        fields = ("first_name", "last_name", "email", 'password1', 'password2', "track")
+        fields = ("first_name", "last_name", "email", 'password', 'password2', "track")
+
+
+    def clean_password2(self):
+        print(self.cleaned_data)
+        password = self.cleaned_data.get("password")
+        password2 = self.cleaned_data.get("password2")
+        if password != password2:
+            raise ValidationError("Passwords don't match")
+        return password
+
 
     def save(self, commit=True):
         user = User.objects.create_user(
@@ -42,8 +60,8 @@ class UserForm(UserCreationForm):
 
         tutor = Tutor.objects.create(
             user=user,
-            track=self.cleaned_data["track"],
-            picture=self.cleaned_data["picture"])
+            track=self.cleaned_data["track"])
+        
         tutor.save()
 
 
@@ -61,7 +79,8 @@ class StudentCreationForm(forms.Form):
     last_name = forms.CharField(
         label='Last Name',
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}))
-    
+
+
 class TutorCreationForm(forms.Form):
     track = forms.ModelChoiceField(
         label="Track",
@@ -78,7 +97,6 @@ class TutorCreationForm(forms.Form):
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}))
     
     
-
 class LoginForm(AuthenticationForm):
     email = forms.EmailField(max_length=150, 
                              widget=forms.EmailInput(attrs={'class': 'form-control form-control-lg', 'id': 'email', 'placeholder': 'Enter Email Address'}))

@@ -22,7 +22,7 @@ User = get_user_model()
 
 
 class TutorSignUpView(CreateView):
-    model = User
+    model = Tutor
     form_class = UserForm
     template_name = 'accounts/signup.html' 
     success_url = reverse_lazy('login')
@@ -67,7 +67,7 @@ class ChangePasswordView(PasswordChangeView):
 
 class TutorUpdateView(LoginRequiredMixin, UpdateView):
     model = Tutor
-    form_class = UserForm
+    form_class = TutorProfileUpdateForm
     template_name = 'update_profile.html'
     success_url = reverse_lazy('tutor-home')
 
@@ -83,7 +83,7 @@ class TutorUpdateView(LoginRequiredMixin, UpdateView):
 
 class StudentUpdateView(LoginRequiredMixin, UpdateView):
     model = Student
-    form_class = UserForm
+    form_class = StudentProfileUpdateForm
     template_name = 'update_profile.html'
     success_url = reverse_lazy('student-home')
 

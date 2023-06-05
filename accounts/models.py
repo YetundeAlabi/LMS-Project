@@ -54,6 +54,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def is_admin(self):
         return self.is_staff
 
+
 class Student(models.Model):
     GENDER_CHOICES =(
         ("FEMALE", "Female"),
@@ -63,13 +64,12 @@ class Student(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     cohort = models.ForeignKey(Cohort, on_delete=models.SET_NULL, related_name='students', null=True)
     gender = models.CharField(max_length=20, choices=GENDER_CHOICES)
-    last_login = models.DateTimeField(auto_now=True)
     is_verified = models.BooleanField(default=False)
     is_suspended = models.BooleanField(default=False)
     picture = models.ImageField(upload_to='accounts/media', blank=True, null=True)
     is_deleted = models.BooleanField(default=False)
     track = models.ForeignKey(Track, on_delete=models.SET_NULL, related_name="students", null=True)
-    # cohort = models.ManyToManyField(Cohort)
+   
     
     def get_full_name(self) -> str:
         return f'{self.first_name} {self.last_name}'
