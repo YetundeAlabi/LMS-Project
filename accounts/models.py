@@ -80,7 +80,6 @@ class Student(models.Model):
         return reverse('student_detail', args=[str(self.id)])
 
 
-
 class Tutor(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name="tutor")
     is_verified = models.BooleanField(default=False)
