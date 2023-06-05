@@ -39,7 +39,7 @@ class Course(BaseContent):
         return self.slug
     
     def get_absolute_url(self):
-        return reverse('course-detail', args=[str(self.slug)])
+        return reverse('course_detail', args=[str(self.slug)])
 
 
 class Topic(BaseContent):

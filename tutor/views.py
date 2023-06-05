@@ -1,4 +1,5 @@
 from typing import Any, Dict
+from django import http
 from django.forms.models import BaseModelForm
 from django.http import HttpResponse
 from django.http.response import HttpResponseRedirect
@@ -43,7 +44,7 @@ class CourseAndTopicCreateView(TutorUserRequiredMixin, CreateView):
     model = Course
     form_class = CourseForm
     template_name = 'tutor/course_create_update.html'
-    success_url = reverse_lazy('course_list')
+    success_url = reverse_lazy('course:course_list')
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -115,8 +116,10 @@ class TopicList(TutorUserRequiredMixin, ListView):
     template_name = 'tutor/topiclist.html'
 
     def get_queryset(self):
+        course_slug=self.kwargs['course_slug']
+        print(course_slug)
         track = self.request.user.tutor.track
-        return super().get_queryset().filter(course__track=track)
+        return super().get_queryset().filter(course__track=track, course__slug=course_slug)
     
 
 class TopicUpdateView(TutorUserRequiredMixin, SuccessMessageMixin, UpdateView):
@@ -129,7 +132,7 @@ class TopicUpdateView(TutorUserRequiredMixin, SuccessMessageMixin, UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         topic= self.get_object()
-        if topic.course.tutor != self.request.user.tutor:
+        if topic.course.course_tutor != self.request.user.tutor:
             messages.error(self.request, "You cannot update topics under another tutor's course")
         return super().dispatch(request, *args, **kwargs)
     
@@ -163,6 +166,7 @@ class TopicDeleteView(TutorUserRequiredMixin, View):
 class TrackStudentListView(TutorUserRequiredMixin, ListView):
     model = Student
     context_object_name = 'students'
+    template_name = 'tutor/track_student_list.html'
 
     def get_queryset(self):
         track = self.request.user.tutor.track
@@ -176,16 +180,16 @@ class SuspendStudent(TutorUserRequiredMixin, View):
     def dispatch(self, request, student_id, *args, **kwargs):
         student = get_object_or_404(Student, id=student_id)
         if self.request.user.tutor.track != student.track:
-            messages.error(request, "You can only suspend students from your own track.")
-            return HttpResponseRedirect(reverse('student_detail', kwargs={'student_id': student_id}))
-        return super().dispatch(request, student_id, *args, **kwargs)
-    
-    def post(self, request, student_id):
-        student = get_object_or_404(Student, id=student_id)
-        student.is_suspended = True
+            messages.error(request, 'You cannot view the details of students in other tracks')
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        student = self.get_object()
+        student_suspension_status = student.is_suspended
+        student.is_suspended = not student_suspension_status
         student.save()
-        messages.success(request, "Student suspended successfully.")
-        return HttpResponseRedirect(reverse('student_detail', kwargs={'student_id': student_id}))
+        messages.success(request, "Student suspension status has been changed successfully.")
+        return HttpResponseRedirect(reverse('course:track_student_detail', kwargs={'pk': student.pk}))
     
 class SubTopicCreateUpdateView(TemplateResponseMixin, View):
     topic = None

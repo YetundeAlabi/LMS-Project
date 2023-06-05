@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Detail</title>
+</head>
+<body>
+    <h1>Student Detail</h1>
+    <h2>{{ student.user.first_name }} {{ student.user.last_name }}</h2>
+    <p>Email: {{ student.user.email }}</p>
+    <p>Last Login: {{ student.last_login }}</p>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="is_suspended">Is Suspended:</label>
+        <input type="checkbox" id="is_suspended" name="is_suspended" {% if student.is_suspended %}checked{% endif %} onchange="this.form.submit()">
+    </form>
+
+    <p>Is Verified: {{ student.is_verified }}</p>
+
+    {% if student.picture %}
+        <img src="{{ student.picture.url }}" alt="Student Picture">
+    {% else %}
+        <p>No picture available.</p>
+    {% endif %}
+
+    <p>Track: {{ student.track }}</p>
+</body>
+</html>
+
