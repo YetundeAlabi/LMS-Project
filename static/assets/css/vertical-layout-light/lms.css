@@ -21,7 +21,3 @@
 .table-striped-lms tbody tr:nth-child() {
   background-color: #FCE9E8 !important;
 }
-
-body{
-  background-color: #e1261c;
-}
