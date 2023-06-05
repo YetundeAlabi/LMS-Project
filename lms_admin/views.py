@@ -40,7 +40,7 @@ class DashboardView(TemplateView):
 class TrackCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """Track Create View"""
     model = Track
-    form = TrackForm
+    form_class = TrackForm
     template_name = 'lms_admin/track_create.html'
     success_url = reverse_lazy('track_list')
 
@@ -76,7 +76,7 @@ class TrackDetailView(DetailView):
 class TrackUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """Generic Track Update View"""
     model = Track
-    form = TrackForm
+    form_class = TrackForm
     template_name = 'lms_admin/track_update.html'
     slug_url_kwarg = 'slug'
     slug_field = 'slug' 
@@ -98,7 +98,7 @@ class TrackDeleteView(LoginRequiredMixin, PermissionRequiredMixin, View):
 class StudentCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """Student Create Form View to create one student at a time"""
     model = Student
-    form = StudentCreationForm
+    form_class = StudentCreationForm
     template_name = 'lms_admin/student_create.html'
     success_url = reverse_lazy('student_list')
 
@@ -152,7 +152,7 @@ class StudentDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView)
 class StudentUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """Generic Student Update Form View"""
     model = Student
-    form = StudentCreationForm
+    form_class = StudentCreationForm
     template_name = 'lms_admin/student_update.html'
     
     def get_success_url(self):
