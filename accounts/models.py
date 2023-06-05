@@ -3,7 +3,9 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, Permis
 from django.db.models.query import QuerySet
 from django.urls import reverse
 
-from lms_admin.models import Track, Cohort
+from lms_admin.models import Track
+from lms_admin.models import Cohort
+
 
 class MyUserManager(BaseUserManager):
 
@@ -32,23 +34,14 @@ class ActiveUserManager(models.Manager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     """ Custom user model that supports using email instead of username"""
-    # ADMIN = 0
-    # TUTOR = 1
-    # STUDENT = 2
-    # ROLE_CHOICES = [
-    #     ("ADMIN", "Admin"),
-    #     ("TUTOR", "Tutor"),
-    #     ("STUDENT", "Student")
-    # ]
     
     email = models.EmailField(max_length=255, unique=True, verbose_name="email address")
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    # role = models.CharField(max_length= 50, choices=ROLE_CHOICES)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS= []
     USERNAME_FIELD = "email"
     
     objects = MyUserManager()
@@ -62,8 +55,15 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.is_staff
 
 class Student(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='student')
-    #last_login = models.DateTimeField(auto_now=True)
+    GENDER_CHOICES =(
+        ("FEMALE", "Female"),
+        ("MALE", "Male"),
+    )
+
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    cohort = models.ForeignKey(Cohort, on_delete=models.SET_NULL, related_name='students', null=True)
+    gender = models.CharField(max_length=20, choices=GENDER_CHOICES)
+    last_login = models.DateTimeField(auto_now=True)
     is_verified = models.BooleanField(default=False)
     is_suspended = models.BooleanField(default=False)
     picture = models.ImageField(upload_to='accounts/media', blank=True, null=True)
@@ -93,23 +93,3 @@ class Tutor(models.Model):
     def __str__(self):
         return self.user.email
 
-
-class ApprovedApplicantManager(models.Manager):
-
-    def get_queryset(self):
-        return super().get_queryset().filter(is_approved=True)
-    
-
-class Applicant(models.Model):
-    GENDER_CHOICES =(
-        ("FEMALE", "Female"),
-        ("MALE", "Male"),
-    )
-    first_name = models.CharField(max_length=150)
-    last_name = models.CharField(max_length=150)
-    email = models.EmailField(max_length=150, unique=True)
-    gender = models.CharField(max_length=20, choices=GENDER_CHOICES)
-    is_approved = models.BooleanField(default=False)
-    track = models.ForeignKey(Track, on_delete=models.SET_NULL, related_name="applicants", null=True)
-    objects = models.Manager()
-    approved = ApprovedApplicantManager()

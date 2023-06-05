@@ -1,17 +1,13 @@
-venv/
-.env
 db.sqlite3
 .env
 */migrations/*
 **/migrations/**
 !**/migrations
 !*/migrations/__init__.py
-<<<<<<< HEAD
 venv/
 =======
-venv/
+
 __pycache__/*
 *.pyc
 __pycache__/
 lms_admin/student.csv
->>>>>>> 1c229a3ed64c05d879c58fbaef59de541f6df363
