@@ -70,6 +70,13 @@ class CourseAndTopicCreateView(TutorUserRequiredMixin, CreateView):
             return self.form_invalid(form)
 
 
+class TopicDetail(TutorUserRequiredMixin, DetailView):
+    model = Topic
+    template_name='tutor'
+    context_object_name = 'topic'
+    template_name = 'tutor/topic_detail.html'
+
+
 class CourseUpdateView(TutorUserRequiredMixin, SuccessMessageMixin, UpdateView):    
     model = Course
     slug_field= 'slug'
