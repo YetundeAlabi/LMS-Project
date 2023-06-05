@@ -21,7 +21,7 @@ from .views import HomePage
 
 urlpatterns = [
     
-    path('', HomePage.as_view(), name="home_page"),
+    path('home/', HomePage.as_view(), name="home_page"),
     path('', include('accounts.urls', namespace="accounts")),
     path('admin/', admin.site.urls), 
     path('course/', include('tutor.urls', namespace="course")),

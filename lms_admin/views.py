@@ -37,7 +37,7 @@ class DashboardView(TemplateView):
         return context
 
 # Track Views
-class TrackCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+class TrackCreateView(CreateView):
     """Track Create View"""
     model = Track
     form_class = TrackForm
@@ -73,7 +73,7 @@ class TrackDetailView(DetailView):
         return context
 
 
-class TrackUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+class TrackUpdateView(UpdateView):
     """Generic Track Update View"""
     model = Track
     form_class = TrackForm
@@ -85,7 +85,7 @@ class TrackUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
         return self.object.get_absolute_url()
 
 
-class TrackDeleteView(LoginRequiredMixin, PermissionRequiredMixin, View):
+class TrackDeleteView(View):
     """Track dlete view to set is_deleted attribute to True"""
 
     def post (self, request, slug):
@@ -132,7 +132,7 @@ class StudentCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView)
             return self.request.build_absolute_uri(reverse('login')) 
 
 
-class StudentListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class StudentListView(ListView):
     """Generic Student List View to list all students"""
     model = Student
     template_name = 'lms_admin/student_list.html'
@@ -142,14 +142,14 @@ class StudentListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
             return Student.objects.all()
 
 
-class StudentDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+class StudentDetailView(DetailView):
     """Generic Student Detail View""" 
     model = Student 
     template_name = 'lms_admin/student_detail.html'
     context_object_name = 'student'
 
 
-class StudentUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+class StudentUpdateView(UpdateView):
     """Generic Student Update Form View"""
     model = Student
     form_class = StudentCreationForm
@@ -159,7 +159,7 @@ class StudentUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView)
         return self.object.get_absolute_url()
 
 
-class StudentDeleteView(LoginRequiredMixin, PermissionRequiredMixin, View):
+class StudentDeleteView(View):
     """Student Delete View to set is_deleted to True"""
     def post (self, request, id):
         student = Student.objects.get(id=id)
@@ -167,7 +167,7 @@ class StudentDeleteView(LoginRequiredMixin, PermissionRequiredMixin, View):
         student.save()
 
 
-class ToggleStudentSuspendView(LoginRequiredMixin, PermissionRequiredMixin, View):
+class ToggleStudentSuspendView(View):
 
     def post(self, request, *args, **kwargs):
         student = get_object_or_404(Student, id=kwargs['pk'])
@@ -217,13 +217,13 @@ class StudentImportView(PasswordResetView, FormView):
 
 
 # Cohort Views
-class CohortCreateFormView(LoginRequiredMixin,PermissionRequiredMixin, CreateView):
+class CohortCreateFormView(CreateView):
     """Generic Cohort Create View"""
     form_class = CohortCreateForm
     template_name = "admin/cohort_create_form.html"
 
 
-class CohortListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class CohortListView(ListView):
     "Cohort List View to list all Cohorts"
     model = Cohort
     template_name = "admin/cohort_list.html"
@@ -235,7 +235,7 @@ class CohortListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     
   
     #Tutor Views 
-class TutorCreateFormView(LoginRequiredMixin,PermissionRequiredMixin,CreateView):
+class TutorCreateFormView(CreateView):
     form_class = TutorCreationForm
     template_name = "admin/tutor_create_form.html"
     success_url = reverse_lazy('tutor_list')
@@ -271,7 +271,7 @@ class TutorCreateFormView(LoginRequiredMixin,PermissionRequiredMixin,CreateView)
             return self.request.build_absolute_uri(reverse('login')) 
 
 
-class TutorListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class TutorListView(ListView):
     """Generic Tutor List View to view all Tutors"""
     model = Tutor
     template_name = "admin/tutor_list.html"
@@ -281,7 +281,7 @@ class TutorListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
         return Tutor.objects.all()
 
 
-class TutorUpdateView(LoginRequiredMixin,PermissionRequiredMixin, UpdateView):
+class TutorUpdateView(UpdateView):
     model = Tutor
     template_name = "admin/tutor_update_form.html"
     fields = "__all__"
@@ -290,7 +290,7 @@ class TutorUpdateView(LoginRequiredMixin,PermissionRequiredMixin, UpdateView):
         return super().form_valid(form)
     
 
-class TutorDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+class TutorDetailView(DetailView):
     model = Tutor
     template_name = "admin/tutor_detail.html"
 
@@ -303,7 +303,7 @@ class TutorDeleteView(LoginRequiredMixin, PermissionRequiredMixin, View):
         tutor.save() 
 
 
-class ToggleTutorSuspendView(LoginRequiredMixin, PermissionRequiredMixin, View):
+class ToggleTutorSuspendView(View):
 
     def post(self, request, *args, **kwargs):
         tutor = get_object_or_404(Tutor, id=kwargs['pk'])
@@ -324,7 +324,7 @@ class ApplicantCreateView(CreateView):
         return super().form_valid(form)
 
 
-class ApplicantApprovalFormView(LoginRequiredMixin, PermissionRequiredMixin, View):
+class ApplicantApprovalFormView(View):
     template_name = 'applicant_checklist.html'
 
     def get(self, request):
