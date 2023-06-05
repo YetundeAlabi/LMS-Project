@@ -141,12 +141,6 @@ class TopicUpdateView(TutorUserRequiredMixin, SuccessMessageMixin, UpdateView):
         return reverse_lazy('course:topic_list', kwargs={'course_slug': course_slug})
     
 class TopicDeleteView(TutorUserRequiredMixin, View):
-<<<<<<< HEAD
-    model = Topic
-    pk_url_kwarg ='pk'
-    template_name = 'tutor/course_delete_confirm.html'
-    fields=[]
-=======
     
     def get_object(self):
         pk = self.kwargs['pk']
@@ -155,7 +149,6 @@ class TopicDeleteView(TutorUserRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         topic = self.get_object()
         return render(request, 'tutor/course_delete_confirm.html', {'topic': topic})
->>>>>>> fee5d8456ae1640ae1c0a2017d662cffc891440d
 
     def dispatch(self, request, *args, **kwargs):
         topic= self.get_object()
