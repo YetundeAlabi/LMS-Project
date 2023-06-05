@@ -1,0 +1,3 @@
+{% for student in students %}
+    {{student}}--{{student.is_suspended}}----<a href="{% url 'course:track_student_detail' student.user.pk %}">View student detail</a>
+{% endfor %}

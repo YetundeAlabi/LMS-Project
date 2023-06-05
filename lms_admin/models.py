@@ -17,7 +17,6 @@ class Track(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField()
     slug = models.SlugField(max_length=200, unique=True)
-    is_completed = models.BooleanField(default=False)
     is_deleted = models.BooleanField(default=False)
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
@@ -37,4 +36,40 @@ class Track(models.Model):
 
 
 class Cohort(models.Model):
-    year = models.PositiveIntegerField()
+    year = models.PositiveIntegerField(unique=True)
+
+    def get_name(self) -> str:
+        return f'Cohort of {self.year}'
+    
+    def __str__(self):
+        return self.get_name
+
+
+
+class ApprovedApplicantManager(models.Manager):
+
+    def get_queryset(self):
+        return super().get_queryset().filter(is_approved=True)
+
+
+class NotApprovedApplicantManager(models.Manager):
+
+    def get_queryset(self):
+        return super().get_queryset().filter(is_approved=False)
+    
+
+class Applicant(models.Model):
+    GENDER_CHOICES =(
+        ("FEMALE", "Female"),
+        ("MALE", "Male"),
+    )
+    first_name = models.CharField(max_length=150)
+    cohort = models.ForeignKey('Cohort', on_delete=models.SET_NULL, related_name='applicants', null=True)
+    last_name = models.CharField(max_length=150)
+    email = models.EmailField(max_length=150, unique=True)
+    gender = models.CharField(max_length=20, choices=GENDER_CHOICES)
+    track = models.ForeignKey("Track", on_delete=models.SET_NULL, related_name="applicants", null=True)
+    is_approved = models.BooleanField(default=False)
+    objects = models.Manager()
+    approved = ApprovedApplicantManager()
+    not_approved= NotApprovedApplicantManager()
