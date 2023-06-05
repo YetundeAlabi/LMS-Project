@@ -11,7 +11,7 @@ from django.urls import reverse
 from django.template.loader import render_to_string
 from typing import Any
 from django.shortcuts import get_object_or_404
-from accounts.models import Tutor
+from accounts.models import Tutor, User
 from .models import Cohort
 from .forms import CohortCreateForm
 from django.db.models.query import QuerySet
@@ -67,14 +67,17 @@ class TrackDeleteView(View, LoginRequiredMixin, PermissionRequiredMixin):
         track.save()
 
 
-class StudentCreateView(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
+class StudentCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Student
     form = StudentCreationForm
     template_name = 'lms_admin/student_create.html'
     success_url = reverse_lazy('student_list')
 
     def form_valid(self, form):
-        return super().form_valid(form)
+        user = User.objects.create_user(email=form.cleaned_data['email'], 
+                                        first_name=form.cleaned_data['first_name'],
+                                        last_name=form.cleaned_data['last_name'])
+        student = Student.objects.create(user=user)
 
 
 class StudentListView(ListView, LoginRequiredMixin, PermissionRequiredMixin):
@@ -116,31 +119,28 @@ class StudentImportView(FormView):
     def form_valid(self, form):
         students = form.process_csv()
         for student in students:
-            username = student['username']
             email = student['email']
-            is_verified = student['is_verified']
-            is_suspended = student['is_suspended']
-            is_deleted = student['is_deleted']
+            first_name = student['first_name']
+            last_name = student['last_name'] 
+            # is_verified = student['is_verified']
+            # is_suspended = student['is_suspended']
+            # is_deleted = student['is_deleted']
 
             student, created = Student.objects.get_or_create(
-                username=username,
-                email=email,
-                defaults={
-                    'is_verified': is_verified,
-                    'is_suspended': is_suspended,
-                    'is_deleted': is_deleted
-                }
-            )
+                                                            email=email,
+                                                            first_name=first_name,
+                                                            last_name=last_name
+                                                            )
 
             if created:
-                subject = 'Login Instructions' if is_verified else 'Account Setup'
+                subject = 'Account Setup' if created else 'Login Instructions'
                 context = {
-                    'username': username,
+                    'first_name': first_name,
                     'verification_url': self._get_verification_url(student),
                     'login_url': self._get_login_url(student),
                 }
                 message = render_to_string('email_template.html', context)
-                send_mail(subject, message, 'adeosunfaith0101@gmail.com', ['adeosunfaith0101@gmail.com', 'otutaiwo1@gmail.com', 'mohamodudaniel39@gmail.com'])
+                send_mail(subject, message, 'adeosunfaith0101@gmail.com', ['adeosunfaith0101@gmail.com', 'otutaiwo1@gmail.com', 'momodudaniel39@gmail.com'])
 
         return super().form_valid(form)
 
@@ -150,7 +150,6 @@ class StudentImportView(FormView):
     def _get_login_url(self, student):
         if student.is_verified:
             return self.request.build_absolute_uri(reverse('login'))
-
 
 
 class CohortCreateFormView(LoginRequiredMixin,PermissionRequiredMixin, CreateView):
