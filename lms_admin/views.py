@@ -100,7 +100,7 @@ class StudentCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView)
                     'set_password_url': self.get_password_reset_url(user) if created else self._get_login_url(student),
                 }
         message = render_to_string('email_template.html', context)
-        send_mail(subject, message, 'adeosunfaith0101@gmail.com', [user.email,])
+        send_mail(subject, message, 'adebusolayeye.com', [user.email,])
         
         return super().form_valid(form)
 
@@ -184,7 +184,7 @@ class StudentImportView(PasswordResetView, FormView):
                     'verification_url': self.get_password_reset_url(user) if created else self._get_login_url(student),
                 }
             message = render_to_string('email_template.html', context)
-            send_mail(subject, message, 'adeosunfaith0101@gmail.com', [email,])
+            send_mail(subject, message, 'adebusolayeye.@gmailcom', [self.email,])
             
         return super().form_valid(form)
 
@@ -238,7 +238,7 @@ class TutorCreateFormView(LoginRequiredMixin,PermissionRequiredMixin,CreateView)
                     'set_password_url': self.get_password_reset_url(user),
                 }
         message = render_to_string('email_template.html', context)
-        send_mail(subject, message, 'adeosunfaith0101@gmail.com', [user.email,])
+        send_mail(subject, message, 'adebusolayeye@gmail.com', [user.email,])
         
         return super().form_valid(form)
 
