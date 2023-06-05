@@ -30,12 +30,10 @@ class BaseContent(models.Model):
          abstract = True
          ordering= ['created_at']
 
-        
 class Course(BaseContent):
     course_tutor=models.ForeignKey(Tutor, on_delete=models.SET_NULL, null=True)
     track=models.ForeignKey(Track, on_delete=models.SET_NULL, null=True)
     slug= models.SlugField(blank=True, null=True)
-
 
     def __str__(self):
         return self.slug
@@ -48,10 +46,8 @@ class Topic(BaseContent):
     course=models.ForeignKey(Course, on_delete=models.CASCADE, blank=True, null=True)
     id=models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
 
-
     def __str__(self):
          return f"{self.title}"
-    
 
 class SubTopic(BaseContent):
     topic=models.ForeignKey(Topic, on_delete=models.CASCADE, blank=True, null=True)
@@ -73,16 +69,19 @@ class SubTopic(BaseContent):
 
 class Text(BaseContent):
     content=models.TextField(blank=True, null=True)
-
+    tutor=models.ForeignKey(Tutor, on_delete=models.SET_NULL, null=True)
 
 class File(BaseContent):
     file= models.FileField(upload_to='files')
+    tutor=models.ForeignKey(Tutor, on_delete=models.SET_NULL, null=True)
 
 class Image(BaseContent):
     image=models.ImageField(upload_to='images')
+    tutor=models.ForeignKey(Tutor, on_delete=models.SET_NULL, null=True)
 
 class Video(BaseContent):
     url = models.URLField()
+    tutor=models.ForeignKey(Tutor, on_delete=models.SET_NULL, null=True)
 
 
 @receiver(post_save, sender=Course)
