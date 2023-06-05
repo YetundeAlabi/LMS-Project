@@ -50,7 +50,8 @@ a {
   -webkit-transition: .3s all ease;
   -o-transition: .3s all ease;
   transition: .3s all ease; }
-  a:hover {
+  
+a:hover {
     color: #e1261c;
     text-decoration: none; }
 

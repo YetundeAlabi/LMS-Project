@@ -1,6 +1,6 @@
 import csv
 
-from typing import Any
+from typing import Any, Dict
 from django.contrib import messages
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.views import PasswordResetView
@@ -16,7 +16,7 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.views import View
 from django.views.generic import (
-    CreateView, DetailView, FormView, ListView, UpdateView
+    CreateView, DetailView, FormView, ListView, UpdateView, TemplateView
 )
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
@@ -27,8 +27,16 @@ from lms_admin.models import Track
 from .models import Cohort, Applicant
 
 # Create your views here
-# Track Views
 
+class DashboardView(TemplateView):
+    template_name = "lms_admin/dashboard.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['students'] = Student.objects.all()
+        return context
+
+# Track Views
 class TrackCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """Track Create View"""
     model = Track
@@ -40,7 +48,7 @@ class TrackCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         return super().form_valid(form)
     
 
-class TrackListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class TrackListView(ListView):
     """Track List View to list all active Tracks"""
     model = Track
     template_name = 'lms_admin/track_list.html'
@@ -50,11 +58,19 @@ class TrackListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
             return Track.active_objects.all()
     
 
-class TrackDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView): 
+class TrackDetailView(DetailView): 
     """Generic Track Detail View"""
     model = Track 
     template_name = 'lms_admin/track_detail.html'
     context_object_name = 'track'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj = self.get_object()
+        context['track_students'] = Student.objects.filter(track=obj)
+        print(context['track_students'])
+        print(obj)
+        return context
 
 
 class TrackUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
