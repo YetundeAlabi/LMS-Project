@@ -27,7 +27,7 @@ urlpatterns = [
     path('courses/<slug:course_slug>/topics/', views.TopicList.as_view(), name='topic_list'),
     path('courses/<slug:course_slug>/topic/<int:id>/delete', views.TopicDeleteView.as_view(), name='create_topic'),
     path('track/students/', views.TrackStudentListView.as_view(), name='track_student_list'),
-    path('track/students/<int:pk>/', views.TrackStudentDetailView.as_view(), name='track_student_detail'),
+    #path('track/students/<int:pk>/', views.TrackStudentDetailView.as_view(), name='track_student_detail'),
 ]
 
 
