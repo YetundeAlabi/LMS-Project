@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="row">
+        <div class="col-md-12 grid-margin">
+            <div class="row">
+                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                    <h1>Tracks</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+      
+
+    <div>
+        <ul>
+            {% for track in tracks %}
+        
+            <li>
+                <h3>{{ track.name }}</h3>
+                <p>{{ track.description }}</p>
+                <p><a class="btn btn-primary mr-2" href="{% url 'lms_admin:track_detail' slug=track.slug %}">Detail</a></p>    
+            </li>
+            <br>
+            {% endfor %}
+        
+        </ul>
+
+        <a class="btn btn-success mr-2 mt-5" href="{% url 'lms_admin:track_create' %}"> Create New Track </a>
+    </div>    
+</div>
+{% endblock %}
