@@ -136,7 +136,7 @@ class StudentDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView)
 class StudentUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """Generic Student Update Form View"""
     model = Student
-    form = StudentCreationForm
+    form_class = StudentCreationForm
     template_name = 'lms_admin/student_update.html'
     
     def get_success_url(self):

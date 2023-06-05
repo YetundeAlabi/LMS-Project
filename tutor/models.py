@@ -49,39 +49,38 @@ class Topic(BaseContent):
     def __str__(self):
          return f"{self.title}"
 
-class SubTopic(BaseContent):
+class SubTopic(models.Model):
     topic=models.ForeignKey(Topic, on_delete=models.CASCADE, blank=True, null=True)
-    id=models.UUIDField(primary_key=True, unique=True)
+    id=models.UUIDField(default= uuid.uuid4,  primary_key=True, unique=True)
     content_type=models.ForeignKey(ContentType,
                                    on_delete=models.CASCADE,
                                    limit_choices_to={'model__in':(
                                        'text',
                                        'file',
-                                       'image',
                                        'video')})
     object_id=models.PositiveIntegerField()
     item = GenericForeignKey('content_type','object_id')
+    is_active=models.BooleanField(default=True)
+    created_at= models.DateTimeField(auto_now_add=True)
+    updated_at=models.DateTimeField(auto_now=True)
+
+    objects = models.Manager()
+    active_objects=ActiveManager()
 
 
     def __str__(self):
-         return f"{self.title}"
+         return f"{self.object_id}"
     
 
 class Text(BaseContent):
-    content=models.TextField(blank=True, null=True)
-    tutor=models.ForeignKey(Tutor, on_delete=models.SET_NULL, null=True)
+    text =models.TextField(blank=True, null=True)
+
 
 class File(BaseContent):
-    file= models.FileField(upload_to='files')
-    tutor=models.ForeignKey(Tutor, on_delete=models.SET_NULL, null=True)
-
-class Image(BaseContent):
-    image=models.ImageField(upload_to='images')
-    tutor=models.ForeignKey(Tutor, on_delete=models.SET_NULL, null=True)
+    file=models.FileField(upload_to='files')
 
 class Video(BaseContent):
     url = models.URLField()
-    tutor=models.ForeignKey(Tutor, on_delete=models.SET_NULL, null=True)
 
 
 @receiver(post_save, sender=Course)

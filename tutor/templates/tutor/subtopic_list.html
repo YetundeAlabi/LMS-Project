@@ -1,0 +1,20 @@
+{% for subtopic in subtopics %}
+<h3>Subtopic ID: {{ subtopic.id }}</h3>
+<h4>Topic: {{ subtopic.topic }}</h4>
+<h4>Content Type: {{ subtopic.content_type.model }}</h4>
+
+{% if subtopic.content_type.model == 'text' %}
+    <h4>Text Content:</h4>
+    <p>{{ subtopic.item.text }}</p><a href="{% url 'course:delete_subtopic' id=subtopic.id %}">delete</a>
+{% elif subtopic.content_type.model == 'file' %}
+    <h4>File Content:</h4>
+    <a href="{{ subtopic.item.file }}">{{ subtopic.item.file }}</a> <a href="{% url 'course:delete_subtopic' id=subtopic.id %}">delete</a>
+{% elif subtopic.content_type.model == 'video' %}
+    <h4>Video Content:</h4>
+    <iframe src="{{ subtopic.item.url }}"></iframe><a href="{% url 'course:delete_subtopic' id=subtopic.id %}">delete</a>
+
+{% endif %}
+
+<hr>
+
+{% endfor %}
