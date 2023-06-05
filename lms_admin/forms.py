@@ -10,10 +10,16 @@ from lms_admin.models import Track
 
 
 class TrackForm(forms.ModelForm):
-    
+    """Form to create Track"""
+    name = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Track Name'}),
+    )
+    description = forms.CharField(
+        widget=forms.Textarea(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Track Description'}),
+    )
     class Meta:
         model = Track
-        fields = ('name', 'slug', 'description',)
+        fields = ('name', 'description',)
 
 
 class ApplicantForm(forms.ModelForm):
