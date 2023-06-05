@@ -6,11 +6,11 @@ from django.db.models.query import QuerySet
 
 class ActiveManager(models.Manager):
  def get_queryset(self):
-    return super(ActiveManager, self).get_queryset().filter(is_delete=False)
+    return super(ActiveManager, self).get_queryset().filter(is_deleted=False)
 
 class DeleteManager(models.Manager):
  def get_queryset(self):
-    return super(ActiveManager, self).get_queryset().filter(is_delete=True)
+    return super(ActiveManager, self).get_queryset().filter(is_deleted=True)
      
 
 class Track(models.Model):
@@ -42,7 +42,7 @@ class Cohort(models.Model):
         return f'Cohort of {self.year}'
     
     def __str__(self):
-        return self.get_name
+        return self.get_name()
 
 
 
