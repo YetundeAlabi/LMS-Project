@@ -17,7 +17,7 @@ class DeleteManager(models.Manager):
      
 
 class Track(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, unique=True)
     description = models.TextField()
     slug = models.SlugField(null=True, blank=True)
     is_deleted = models.BooleanField(default=False)

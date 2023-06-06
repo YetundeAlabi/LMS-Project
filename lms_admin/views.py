@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.views import PasswordResetView
 from django.core.mail import send_mail
-from django.db import models
+from django.db import models, IntegrityError
 from django.db.models.query import QuerySet
 from django.forms.models import BaseModelForm
 from django.http import HttpResponse, HttpResponseRedirect
@@ -46,8 +46,11 @@ class TrackCreateView(CreateView):
     success_url = reverse_lazy('lms_admin:track_list')
 
     def form_valid(self, form):
-        messages.success(self.request, "Track created successfully")
-        return super().form_valid(form)
+        try:
+            return super().form_valid(form)
+        except IntegrityError:
+            form.add_error('A track with this name already exists.')
+            return self.form_invalid(form)
     
 
 class TrackListView(ListView):
@@ -82,15 +85,16 @@ class TrackUpdateView(UpdateView):
     slug_field = 'slug'
     queryset = Track.active_objects.all()
     
-    #def get_object(self, queryset=None):
-        #return Track.objects.get(slug=self.kwargs['slug'])
+    
+    def get_object(self, queryset=None):
+        return Track.objects.get(slug=self.kwargs['slug'])
 
     def get_success_url(self):
         return self.object.get_absolute_url()
 
 
 class TrackDeleteView(View):
-    """Track dlete view to set is_deleted attribute to True"""
+    """Track delete view to set is_deleted attribute to True"""
 
     def get(self, request, slug):
         track = Track.active_objects.get(slug=slug)
@@ -100,7 +104,7 @@ class TrackDeleteView(View):
 
 
 # Student Views
-class StudentCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+class StudentCreateView( CreateView):
     """Student Create Form View to create one student at a time"""
     model = Student
     form_class = StudentCreationForm
@@ -108,6 +112,7 @@ class StudentCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView)
     success_url = reverse_lazy('student_list')
 
     def form_valid(self, form):
+        
         user, created = User.objects.get_or_create(email=form.cleaned_data['email'], 
                                         first_name=form.cleaned_data['first_name'],
                                         last_name=form.cleaned_data['last_name'])

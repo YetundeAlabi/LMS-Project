@@ -71,7 +71,7 @@ class Student(models.Model):
     track = models.ForeignKey(Track, on_delete=models.SET_NULL, related_name="students", null=True)
     
     def get_full_name(self) -> str:
-        return f'{self.first_name} {self.last_name}'
+        return f'{self.user.first_name} {self.user.last_name}'
     
     def __str__(self):
         return self.user.email
