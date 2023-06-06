@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load embed_video_tags %}
 
 {% block content %}
 <div class="row">
@@ -19,7 +20,7 @@
                   {% if subtopic.content_type.model == 'text' %}
                   <h4>Text Content:</h4>
                   <p>{{ subtopic.item.text }}</p>
-                  <a href="{% url 'course:update_subtopic' subtopic.topic.course.slug subtopic.topic.id 'text' subtopic.id %}">Update</a>
+                  <a href="">Update</a>
                   <a href="{% url 'course:delete_subtopic' id=subtopic.id %}">Delete</a>
                   
                   {% elif subtopic.content_type.model == 'file' %}
@@ -30,18 +31,19 @@
                   {% else %}
                   <h4>File Content:</h4>
                   <p>
-                    <a href="{{ subtopic.item.file.get_file_url }}" class="button">Download file</a>
+                    <a href="{{ subtopic.item.get_file_url }}" class="button">Download file</a>
                   </p>
                   {% endif %}
                   {% endif %}
                   
-                  <a href="{% url 'course:update_subtopic' subtopic.topic.course.slug subtopic.topic.id 'file' subtopic.id %}">Update</a>
+                  <!-- <a href="">Update</a> -->
                   <a href="{% url 'course:delete_subtopic' id=subtopic.id %}">delete</a>
                   
                   {% elif subtopic.content_type.model == 'video' %}
                   <h4>Video Content:</h4>
-                  <iframe src="{{ subtopic.item.url }}"></iframe>
-                  <a href="{% url 'course:update_subtopic'  subtopic.topic.course.slug subtopic.topic.id 'video' id=subtopic.id %}">Update</a>
+                  {% video subtopic.item.url "small" %}
+                  
+                  <!-- <a href="">Update</a> -->
                   <a href="{% url 'course:delete_subtopic' id=subtopic.id %}">delete</a>
                   {% endif %}
 

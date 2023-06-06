@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'tutor',
     'accounts',
     'lms_admin',
+    'embed_video',
+
 ]
 
 MIDDLEWARE = [
