@@ -317,18 +317,26 @@ class ToggleTutorSuspendView(LoginRequiredMixin, PermissionRequiredMixin, View):
 # Applicant Views
 class ApplicantCreateView(CreateView):
     form_class = ApplicantForm
-    template_name = "admin/application_form"
-    success_url = reverse_lazy('home_page')
+    template_name = "lms_admin/application_form.html"
+    success_url = reverse_lazy('lms_admin:applicant_thank_you')
 
     def form_valid(self, form):
         applicant = form.save(commit=False)
         applicant.cohort = Cohort.objects.get(year=timezone.now().year)
         applicant.save()
+        messages.success(self.request, "Thank you for applying. Your application has been submitted successfully.")
         return super().form_valid(form)
+    
+
+class ApplicantThankYouView(View):
+    template_name = "lms_admin/applicant_thank_you.html"
+
+    def get(self, request):
+        return render(request, self.template_name)
 
 
-class ApplicantApprovalFormView(LoginRequiredMixin, PermissionRequiredMixin, View):
-    template_name = 'applicant_checklist.html'
+class ApplicantApprovalFormView(LoginRequiredMixin, View):
+    template_name = 'lms_admin/applicant_checklist.html'
 
     def get(self, request):
         form = ApplicantChecklistForm()
@@ -342,8 +350,19 @@ class ApplicantApprovalFormView(LoginRequiredMixin, PermissionRequiredMixin, Vie
                 applicant.is_approved = True
                 applicant.save()
             messages.success(request, "Applicants have been approved successfully.")
-            return HttpResponseRedirect(reverse("lms_admin:export_to_csv"))
+            return HttpResponseRedirect(reverse("lms_admin:applicant_list"))
         return render(request, self.template_name, {'form': form})
+
+
+class ApplicantListView(ListView):
+    model = Applicant
+    template_name = 'applicant_list.html'
+    context_object_name = 'applicants'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.filter(is_approved=False)
+        return queryset
 
 
 class ExportApprovedApplicantsCSVView(View):
@@ -357,9 +376,9 @@ class ExportApprovedApplicantsCSVView(View):
         response['Content-Disposition'] = 'attachment; filename="approved_applicants.csv"'
 
         writer = csv.writer(response)
-        writer.writerow(['First Name', 'Last Name', 'Email', 'Gender'])
+        writer.writerow(['First Name', 'Last Name', 'Email', 'Gender', 'Track'])
 
         for applicant in approved_applicants:
-            writer.writerow([applicant.first_name, applicant.last_name, applicant.email, applicant.gender])
-
+            writer.writerow([applicant.first_name, applicant.last_name, applicant.email, applicant.gender, applicant.track])
+    
         return response
