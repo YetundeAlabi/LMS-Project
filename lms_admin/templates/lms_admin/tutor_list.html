@@ -1,0 +1,51 @@
+{% extends 'base.html'%}
+{% block content %}
+<div>
+<a class="btn btn-primary mt-4 mb-4" href="{% url 'lms_admin:tutor_create'%}">Create Tutor</a>
+</div>
+<div class="row">
+    <div class="col-md grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <p class="card-title mb-5">All Tutors</p>
+          <div class="table-responsive">
+            <table class="table table-striped-lms table-hover">
+              <thead>
+                <tr>
+                  <th>S/N</th>
+                  <th>First Name</th>
+                  <th>Last Name</th>
+                  <th>Email</th>
+                  <th>Track</th>
+                  <th>Status</th>
+                  <th>View</th>
+
+                </tr>  
+              </thead>
+             
+
+              <tbody>
+                {% for tutor in tutors %}
+                  <tr>
+                    <th scope="row">{{forloop.counter}}</th>
+                    <td> {{ tutor.user.first_name}} </td>
+                    <td> {{ tutor.user.last_name}}</td>
+                    <td><span>{{ tutor.user.email }}</span> </td>
+                    <td>{{ tutor.track.name }}</td>
+                    <td class="font-weight-medium"><a href="{% url 'lms_admin:tutor_toggle_suspend' pk=tutor.pk%}" class="badge {%if not tutor.is_suspended %}
+                        badge-info"> not suspended</a></td>
+                        {% else %}
+                        badge-warning"> suspended</a></td>
+                        {%endif%}
+                    <td><a class="badge badge-primary" href="{% url 'lms_admin:tutor_update' pk=tutor.pk%}">View</a></td>
+
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+{%endblock%}
