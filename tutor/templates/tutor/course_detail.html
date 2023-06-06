@@ -1,5 +1,30 @@
-<l1>{{ course }}</l1><br>
-<l1>{{ course.description }}</l1><br>
-<l1>{{ course.created_at }}</l1><br>
-<l1>{{ course.is_active }}</l1>
+
+
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="content-wrapper">
+
+    <div class="row">
+        <div class="col-md-12 grid-margin">
+            <div class="row">
+                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                    <h2>{{ course }}</h2>
+                    <p class="text-muted">Topic Description: {{ course.description }} </small></p>
+                    <p class="text-muted">Created at: {{ course.created_at }} </small></p>
+                    <p class="text-muted">Availability status: {{ course.is_active }} </small></p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a class="btn btn-primary mt-4 mb-4" href="{% url 'course:tutor_dashboard_view' %}">Back</a>
+    
+
+</div>
+
+{% endblock %}
 

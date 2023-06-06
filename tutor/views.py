@@ -1,24 +1,33 @@
 from django.apps import apps
-from django.http.response import HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
-from django.urls import reverse_lazy, reverse
-from django.views.generic import (ListView, DetailView, CreateView, UpdateView)
-from django.views.generic.base import View
-from django.views.generic.base import TemplateResponseMixin
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.forms.models import modelform_factory
-from django.shortcuts import redirect
-from .models import Course, Topic, SubTopic
-from .forms import CourseForm, TopicForm, TopicFormSet
+from django.http.response import HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse, reverse_lazy
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic.base import TemplateResponseMixin, View
 from accounts.models import Student
+from .forms import CourseForm, TopicForm, TopicFormSet
+from .models import Course, Topic, SubTopic
 
 
 class TutorUserRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.tutor
     
+class TutorDashboardView(TutorUserRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        tutor= self.request.user.tutor
+        students= Student.objects.filter(track=tutor.track)
+        context = {
+            'tutor':tutor,
+            'students':students
+
+        }
+        return render (self.request, 'tutor/tutor_dashboard.html', context=context)
+
 
 class CourseListView(TutorUserRequiredMixin, ListView):
     model = Course
@@ -57,20 +66,47 @@ class CourseAndTopicCreateView(TutorUserRequiredMixin, CreateView):
         form.instance.track = self.request.user.tutor.track
         context = self.get_context_data()
         topic_formset = context['topic_formset']
+
         if topic_formset.is_valid():
             course = form.save()
             topic_formset = topic_formset.save(commit=False)
+            
             for instance in topic_formset:
                 instance.course = course
                 instance.save()
-            for obj in topic_formset.deleted_objects:
-                obj.delete()
             return super().form_valid(form)
         else:
             return self.form_invalid(form)
 
 
-class TopicDetail(TutorUserRequiredMixin, DetailView):
+class CreateTopicView(TutorUserRequiredMixin, SuccessMessageMixin, CreateView):
+    model = Topic
+    form_class = TopicForm
+    success_message = 'Topic created successfully'
+    template_name = 'tutor/topic_form.html'
+
+    def form_valid(self, form):
+        course_slug = self.kwargs['course_slug']
+        course = get_object_or_404(Course, slug=course_slug)
+        title = form.cleaned_data.get('title')
+        if Topic.objects.filter(course=course, title=title).exists():
+            messages.error(self.request, 'Topic title under the same course already exists')
+            return self.render_to_response(self.get_context_data(form=form))
+        instance = form.save(commit=False)
+        instance.course = course
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        course_slug = self.kwargs['course_slug']
+        return reverse('course:topic_list', kwargs={'course_slug': course_slug})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['course_slug'] = self.kwargs['course_slug']
+        return context
+
+
+class TopicDetailView(TutorUserRequiredMixin, DetailView):
     model = Topic
     template_name='tutor'
     context_object_name = 'topic'
@@ -117,27 +153,30 @@ class TopicList(TutorUserRequiredMixin, ListView):
 
     def get_queryset(self):
         course_slug=self.kwargs['course_slug']
-        print(course_slug)
         track = self.request.user.tutor.track
         return super().get_queryset().filter(course__track=track, course__slug=course_slug)
+    
+    def get_context_data(self, **kwargs):
+        context=super().get_context_data(*kwargs)
+        context['course_slug']=self.kwargs['course_slug']
+        return context
     
 
 class TopicUpdateView(TutorUserRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Topic
-    success_url = reverse_lazy('course:topic_list')
-    success_message = 'Subtopic created successfully'
+    success_message = 'Subtopic updated successfully'
     template_name = 'tutor/update_topic_form.html'
     form_class = TopicForm
-    pk_url_kwarg='pk'
+    pk_url_kwarg = 'pk'
 
     def dispatch(self, request, *args, **kwargs):
-        topic= self.get_object()
+        topic = self.get_object()
         if topic.course.course_tutor != self.request.user.tutor:
             messages.error(self.request, "You cannot update topics under another tutor's course")
         return super().dispatch(request, *args, **kwargs)
     
     def get_success_url(self):
-        course_slug = self.kwargs['course_slug']
+        course_slug = self.object.course.slug
         return reverse_lazy('course:topic_list', kwargs={'course_slug': course_slug})
 
 
@@ -193,7 +232,7 @@ class TrackStudentDetailView(TutorUserRequiredMixin, DetailView):
         student.is_suspended = not student_suspension_status
         student.save()
         messages.success(request, "Student suspension status has been changed successfully.")
-        return HttpResponseRedirect(reverse('course:track_student_detail', kwargs={'pk': student.pk}))
+        return HttpResponseRedirect(reverse('course:track_student_detail', kwargs={'pk':student.id}))
 
 
 class SubTopicCreateUpdateView(TemplateResponseMixin, View):

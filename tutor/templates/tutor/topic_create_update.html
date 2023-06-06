@@ -1,11 +1,42 @@
-<!-- <h1>Edit "{{ course.title }}"</h1> -->
-<h1>Create Topic</h1>
-<div class="module">
+{% extends 'base.html' %}
 
-<form method="POST">
-    {% csrf_token %}
-{{ formset.as_p }}
-{{ formset.management_form }}
-<input type="submit" value="Save Topics">
+{% block content %}
+<form method="POST" id="course-form">
+  {% csrf_token %}
+  <h1>Create Course</h1>
+  {{ form.as_p }}
+  {{ topic_formset.management_form }}
+  <h1>Add Topic for the Course</h1>
+  <div id="topic-formset-wrapper">
+    {% for form in topic_formset %}
+      {{ form.as_p }}
+    {% endfor %}
+  </div>
+  <button type="button" id="add-topic-button">Add Topic</button>
+  <input type="submit" value="Create">
 </form>
-</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+  // Hide the initial topic formset
+  $('#topic-formset-wrapper').hide();
+
+  // Add Topic button click event
+  $('#add-topic-button').click(function() {
+    // Clone the first form in the formset
+    var topicForm = $('#id_topic-0').clone();
+
+    // Update the formset index
+    var formCount = $('#id_topic-TOTAL_FORMS').val();
+    topicForm.html(topicForm.html().replace(/__prefix__/g, formCount));
+
+    // Append the cloned form to the formset wrapper
+    $('#topic-formset-wrapper').append(topicForm);
+
+    // Increment the formset index
+    $('#id_topic-TOTAL_FORMS').val(parseInt(formCount) + 1);
+  });
+});
+</script>
+{% endblock %}
