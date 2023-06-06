@@ -51,8 +51,7 @@
                         <td> {{ topic.title}} </td>
                         <td> {{ topic.created_at}}</td>
                         <td class="font-weight-medium"><a href="{% url 'course:topic_detail' topic.course.slug topic.id %}"class="badge badge-info">details</a></td>
-                        <td><a class="badge badge-primary" href="">View Subtopics</a></td>
-                        
+                        <td><a class="badge badge-primary" href="{% url 'course:subtopic_list' topic.course.slug topic.id %}">View Subtopics</a></td>
                         <td class="font-weight-medium"><a href="{% url 'course:update_topic' topic.course.slug topic.id %}"class="badge badge-info">Update</a></td>
                         <td><a class="badge badge-danger" href="{% url 'course:delete_topic' topic.course.slug topic.id %}">Delete</a></td>
     

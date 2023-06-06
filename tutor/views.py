@@ -1,3 +1,5 @@
+from typing import Any, Dict
+import uuid
 from django.apps import apps
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -243,38 +245,50 @@ class SubTopicCreateUpdateView(TemplateResponseMixin, View):
 
     def get_model(self, model_name):
         if model_name in ['text', 'video', 'file']:
-            return apps.get_model(app_label='tutor',
-            model_name=model_name)
+            return apps.get_model(app_label='tutor', model_name=model_name)
         return None
 
     def get_form(self, model, *args, **kwargs):
         Form = modelform_factory(model, exclude=[
-                                        'created_at',
-                                        'updated_at',
-                                        'is_active'])
+            'created_at',
+            'updated_at',
+            'is_active',
+        ])
         return Form(*args, **kwargs)
 
     def dispatch(self, request, course_slug, topic_id, model_name, id=None):
-        self.topic = get_object_or_404(Topic, id=topic_id, course__course_tutor=request.user.tutor)
+        self.topic = get_object_or_404(
+            Topic,
+            id=topic_id,
+            course__slug=course_slug,
+            course__course_tutor=request.user.tutor
+        )
         self.model = self.get_model(model_name)
-        # check if non-course_tutor can do the below
         if id:
             self.obj = get_object_or_404(self.model, id=id)
-        return super().dispatch(request, topic_id, model_name, id)
+        return super().dispatch(request, course_slug, topic_id, model_name, id)
 
-    def get(self, request, topic_id, model_name, id=None):
+    def get(self, request, course_slug, topic_id, model_name, id=None):
         form = self.get_form(self.model, instance=self.obj)
         return self.render_to_response({'form': form, 'object': self.obj})
 
-    def post(self, request, topic_id, model_name, id=None):
+    def post(self, request, course_slug, topic_id, model_name, id=None):
         form = self.get_form(self.model, instance=self.obj, data=request.POST, files=request.FILES)
         if form.is_valid():
             obj = form.save(commit=False)
+
+            # Handle the file field separately
+            if 'file' in request.FILES:
+                obj.file = request.FILES['file']
+            
             obj.save()
 
             if not id:
-                SubTopic.objects.create(topic=self.topic, item=obj)
-            return HttpResponseRedirect(reverse('course:topic_list', kwargs={'course_slug':self.topic.course.slug}))
+                subtopic = SubTopic(id=uuid.uuid4(), topic=self.topic, item=obj)
+                subtopic.title = form.cleaned_data['title']
+                subtopic.description = form.cleaned_data['description']
+                subtopic.save()
+            return HttpResponseRedirect(reverse('course:topic_list', kwargs={'course_slug': self.topic.course.slug}))
         return self.render_to_response({'form': form, 'object': self.obj})
 
 class SubTopicDeleteView(View):
@@ -300,6 +314,12 @@ class SubTopicList(TutorUserRequiredMixin, ListView):
     def get_queryset(self):
         topic_id=self.kwargs['pk']
         course_slug=self.kwargs['course_slug']
-        print(course_slug)
-        track = self.request.user.tutor.track
+        # print(course_slug)
+        # track = self.request.user.tutor.track
         return super().get_queryset().filter(topic=get_object_or_404(Topic, id=topic_id))
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        topic_id = self.kwargs['pk']
+        context['topic'] = get_object_or_404(Topic, id=topic_id)
+        return context
