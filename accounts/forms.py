@@ -41,7 +41,6 @@ class UserForm(forms.ModelForm):
         model = User
         fields = ("first_name", "last_name", "email", 'password', 'password2', "track")
 
-
     def clean_password2(self):
         print(self.cleaned_data)
         password = self.cleaned_data.get("password")
@@ -49,7 +48,6 @@ class UserForm(forms.ModelForm):
         if password != password2:
             raise ValidationError("Passwords don't match")
         return password
-
 
     def save(self, commit=True):
         user = User.objects.create_user(
@@ -82,6 +80,7 @@ class StudentCreationForm(forms.Form):
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}))
 
 
+""" Tutor creation form """
 class TutorCreationForm(forms.Form):
 
     track = forms.ModelChoiceField(
@@ -99,29 +98,17 @@ class TutorCreationForm(forms.Form):
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}))
     
     def __init__(self, *args, **kwargs):
-        print(kwargs)
-        if kwargs['instance']:
-            kwargs.pop("instance")
+        kwargs.pop("instance")
         super().__init__(*args, **kwargs)
 
-
-    def save(self, commit=True, *args, **kwargs):
-        if self.request.method == 'POST':
-            user = User.objects.create_user(
-                email=self.cleaned_data['email'], 
-                first_name=self.cleaned_data['first_name'],
-                last_name=self.cleaned_data['last_name'])
-            
-            tutor = Tutor.objects.create(user=user, 
+    def save(self, commit=True):
+        user = User.objects.create_user(
+            email=self.cleaned_data['email'], 
+            first_name=self.cleaned_data['first_name'],
+            last_name=self.cleaned_data['last_name'])
+        
+        tutor = Tutor.objects.create(user=user, 
                                         track=self.cleaned_data['track'])
-            
-        elif self.request.method == "PUT" or self.request.method == "PATCH":
-            tutor = kwargs.get('instance')
-            tutor.track = self.cleaned_data['track']
-            tutor.user.first_name = self.cleaned_data['first_name']
-            tutor.user.last_name = self.cleaned_data['last_name']
-            tutor.user.email = self.cleaned_data['email']
-            # tutor.save()
         tutor.save()
         return tutor
 
@@ -132,7 +119,7 @@ class LoginForm(AuthenticationForm):
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control form-control-lg', 'id': 'password', 'placeholder': 'Enter Password'}))
 
 
-class TutorProfileUpdateForm(forms.Form):
+class TutorUpdateForm(forms.Form):
     track = forms.ModelChoiceField(
         label="Track",
         queryset=Track.objects.all(),
@@ -147,42 +134,14 @@ class TutorProfileUpdateForm(forms.Form):
         label='Last Name',
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}))
     
-    # class Meta:
-    #     model = Tutor
-    #     exclude = ("is_deleted", "is_verified", "is_suspended", "user")
-
     def __init__(self, *args, **kwargs):
         print(kwargs)
         if kwargs['instance']:
             kwargs.pop("instance")
         super().__init__(*args, **kwargs)
     
-    # def save(self, commit=True, *args, **kwargs):
-    #     print(kwargs)
-    #     tutor = kwargs.get('instance')
-    #     tutor.track = self.cleaned_data['track']
-    #     tutor.user.first_name = self.cleaned_data['first_name']
-    #     tutor.user.last_name = self.cleaned_data['last_name']
-    #     tutor.user.email = self.cleaned_data['email']
-    #     tutor.save()
-    #     return tutor
-    
-    # class Meta:
-    #     model = User
-    #     exclude = ("is_verified", "is_suspended", "is_deleted", "user")
 
-    # def clean(self):
-    #     cleaned_data = super.clean()
-
-    #     if self.instance:
-    #         cleaned_data
-
-    # def save(self, *args, **kwargs):
-    #     obj, created = Tutor.objects.get
-        
-
-
-class StudentProfileUpdateForm(forms.ModelForm):
+class StudentUpdateForm(forms.ModelForm):
 
     class Meta:
         model = Student

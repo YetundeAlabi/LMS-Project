@@ -21,7 +21,7 @@ from django.views.generic import (
 )
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
-from accounts.forms import StudentCreationForm, TutorCreationForm, TutorProfileUpdateForm
+from accounts.forms import StudentCreationForm, TutorCreationForm, TutorUpdateForm
 from accounts.models import Student, Tutor, User
 from lms_admin.forms import TrackForm, CohortCreateForm, StudentImportForm,ApplicantChecklistForm, ApplicantForm
 from lms_admin.models import Track
@@ -295,7 +295,7 @@ class TutorListView(LoginRequiredMixin,  ListView): #PermissionRequiredMixin,
 
 class TutorUpdateView(LoginRequiredMixin, UpdateView): #PermissionRequiredMixin,
     model = Tutor
-    form_class = TutorProfileUpdateForm
+    form_class = TutorUpdateForm
     template_name = "lms_admin/tutor_update_form.html"
     
     def get_object(self, queryset=None):
@@ -323,7 +323,6 @@ class TutorUpdateView(LoginRequiredMixin, UpdateView): #PermissionRequiredMixin,
         return HttpResponseRedirect(reverse('lms_admin:tutor_list'))
         
     
-
 class TutorDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Tutor
     template_name = "lms_admin/tutor_detail.html"
@@ -335,14 +334,16 @@ class TutorDeleteView(LoginRequiredMixin, PermissionRequiredMixin, View):
         tutor = get_object_or_404(Tutor, id=kwargs['pk'])
         tutor.is_deleted = True
         tutor.save() 
+        return HttpResponseRedirect(reverse('lms_admin:tutor_list'))
 
 
-class ToggleTutorSuspendView(LoginRequiredMixin, PermissionRequiredMixin, View):
+class ToggleTutorSuspendView(LoginRequiredMixin, View): #PermissionRequiredMixin,
 
     def get(self, request, *args, **kwargs):
-        tutor = get_object_or_404(Tutor, id=kwargs['pk'])
+        tutor = get_object_or_404(Tutor, pk=kwargs['pk'])
         tutor.is_suspended = not tutor.is_suspended
         tutor.save()
+        return HttpResponseRedirect(reverse('lms_admin:tutor_list'))
 
 
 # Applicant Views

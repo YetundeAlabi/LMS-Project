@@ -1,6 +1,8 @@
 {% extends 'base.html'%}
 {% block content %}
-
+<div>
+<a class="btn btn-primary mt-4 mb-4" href="{% url 'lms_admin:tutor_create'%}">Create Tutor</a>
+</div>
 <div class="row">
     <div class="col-md grid-margin stretch-card">
       <div class="card">
@@ -10,7 +12,7 @@
             <table class="table table-striped-lms table-hover">
               <thead>
                 <tr>
-                  <th>#</th>
+                  <th>S/N</th>
                   <th>First Name</th>
                   <th>Last Name</th>
                   <th>Email</th>
@@ -30,7 +32,11 @@
                     <td> {{ tutor.user.last_name}}</td>
                     <td><span>{{ tutor.user.email }}</span> </td>
                     <td>{{ tutor.track.name }}</td>
-                    <td class="font-weight-medium"><a href="#"class="badge badge-info">Link</a></td>
+                    <td class="font-weight-medium"><a href="{% url 'lms_admin:tutor_toggle_suspend' pk=tutor.pk%}" class="badge {%if not tutor.is_suspended %}
+                        badge-info"> not suspended</a></td>
+                        {% else %}
+                        badge-warning"> suspended</a></td>
+                        {%endif%}
                     <td><a class="badge badge-primary" href="{% url 'lms_admin:tutor_update' pk=tutor.pk%}">View</a></td>
 
                   </tr>
