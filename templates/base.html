@@ -29,13 +29,28 @@
         opacity: 0;
         transition: opacity 0.5s ease-out;
       }
+
+      .sidebar .nav:not(.sub-menu) > .nav-item:hover > .nav-link, .sidebar .nav:not(.sub-menu) > .nav-item:hover[aria-expanded="true"] {
+        background: #e1261c;
+        color: #fff;
+      }
+      
+      .sidebar .nav:not(.sub-menu) > .nav-item > .nav-link {
+        margin: 0;
+      }
+      
+      .sidebar .nav:not(.sub-menu) > .nav-item > .nav-link[aria-expanded="true"] {
+        border-radius: 8px 8px 0 0;
+        background: #e1261c;
+        color: #fff;
+      }
     </style>
     <div class="container-scroller">
       <!-- partial:partials/_navbar.html -->
       <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row" style="background: #e1261c;">
         <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
-          <a class="navbar-brand brand-logo mr-5" href="#"><img src="{% static 'assets/images/lms_logo.svg' %}" class="mr-2" alt="logo"/></a>
-          <a class="navbar-brand brand-logo-mini" href="#"><img src="{% static 'assets/images/X_lms_logo.svg' %}" alt="logo"/></a>
+          <a class="navbar-brand brand-logo mr-5" href="{% url 'lms_admin:dashboard' %}"><img src="{% static 'assets/images/lms_logo.svg' %}" class="mr-2" alt="logo"/></a>
+          <a class="navbar-brand brand-logo-mini" href="{% url 'lms_admin:dashboard' %}"><img src="{% static 'assets/images/X_lms_logo.svg' %}" alt="logo"/></a>
         </div>
 
         <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
@@ -82,7 +97,7 @@
         <nav class="sidebar sidebar-offcanvas" id="sidebar">
             <ul class="nav">
               <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="{% url 'lms_admin:dashboard' %}">
                   <i class="icon-grid menu-icon"></i>
                   <span class="menu-title">Dashboard</span>
                 </a>

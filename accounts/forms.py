@@ -62,6 +62,7 @@ class StudentCreationForm(forms.Form):
         label='Last Name',
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}))
     
+
 class TutorCreationForm(forms.Form):
     track = forms.ModelChoiceField(
         label="Track",
@@ -78,7 +79,6 @@ class TutorCreationForm(forms.Form):
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}))
     
     
-
 class LoginForm(AuthenticationForm):
     email = forms.EmailField(max_length=150, 
                              widget=forms.EmailInput(attrs={'class': 'form-control form-control-lg', 'id': 'email', 'placeholder': 'Enter Email Address'}))

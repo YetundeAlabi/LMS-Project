@@ -64,6 +64,10 @@ def validate_current_year(value):
 
 class CohortCreateForm(forms.ModelForm):
 
+    year = forms.IntegerField(
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Input Cohort Year'})
+    )
+    
     class Meta:
         model = Cohort
         fields = ('year',)

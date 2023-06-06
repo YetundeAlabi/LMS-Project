@@ -26,16 +26,18 @@ from accounts.models import Student, Tutor, User
 from lms_admin.forms import TrackForm, CohortCreateForm, StudentImportForm,ApplicantChecklistForm, ApplicantForm
 from lms_admin.models import Track
 from .models import Cohort, Applicant
+from .tasks import send_verification_mail
 
 # Create your views here
 
 class DashboardView(TemplateView):
-    template_name = "lms_admin/dashboard.html"
+    template_name = "lms_admin/dashboard2.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['students'] = Student.objects.all()
         return context
+
 
 # Track Views
 class TrackCreateView(CreateView):
@@ -52,7 +54,7 @@ class TrackCreateView(CreateView):
 class TrackListView(ListView):
     """Track List View to list all active Tracks"""
     model = Track
-    template_name = 'lms_admin/track_list.html'
+    template_name = 'lms_admin/track_list1.html'
     context_object_name = 'tracks'
 
     def get_queryset(self):
@@ -64,6 +66,9 @@ class TrackDetailView(DetailView):
     model = Track 
     template_name = 'lms_admin/track_detail.html'
     context_object_name = 'track'
+    slug_url_kwarg = 'slug'
+    slug_field = 'slug'
+    
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -78,7 +83,6 @@ class TrackUpdateView(UpdateView):
     template_name = 'lms_admin/track_create.html'
     slug_url_kwarg = 'slug'
     slug_field = 'slug'
-    queryset = Track.active_objects.all()
     
     def get_object(self, queryset=None):
         return Track.objects.get(slug=self.kwargs['slug'])
@@ -119,7 +123,8 @@ class StudentCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView)
                     'set_password_url': self.get_password_reset_url(user) if created else self._get_login_url(student),
                 }
         message = render_to_string('email_template.html', context)
-        send_mail(subject, message, 'adeosunfaith0101@gmail.com', [user.email,])
+        recipient = [user.email,]
+        send_verification_mail.delay(subject, recipient , message )
         
         return super().form_valid(form)
 
@@ -202,8 +207,11 @@ class StudentImportView(PasswordResetView, FormView):
                     'first_name': first_name,
                     'verification_url': self.get_password_reset_url(user) if created else self._get_login_url(student),
                 }
-            message = render_to_string('email_template.html', context)
+            message = render_to_string('lms_admin/email_template.html', context)
             send_mail(subject, message, 'adeosunfaith0101@gmail.com', [email,])
+            recipient = [email,]
+            send_verification_mail.delay(subject, recipient, message)
+            
             
         return super().form_valid(form)
 
@@ -220,24 +228,29 @@ class StudentImportView(PasswordResetView, FormView):
 
 
 # Cohort Views
-class CohortCreateFormView(LoginRequiredMixin,PermissionRequiredMixin, CreateView):
+class CohortCreateFormView(CreateView):
     """Generic Cohort Create View"""
     form_class = CohortCreateForm
-    template_name = "admin/cohort_create_form.html"
+    template_name = "lms_admin/cohort_create_form.html"
+    success_url = reverse_lazy('lms_admin:cohort_list')
 
+    def form_valid(self, form):
+        messages.success(self.request, "Cohort created successfully")
+        return super().form_valid(form)
+    
 
-class CohortListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class CohortListView(ListView):
     "Cohort List View to list all Cohorts"
     model = Cohort
     template_name = "admin/cohort_list.html"
-    context_object_name = "cohort_list"
+    context_object_name = "cohorts"
 
     def get_queryset(self):
         queryset = Cohort.objects.all()
         return queryset
     
   
-    #Tutor Views 
+#Tutor Views 
 class TutorCreateFormView(LoginRequiredMixin,PermissionRequiredMixin,CreateView):
     form_class = TutorCreationForm
     template_name = "admin/tutor_create_form.html"
@@ -257,7 +270,8 @@ class TutorCreateFormView(LoginRequiredMixin,PermissionRequiredMixin,CreateView)
                     'set_password_url': self.get_password_reset_url(user),
                 }
         message = render_to_string('email_template.html', context)
-        send_mail(subject, message, 'adeosunfaith0101@gmail.com', [user.email,])
+        recipient = [user.email,]
+        send_verification_mail.delay(subject, recipient, message)
         
         return super().form_valid(form)
 
@@ -267,11 +281,6 @@ class TutorCreateFormView(LoginRequiredMixin,PermissionRequiredMixin,CreateView)
         uid = urlsafe_base64_encode(force_bytes(user.pk)).decode() # encode user pk for security
         url = reverse('password_reset_confirm', args=[uid, token])
         return self.request.build_absolute_uri(url)
-
-    def _get_login_url(self, student):
-        """Generate a login URL for existing users"""
-        if student.is_verified:
-            return self.request.build_absolute_uri(reverse('login')) 
 
 
 class TutorListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
@@ -300,18 +309,22 @@ class TutorDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
 
 class TutorDeleteView(LoginRequiredMixin, PermissionRequiredMixin, View):
     
-    def post(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         tutor = get_object_or_404(Tutor, id=kwargs['pk'])
         tutor.is_deleted = True
-        tutor.save() 
+        tutor.save()
+        return HttpResponseRedirect(reverse("lms_admin:tutor_list"))
+
 
 
 class ToggleTutorSuspendView(LoginRequiredMixin, PermissionRequiredMixin, View):
 
-    def post(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         tutor = get_object_or_404(Tutor, id=kwargs['pk'])
         tutor.is_suspended = not tutor.is_suspended
         tutor.save()
+        return HttpResponseRedirect(reverse("lms_admin:tutor_list"))
+
 
 
 # Applicant Views
