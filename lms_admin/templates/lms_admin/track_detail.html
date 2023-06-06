@@ -49,6 +49,10 @@
                         <td><a class="badge badge-primary" href="#">View</a></td>
   
                       </tr>
+                    {% empty %}
+                      <tr>
+                        <td>There are no registered students under this track.</td>
+                      <tr>
                     {% endfor %}
                   </tbody>
                 </table>

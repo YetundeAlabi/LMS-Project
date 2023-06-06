@@ -23,16 +23,39 @@ class TrackForm(forms.ModelForm):
 
 
 class ApplicantForm(forms.ModelForm):
-
     class Meta:
         model = Applicant
         exclude = ("is_approved", "cohort")
+
+    first_name = forms.CharField(
+        label='First Name',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'})
+    )
+    last_name = forms.CharField(
+        label='Last Name',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'})
+    )
+    email = forms.EmailField(
+        label='Email',
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'})
+    )
+    gender = forms.ChoiceField(
+        label='Gender',
+        choices=Applicant.GENDER_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    track = forms.ModelChoiceField(
+        label='Track',
+        queryset=Track.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
 
 
 class ApplicantChecklistForm(forms.Form):
     applicants = forms.ModelMultipleChoiceField(
         queryset=Applicant.not_approved.filter(cohort__year=timezone.now().year),
-        widget=forms.CheckboxSelectMultiple,
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-control form-control-lg'}),
     )
 
 
@@ -64,6 +87,10 @@ def validate_current_year(value):
 
 class CohortCreateForm(forms.ModelForm):
 
+    year = forms.IntegerField(
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Input Cohort Year'})
+    )
+    
     class Meta:
         model = Cohort
         fields = ('year',)

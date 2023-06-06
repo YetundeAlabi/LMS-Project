@@ -1,7 +1,10 @@
+from PIL import Image
+
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from django.db.models.query import QuerySet
 from django.urls import reverse
+
 
 from lms_admin.models import Track
 from lms_admin.models import Cohort
@@ -54,6 +57,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def is_admin(self):
         return self.is_staff
 
+
 class Student(models.Model):
     GENDER_CHOICES =(
         ("FEMALE", "Female"),
@@ -63,12 +67,12 @@ class Student(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     cohort = models.ForeignKey(Cohort, on_delete=models.SET_NULL, related_name='students', null=True)
     gender = models.CharField(max_length=20, choices=GENDER_CHOICES)
-    last_login = models.DateTimeField(auto_now=True)
     is_verified = models.BooleanField(default=False)
     is_suspended = models.BooleanField(default=False)
     picture = models.ImageField(upload_to='accounts/media', blank=True, null=True)
     is_deleted = models.BooleanField(default=False)
     track = models.ForeignKey(Track, on_delete=models.SET_NULL, related_name="students", null=True)
+   
     
     def get_full_name(self) -> str:
         return f'{self.user.first_name} {self.user.last_name}'
@@ -78,7 +82,6 @@ class Student(models.Model):
 
     def get_absolute_url(self):
         return reverse('student_detail', args=[str(self.id)])
-
 
 
 class Tutor(models.Model):
@@ -92,3 +95,11 @@ class Tutor(models.Model):
     def __str__(self):
         return self.user.email
 
+    def save(self, *args, **kwargs):
+        if self.picture:
+            img = Image.open(self.picture.path)
+            if img.height > 100 or img.width > 100:
+                new_img =(100, 100)
+                img.thumbnail(new_img)
+                img.save(self.picture.path)
+        super().save(*args, **kwargs)
