@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load embed_video_tags %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <p class="card-title mb-0">Sub Topics</p>
+        <div class="table-responsive">
+          <table class="table table-striped-lms table-hover">
+            <tbody>
+              {% for subtopic in subtopics %}
+              <tr>
+                <td>
+                  <!-- <h3>Subtopic ID: {{ subtopic.id }}</h3> -->
+                  <h4>Topic: {{ subtopic.topic }}</h4>
+                  <!-- <h4>Content Type: {{ subtopic.content_type.model }}</h4> -->
+
+                  {% if subtopic.content_type.model == 'text' %}
+                  <h4>Text Content:</h4>
+                  <p>{{ subtopic.item.text }}</p>
+                  <a href="">Update</a>
+                  <a href="{% url 'course:delete_subtopic' id=subtopic.id %}">Delete</a>
+                  
+                  {% elif subtopic.content_type.model == 'file' %}
+                  {% if subtopic.item.file.url %}
+                  {% if subtopic.item.file.url|lower|slice:'-4:' == ".jpg" or subtopic.item.file.url|lower|slice:'-5:' == ".jpeg" or subtopic.item.file.url|lower|slice:'-4:' == ".png" %}
+                  <h4>Image Content:</h4>
+                  <img src="{{ subtopic.item.get_file_url }}" alt="{{ item.title }}">
+                  {% else %}
+                  <h4>File Content:</h4>
+                  <p>
+                    <a href="{{ subtopic.item.get_file_url }}" class="button">Download file</a>
+                  </p>
+                  {% endif %}
+                  {% endif %}
+                  
+                  <!-- <a href="">Update</a> -->
+                  <a href="{% url 'course:delete_subtopic' id=subtopic.id %}">delete</a>
+                  
+                  {% elif subtopic.content_type.model == 'video' %}
+                  <h4>Video Content:</h4>
+                  {% video subtopic.item.url "small" %}
+                  
+                  <!-- <a href="">Update</a> -->
+                  <a href="{% url 'course:delete_subtopic' id=subtopic.id %}">delete</a>
+                  {% endif %}
+
+                  <hr>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <h3>Add new content:</h3>
+
+                  <a class="btn btn-primary mt-4 mb-4" href="{% url 'course:create_subtopic' subtopic.topic.course.slug subtopic.topic.id 'text' %}">Text</a>
+
+                  <a class="btn btn-primary mt-4 mb-4" href="{% url 'course:create_subtopic' subtopic.topic.course.slug subtopic.topic.id 'file' %}">Image</a>
+
+                  <a class="btn btn-primary mt-4 mb-4" href="{% url 'course:create_subtopic' subtopic.topic.course.slug subtopic.topic.id 'video' %}">Video</a>
+
+                  <a class="btn btn-primary mt-4 mb-4" href="{% url 'course:create_subtopic' subtopic.topic.course.slug subtopic.topic.id 'file' %}">File</a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

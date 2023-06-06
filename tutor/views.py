@@ -242,50 +242,64 @@ class SubTopicCreateUpdateView(TemplateResponseMixin, View):
     template_name = 'tutor/subtopic.html'
 
     def get_model(self, model_name):
-        if model_name in ['text', 'video', 'image', 'file']:
+        if model_name in ['text', 'video', 'file']:
             return apps.get_model(app_label='tutor',
             model_name=model_name)
         return None
 
     def get_form(self, model, *args, **kwargs):
-        Form = modelform_factory(model, exclude=['course_tutor',
+        Form = modelform_factory(model, exclude=[
                                         'created_at',
                                         'updated_at',
                                         'is_active'])
         return Form(*args, **kwargs)
-  
-    def dispatch(self, request, topic_id, model_name, id=None):
+
+    def dispatch(self, request, course_slug, topic_id, model_name, id=None):
         self.topic = get_object_or_404(Topic, id=topic_id, course__course_tutor=request.user.tutor)
         self.model = self.get_model(model_name)
-        
+        # check if non-course_tutor can do the below
         if id:
-            self.obj = get_object_or_404(self.model, id=id, tutor=request.user.tutor)
+            self.obj = get_object_or_404(self.model, id=id)
         return super().dispatch(request, topic_id, model_name, id)
-    
+
     def get(self, request, topic_id, model_name, id=None):
         form = self.get_form(self.model, instance=self.obj)
         return self.render_to_response({'form': form, 'object': self.obj})
-    
+
     def post(self, request, topic_id, model_name, id=None):
         form = self.get_form(self.model, instance=self.obj, data=request.POST, files=request.FILES)
         if form.is_valid():
             obj = form.save(commit=False)
-            obj.course_tutor = request.user.tutor
             obj.save()
-        
+
             if not id:
                 SubTopic.objects.create(topic=self.topic, item=obj)
-            return HttpResponseRedirect('course:topic_list', self.topic.id)
+            return HttpResponseRedirect(reverse('course:topic_list', kwargs={'course_slug':self.topic.course.slug}))
         return self.render_to_response({'form': form, 'object': self.obj})
 
 class SubTopicDeleteView(View):
+    
+    def get(self, request, *args, **kwargs):
+        subtopic=get_object_or_404(SubTopic, id=self.kwargs['id'])
+        return render(request, 'tutor/course_delete_confirm.html', {'subtopic': subtopic})
 
     def post(self, request, id):
         sub_topic = get_object_or_404(SubTopic, id=id, topic__course__course_tutor=request.user.tutor)
-        topic = sub_topic.topic
-        sub_topic.item.is_active = False
+        # topic = sub_topic.topic
+        sub_topic.is_active = False
         sub_topic.save()
-        return HttpResponseRedirect('course:course_list', topic.id)
+        return HttpResponseRedirect(reverse('course:subtopic_list', kwargs={'course_slug': sub_topic.topic.course.slug, 'pk':sub_topic.topic.id}))
     
     
+class SubTopicList(TutorUserRequiredMixin, ListView):
+    model=SubTopic
+    queryset =SubTopic.active_objects.all()
+    context_object_name = 'subtopics'
+    template_name = 'tutor/subtopic_list.html'
 
+    def get_queryset(self):
+        topic_id=self.kwargs['pk']
+        course_slug=self.kwargs['course_slug']
+        print(course_slug)
+        track = self.request.user.tutor.track
+        return super().get_queryset().filter(topic=get_object_or_404(Topic, id=topic_id))

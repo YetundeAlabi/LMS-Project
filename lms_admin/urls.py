@@ -1,7 +1,4 @@
 from django.urls import path
-
-app_name = 'lms_admin'
-from django.urls import path
 from .views import (CohortCreateFormView, CohortListView, TutorListView, TutorCreateFormView, 
                     TutorDetailView, TutorDeleteView, TutorUpdateView, ToggleTutorSuspendView)
 
