@@ -1,6 +1,6 @@
 import csv
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Type
 from django.contrib import messages
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.views import PasswordResetView
@@ -21,7 +21,7 @@ from django.views.generic import (
 )
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
-from accounts.forms import StudentCreationForm, TutorCreationForm
+from accounts.forms import StudentCreationForm, TutorCreationForm, TutorUpdateForm
 from accounts.models import Student, Tutor, User
 from lms_admin.forms import TrackForm, CohortCreateForm, StudentImportForm,ApplicantChecklistForm, ApplicantForm
 from lms_admin.models import Track
@@ -250,30 +250,39 @@ class CohortListView(ListView):
         return queryset
     
   
-#Tutor Views 
-class TutorCreateFormView(LoginRequiredMixin,PermissionRequiredMixin,CreateView):
+    #Tutor Views 
+class TutorCreateFormView(LoginRequiredMixin, CreateView): #PermissionRequiredMixin,
     form_class = TutorCreationForm
-    template_name = "admin/tutor_create_form.html"
-    success_url = reverse_lazy('tutor_list')
+    template_name = "lms_admin/tutor_create_form.html"
+    success_url = reverse_lazy('lms_admin:tutor_list')
 
     def form_valid(self, form):
-        user = User.objects.create_user(email=form.cleaned_data['email'], 
-                                        first_name=form.cleaned_data['first_name'],
-                                        last_name=form.cleaned_data['last_name'])
+        tutor = form.save()
+        user = tutor.user
+        self.object = tutor
+        return HttpResponseRedirect(reverse('lms_admin:tutor_list'))
+    
+        # return super().form_valid()
         
-        tutor = Tutor.objects.create(user=user, 
-                                    track=form.cleaned_data['track'])
+
+        # user = User.objects.create_user(email=form.cleaned_data['email'], 
+        #                                 first_name=form.cleaned_data['first_name'],
+        #                                 last_name=form.cleaned_data['last_name'])
         
-        subject = 'Account Setup Instructions'
-        context = {
-                    'user': user,
-                    'set_password_url': self.get_password_reset_url(user),
-                }
-        message = render_to_string('email_template.html', context)
+        # tutor = Tutor.objects.create(user=user, 
+        #                             track=form.cleaned_data['track'])
+        # tutor.save()
+        # subject = 'Account Setup Instructions'
+        # context = {
+        #             'user': user,
+        #             'set_password_url': self.get_password_reset_url(user),
+        #         }
+        # message = render_to_string('email_template.html', context)
         recipient = [user.email,]
-        send_verification_mail.delay(subject, recipient, message)
+        # send_verification_mail.delay(subject, recipient, message)
         
-        return super().form_valid(form)
+        # return super().form_valid(form)
+    
 
     def get_password_reset_url(self, user):
         """ Generate the password reset URL for the user"""
@@ -283,28 +292,49 @@ class TutorCreateFormView(LoginRequiredMixin,PermissionRequiredMixin,CreateView)
         return self.request.build_absolute_uri(url)
 
 
-class TutorListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class TutorListView(LoginRequiredMixin,  ListView): #PermissionRequiredMixin,
     """Generic Tutor List View to view all Tutors"""
     model = Tutor
-    template_name = "admin/tutor_list.html"
-    context_object_name = 'tutor_list'
+    template_name = "lms_admin/tutor_list.html"
+    context_object_name = 'tutors'
 
     def get_queryset(self):
         return Tutor.objects.all()
 
 
-class TutorUpdateView(LoginRequiredMixin,PermissionRequiredMixin, UpdateView):
+class TutorUpdateView(LoginRequiredMixin, UpdateView): #PermissionRequiredMixin,
     model = Tutor
-    template_name = "admin/tutor_update_form.html"
-    fields = "__all__"
-
-    def form_valid(self, form):
-        return super().form_valid(form)
+    form_class = TutorUpdateForm
+    template_name = "lms_admin/tutor_update_form.html"
     
+    def get_object(self, queryset=None):
+        return Tutor.objects.get(pk= self.kwargs["pk"])
+        
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = self.get_form()
+        form.initial = self.get_initial()
+        form.fields['first_name'].initial = self.object.user.first_name
+        form.fields['last_name'].initial = self.object.user.last_name
+        form.fields['email'].initial = self.object.user.email
+        form.fields['track'].initial = self.object.track
 
+        return self.render_to_response(self.get_context_data(form=form))
+        
+    def form_valid(self, form):
+        tutor = self.get_object()
+        tutor.track = form.cleaned_data['track']
+        tutor.user.first_name = form.cleaned_data['first_name']
+        tutor.user.last_name = form.cleaned_data['last_name']
+        tutor.user.email = form.cleaned_data['email']
+        tutor.user.save()
+        tutor.save()
+        return HttpResponseRedirect(reverse('lms_admin:tutor_list'))
+        
+    
 class TutorDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Tutor
-    template_name = "admin/tutor_detail.html"
+    template_name = "lms_admin/tutor_detail.html"
 
 
 class TutorDeleteView(LoginRequiredMixin, PermissionRequiredMixin, View):
@@ -312,36 +342,42 @@ class TutorDeleteView(LoginRequiredMixin, PermissionRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         tutor = get_object_or_404(Tutor, id=kwargs['pk'])
         tutor.is_deleted = True
-        tutor.save()
-        return HttpResponseRedirect(reverse("lms_admin:tutor_list"))
+        tutor.save() 
+        return HttpResponseRedirect(reverse('lms_admin:tutor_list'))
 
 
-
-class ToggleTutorSuspendView(LoginRequiredMixin, PermissionRequiredMixin, View):
+class ToggleTutorSuspendView(LoginRequiredMixin, View): #PermissionRequiredMixin,
 
     def get(self, request, *args, **kwargs):
-        tutor = get_object_or_404(Tutor, id=kwargs['pk'])
+        tutor = get_object_or_404(Tutor, pk=kwargs['pk'])
         tutor.is_suspended = not tutor.is_suspended
         tutor.save()
-        return HttpResponseRedirect(reverse("lms_admin:tutor_list"))
-
+        return HttpResponseRedirect(reverse('lms_admin:tutor_list'))
 
 
 # Applicant Views
 class ApplicantCreateView(CreateView):
     form_class = ApplicantForm
-    template_name = "admin/application_form"
-    success_url = reverse_lazy('home_page')
+    template_name = "lms_admin/application_form.html"
+    success_url = reverse_lazy('lms_admin:applicant_thank_you')
 
     def form_valid(self, form):
         applicant = form.save(commit=False)
         applicant.cohort = Cohort.objects.get(year=timezone.now().year)
         applicant.save()
+        messages.success(self.request, "Thank you for applying. Your application has been submitted successfully.")
         return super().form_valid(form)
+    
+
+class ApplicantThankYouView(View):
+    template_name = "lms_admin/applicant_thank_you.html"
+
+    def get(self, request):
+        return render(request, self.template_name)
 
 
-class ApplicantApprovalFormView(LoginRequiredMixin, PermissionRequiredMixin, View):
-    template_name = 'applicant_checklist.html'
+class ApplicantApprovalFormView(LoginRequiredMixin, View):
+    template_name = 'lms_admin/applicant_checklist.html'
 
     def get(self, request):
         form = ApplicantChecklistForm()
@@ -355,8 +391,19 @@ class ApplicantApprovalFormView(LoginRequiredMixin, PermissionRequiredMixin, Vie
                 applicant.is_approved = True
                 applicant.save()
             messages.success(request, "Applicants have been approved successfully.")
-            return HttpResponseRedirect(reverse("lms_admin:export_to_csv"))
+            return HttpResponseRedirect(reverse("lms_admin:applicant_list"))
         return render(request, self.template_name, {'form': form})
+
+
+class ApplicantListView(ListView):
+    model = Applicant
+    template_name = 'applicant_list.html'
+    context_object_name = 'applicants'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.filter(is_approved=False)
+        return queryset
 
 
 class ExportApprovedApplicantsCSVView(View):
@@ -370,9 +417,9 @@ class ExportApprovedApplicantsCSVView(View):
         response['Content-Disposition'] = 'attachment; filename="approved_applicants.csv"'
 
         writer = csv.writer(response)
-        writer.writerow(['First Name', 'Last Name', 'Email', 'Gender'])
+        writer.writerow(['First Name', 'Last Name', 'Email', 'Gender', 'Track'])
 
         for applicant in approved_applicants:
-            writer.writerow([applicant.first_name, applicant.last_name, applicant.email, applicant.gender])
-
+            writer.writerow([applicant.first_name, applicant.last_name, applicant.email, applicant.gender, applicant.track])
+    
         return response

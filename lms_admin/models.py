@@ -77,6 +77,9 @@ class Applicant(models.Model):
     approved = ApprovedApplicantManager()
     not_approved= NotApprovedApplicantManager()
 
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+
 
 @receiver(post_save, sender=Track)
 def track_slug(sender, instance, created, **kwargs):

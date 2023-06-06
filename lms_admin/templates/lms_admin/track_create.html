@@ -13,6 +13,7 @@
                 <form method="POST" class="forms-sample">
   
                     {% csrf_token %}
+                    
                     {% if form.errors %}
                       <div class="alert alert-danger">
                         <strong>Oops! There was an error:</strong>
