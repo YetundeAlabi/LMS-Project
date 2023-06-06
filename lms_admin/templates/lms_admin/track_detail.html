@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="content-wrapper">
+
+    <div class="row">
+        <div class="col-md-12 grid-margin">
+            <div class="row">
+                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                    <h2>{{ track.name }}</h2>
+                    <p class="text-muted">{{ track.description }} </small></p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a class="btn btn-primary mt-4 mb-4" href="{% url 'lms_admin:track_update' slug=track.slug %}">Update Track Details</a>
+    <a class="btn btn-danger mt-4 mb-4" href="{% url 'lms_admin:track_delete' slug=track.slug %}">Delete Track </a>
+
+    
+    <div class="row">
+        <div class="col-md grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <p class="card-title mb-0">Registered Students </p>
+              <div class="table-responsive">
+                <table class="table table-striped-lms table-hover">
+                  <thead>
+                    <tr>
+                      <th>Last Name</th>
+                      <th>First Name</th>
+                      <th>Email</th>
+                      <th>Status</th>
+                      <th>View</th>
+  
+                    </tr>  
+                  </thead>
+                 
+  
+                  <tbody>
+                    {% for student in track_students %}
+                      <tr>
+                        <td> {{ student.user.last_name}} </td>
+                        <td> {{ student.user.first_name}}</td>
+                        <td><span>{{ student.user.email }}</span> </td>
+                        <td class="font-weight-medium"><a href="#"class="badge badge-info">Suspend</a></td>
+                        <td><a class="badge badge-primary" href="#">View</a></td>
+  
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+</div>
+
+{% endblock %}

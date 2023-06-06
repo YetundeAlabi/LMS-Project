@@ -1,22 +1,25 @@
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.urls import reverse
-from django.db.models.query import QuerySet
+from django.utils.text import slugify
+
 
 # Create your models here.
 
 class ActiveManager(models.Manager):
  def get_queryset(self):
-    return super(ActiveManager, self).get_queryset().filter(is_delete=False)
+    return super(ActiveManager, self).get_queryset().filter(is_deleted=False)
 
 class DeleteManager(models.Manager):
  def get_queryset(self):
-    return super(ActiveManager, self).get_queryset().filter(is_delete=True)
+    return super(ActiveManager, self).get_queryset().filter(is_deleted=True)
      
 
 class Track(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField()
-    slug = models.SlugField(max_length=200, unique=True)
+    slug = models.SlugField(null=True, blank=True)
     is_deleted = models.BooleanField(default=False)
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
@@ -32,7 +35,7 @@ class Track(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('track_detail', kwargs={'slug': self.slug})
+        return reverse('lms_admin:track_detail', kwargs={'slug': self.slug})
 
 
 class Cohort(models.Model):
@@ -42,7 +45,7 @@ class Cohort(models.Model):
         return f'Cohort of {self.year}'
     
     def __str__(self):
-        return self.get_name
+        return self.get_name()
 
 
 
@@ -73,3 +76,11 @@ class Applicant(models.Model):
     objects = models.Manager()
     approved = ApprovedApplicantManager()
     not_approved= NotApprovedApplicantManager()
+
+
+@receiver(post_save, sender=Track)
+def track_slug(sender, instance, created, **kwargs):
+    if created and not instance.slug:
+        slug = slugify(instance.name)
+        instance.slug = slug
+        instance.save()

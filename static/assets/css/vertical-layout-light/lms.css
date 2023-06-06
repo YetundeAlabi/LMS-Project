@@ -10,3 +10,14 @@
     border-color: #871711 !important;
   }
 
+.content-wrapper-lms{
+  background-color: #FCE9E8 !important;
+}
+
+.highlight-row {
+  background-color: #fce9e8;
+}
+
+.table-striped-lms tbody tr:nth-child() {
+  background-color: #FCE9E8 !important;
+}

@@ -79,6 +79,9 @@ class Text(BaseContent):
 class File(BaseContent):
     file=models.FileField(upload_to='files')
 
+    def get_file_url(self):
+        return self.file.url
+
 class Video(BaseContent):
     url = models.URLField()
 

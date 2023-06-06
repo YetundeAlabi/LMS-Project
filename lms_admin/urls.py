@@ -1,7 +1,4 @@
 from django.urls import path
-
-app_name = 'lms_admin'
-from django.urls import path
 from .views import (CohortCreateFormView, CohortListView, TutorListView, TutorCreateFormView, 
                     TutorDetailView, TutorDeleteView, TutorUpdateView, ToggleTutorSuspendView)
 
@@ -10,6 +7,7 @@ from lms_admin import views
 app_name = "lms_admin"
 
 urlpatterns = [
+    path('dashboard/', views.DashboardView.as_view(), name="dashboard"),
     path("tutor/", TutorListView.as_view(), name="tutor_list"),
     path("tutor/create/", TutorCreateFormView.as_view(), name="tutor_create"),
     path("tutor/<int:pk>/", TutorDetailView.as_view(), name="tutor_detail"),

@@ -70,6 +70,13 @@ class CourseAndTopicCreateView(TutorUserRequiredMixin, CreateView):
             return self.form_invalid(form)
 
 
+class TopicDetail(TutorUserRequiredMixin, DetailView):
+    model = Topic
+    template_name='tutor'
+    context_object_name = 'topic'
+    template_name = 'tutor/topic_detail.html'
+
+
 class CourseUpdateView(TutorUserRequiredMixin, SuccessMessageMixin, UpdateView):    
     model = Course
     slug_field= 'slug'
@@ -114,7 +121,7 @@ class TopicList(TutorUserRequiredMixin, ListView):
         track = self.request.user.tutor.track
         return super().get_queryset().filter(course__track=track, course__slug=course_slug)
     
-
+    
 class TopicUpdateView(TutorUserRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Topic
     success_url = reverse_lazy('course:topic_list')
