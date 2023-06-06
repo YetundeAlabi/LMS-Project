@@ -1,6 +1,6 @@
 import csv
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Type
 from django.contrib import messages
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.views import PasswordResetView
@@ -21,7 +21,7 @@ from django.views.generic import (
 )
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
-from accounts.forms import StudentCreationForm, TutorCreationForm
+from accounts.forms import StudentCreationForm, TutorCreationForm, TutorProfileUpdateForm
 from accounts.models import Student, Tutor, User
 from lms_admin.forms import TrackForm, CohortCreateForm, StudentImportForm,ApplicantChecklistForm, ApplicantForm
 from lms_admin.models import Track
@@ -226,7 +226,7 @@ class CohortCreateFormView(LoginRequiredMixin,PermissionRequiredMixin, CreateVie
     template_name = "admin/cohort_create_form.html"
 
 
-class CohortListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class CohortListView(LoginRequiredMixin, PermissionRequiredMixin, ListView): 
     "Cohort List View to list all Cohorts"
     model = Cohort
     template_name = "admin/cohort_list.html"
@@ -238,28 +238,37 @@ class CohortListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     
   
     #Tutor Views 
-class TutorCreateFormView(LoginRequiredMixin,PermissionRequiredMixin,CreateView):
+class TutorCreateFormView(LoginRequiredMixin, CreateView): #PermissionRequiredMixin,
     form_class = TutorCreationForm
-    template_name = "admin/tutor_create_form.html"
-    success_url = reverse_lazy('tutor_list')
+    template_name = "lms_admin/tutor_create_form.html"
+    success_url = reverse_lazy('lms_admin:tutor_list')
 
     def form_valid(self, form):
-        user = User.objects.create_user(email=form.cleaned_data['email'], 
-                                        first_name=form.cleaned_data['first_name'],
-                                        last_name=form.cleaned_data['last_name'])
+        tutor = form.save()
+        user = tutor.user
+        self.object = tutor
+        return HttpResponseRedirect(reverse('lms_admin:tutor_list'))
+    
+        # return super().form_valid()
         
-        tutor = Tutor.objects.create(user=user, 
-                                    track=form.cleaned_data['track'])
+
+        # user = User.objects.create_user(email=form.cleaned_data['email'], 
+        #                                 first_name=form.cleaned_data['first_name'],
+        #                                 last_name=form.cleaned_data['last_name'])
         
-        subject = 'Account Setup Instructions'
-        context = {
-                    'user': user,
-                    'set_password_url': self.get_password_reset_url(user),
-                }
-        message = render_to_string('email_template.html', context)
-        send_mail(subject, message, 'adeosunfaith0101@gmail.com', [user.email,])
+        # tutor = Tutor.objects.create(user=user, 
+        #                             track=form.cleaned_data['track'])
+        # tutor.save()
+        # subject = 'Account Setup Instructions'
+        # context = {
+        #             'user': user,
+        #             'set_password_url': self.get_password_reset_url(user),
+        #         }
+        # message = render_to_string('email_template.html', context)
+        # send_mail(subject, message, 'adeosunfaith0101@gmail.com', [user.email,])
         
-        return super().form_valid(form)
+        # return super().form_valid(form)
+    
 
     def get_password_reset_url(self, user):
         """ Generate the password reset URL for the user"""
@@ -268,39 +277,61 @@ class TutorCreateFormView(LoginRequiredMixin,PermissionRequiredMixin,CreateView)
         url = reverse('password_reset_confirm', args=[uid, token])
         return self.request.build_absolute_uri(url)
 
-    def _get_login_url(self, student):
+    def _get_login_url(self, tutor):
         """Generate a login URL for existing users"""
-        if student.is_verified:
+        if tutor.is_verified:
             return self.request.build_absolute_uri(reverse('login')) 
 
 
-class TutorListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class TutorListView(LoginRequiredMixin,  ListView): #PermissionRequiredMixin,
     """Generic Tutor List View to view all Tutors"""
     model = Tutor
-    template_name = "admin/tutor_list.html"
-    context_object_name = 'tutor_list'
+    template_name = "lms_admin/tutor_list.html"
+    context_object_name = 'tutors'
 
     def get_queryset(self):
         return Tutor.objects.all()
 
 
-class TutorUpdateView(LoginRequiredMixin,PermissionRequiredMixin, UpdateView):
+class TutorUpdateView(LoginRequiredMixin, UpdateView): #PermissionRequiredMixin,
     model = Tutor
-    template_name = "admin/tutor_update_form.html"
-    fields = "__all__"
+    form_class = TutorProfileUpdateForm
+    template_name = "lms_admin/tutor_update_form.html"
+    
+    def get_object(self, queryset=None):
+        return Tutor.objects.get(pk= self.kwargs["pk"])
+        
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = self.get_form()
+        form.initial = self.get_initial()
+        form.fields['first_name'].initial = self.object.user.first_name
+        form.fields['last_name'].initial = self.object.user.last_name
+        form.fields['email'].initial = self.object.user.email
+        form.fields['track'].initial = self.object.track
 
+        return self.render_to_response(self.get_context_data(form=form))
+        
     def form_valid(self, form):
-        return super().form_valid(form)
+        tutor = self.get_object()
+        tutor.track = form.cleaned_data['track']
+        tutor.user.first_name = form.cleaned_data['first_name']
+        tutor.user.last_name = form.cleaned_data['last_name']
+        tutor.user.email = form.cleaned_data['email']
+        tutor.user.save()
+        tutor.save()
+        return HttpResponseRedirect(reverse('lms_admin:tutor_list'))
+        
     
 
 class TutorDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Tutor
-    template_name = "admin/tutor_detail.html"
+    template_name = "lms_admin/tutor_detail.html"
 
 
 class TutorDeleteView(LoginRequiredMixin, PermissionRequiredMixin, View):
     
-    def post(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         tutor = get_object_or_404(Tutor, id=kwargs['pk'])
         tutor.is_deleted = True
         tutor.save() 
@@ -308,7 +339,7 @@ class TutorDeleteView(LoginRequiredMixin, PermissionRequiredMixin, View):
 
 class ToggleTutorSuspendView(LoginRequiredMixin, PermissionRequiredMixin, View):
 
-    def post(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         tutor = get_object_or_404(Tutor, id=kwargs['pk'])
         tutor.is_suspended = not tutor.is_suspended
         tutor.save()

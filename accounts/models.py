@@ -1,7 +1,10 @@
+from PIL import Image
+
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from django.db.models.query import QuerySet
 from django.urls import reverse
+
 
 from lms_admin.models import Track
 from lms_admin.models import Cohort
@@ -72,14 +75,13 @@ class Student(models.Model):
    
     
     def get_full_name(self) -> str:
-        return f'{self.first_name} {self.last_name}'
+        return f'{self.user.first_name} {self.user.last_name}'
     
     def __str__(self):
         return self.user.email
 
     def get_absolute_url(self):
         return reverse('student_detail', args=[str(self.id)])
-
 
 
 class Tutor(models.Model):
@@ -93,3 +95,11 @@ class Tutor(models.Model):
     def __str__(self):
         return self.user.email
 
+    def save(self, *args, **kwargs):
+        if self.picture:
+            img = Image.open(self.picture.path)
+            if img.height > 100 or img.width > 100:
+                new_img =(100, 100)
+                img.thumbnail(new_img)
+                img.save(self.picture.path)
+        super().save(*args, **kwargs)
