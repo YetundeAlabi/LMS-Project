@@ -75,31 +75,22 @@ class TrackDetailView(DetailView):
 
 class TrackUpdateView(UpdateView):
     """Generic Track Update View"""
-<<<<<<< HEAD
     model = Track
     form_class = TrackForm
     template_name = 'lms_admin/track_update.html'
-=======
-    form_class = TrackForm
-    template_name = 'lms_admin/track_create.html'
->>>>>>> dc2b212f26dc2b47f56b2334320c4608eb0b84eb
     slug_url_kwarg = 'slug'
     slug_field = 'slug'
     queryset = Track.active_objects.all()
     
-    def get_object(self, queryset=None):
-        return Track.objects.get(slug=self.kwargs['slug'])
+    #def get_object(self, queryset=None):
+        #return Track.objects.get(slug=self.kwargs['slug'])
 
     def get_success_url(self):
         return self.object.get_absolute_url()
 
 
 class TrackDeleteView(View):
-<<<<<<< HEAD
     """Track dlete view to set is_deleted attribute to True"""
-=======
-    """Track delete view to set is_deleted attribute to True"""
->>>>>>> dc2b212f26dc2b47f56b2334320c4608eb0b84eb
 
     def get(self, request, slug):
         track = Track.active_objects.get(slug=slug)
