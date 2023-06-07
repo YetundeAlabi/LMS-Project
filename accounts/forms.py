@@ -1,7 +1,7 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UserChangeForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UserChangeForm, SetPasswordForm
 from django.core.exceptions import ValidationError
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, password_validation
 
 from lms_admin.models import Cohort, Track
 from .models import Tutor, Student
@@ -143,10 +143,25 @@ class TutorCreationForm(forms.Form):
         return tutor
 
      
-class LoginForm(AuthenticationForm):
+class LoginForm(forms.Form):
     email = forms.EmailField(max_length=150, 
                              widget=forms.EmailInput(attrs={'class': 'form-control form-control-lg', 'id': 'email', 'placeholder': 'Enter Email Address'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control form-control-lg', 'id': 'password', 'placeholder': 'Enter Password'}))
+
+
+class CustomSetPasswordForm(SetPasswordForm):
+
+    new_password1 = forms.CharField(
+        label="New password",
+        widget=forms.PasswordInput(attrs={"autocomplete": "new-password", "class": "form-control"}),
+        strip=False,
+        help_text=password_validation.password_validators_help_text_html(),
+    )
+    new_password2 = forms.CharField(
+        label="New password confirmation",
+        strip=False,
+        widget=forms.PasswordInput(attrs={"autocomplete": "new-password", "class": "form-control"}),
+    )
 
 
 class TutorUpdateForm(forms.Form):
@@ -165,9 +180,7 @@ class TutorUpdateForm(forms.Form):
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}))
     
     def __init__(self, *args, **kwargs):
-        print(kwargs)
-        if kwargs['instance']:
-            kwargs.pop("instance")
+        kwargs.pop("instance")
         super().__init__(*args, **kwargs)
     
 
@@ -198,6 +211,11 @@ class StudentUpdateForm(forms.Form):
         if kwargs['instance']:
             kwargs.pop("instance")
         super().__init__(*args, **kwargs)
-    
 
     
+
+class ProfilePictureForm(forms.ModelForm):
+    picture = forms.CharField(
+        label="Profile picture",
+        widget=forms.ClearableFileInput(attrs={'class': 'form_control'})
+    )

@@ -37,7 +37,7 @@
                         {% else %}
                         badge-warning"> suspended</a></td>
                         {%endif%}
-                    <td><a class="badge badge-primary" href="{% url 'lms_admin:tutor_update' pk=tutor.pk%}">View</a></td>
+                    <td><a class="badge badge-primary" href="{% url 'lms_admin:tutor_detail' pk=tutor.pk%}">View</a></td>
 
                   </tr>
                 {% endfor %}

@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from .views import HomePage
+from django.conf.urls.static import static
+from django.conf import settings
 
 
 urlpatterns = [
@@ -24,6 +26,7 @@ urlpatterns = [
     path('home/', HomePage.as_view(), name="home_page"),
     path('', include('accounts.urls', namespace="accounts")),
     path('admin/', admin.site.urls), 
-    path('course/', include('tutor.urls', namespace="course")),
+    path('tutor/', include('tutor.urls', namespace="course")),
     path('LMS/admin/', include('lms_admin.urls', namespace="lms_admin")),
 ]
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="content-wrapper">
+    
+    <div class="row">
+        <div class="col-md-12 grid-margin">
+            <div class="row">
+                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                    <h3>Confirm Delete</h3>
+                    <p>Are you sure you want to permanently delete {{ track.name }}?</p>
+
+                    <a class="btn btn-danger mt-4 mb-4" href="{% url 'lms_admin:track_delete' slug=track.slug %}">Confirm Delete</a>
+                    <a class="btn btn-primary mt-4 mb-4" href="{% url 'lms_admin:track_detail' slug=track.slug %}">Cancel</a>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+<div>
+
+{% endblock %}
