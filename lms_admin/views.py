@@ -131,14 +131,14 @@ class StudentCreateView(LoginRequiredMixin, CreateView):
         self.object = student
         
         
-        #subject = 'Login Instructions' if student else  'Account Setup Instructions'
-        #context = {
-        #            'first_name': user.first_name,
-        #            'set_password_url': self.get_login_url(student) if student else self.get_password_reset_url(user),
-        #        }
-        #message = render_to_string('email_template.html', context)
-        #recipient = [user.email,]
-        #send_verification_mail.delay(subject, recipient , message )
+        subject = 'Login Instructions' if student else  'Account Setup Instructions'
+        context = {
+                   'first_name': user.first_name,
+                   'set_password_url': self.get_login_url(student) if student else self.get_password_reset_url(user),
+               }
+        message = render_to_string('email_template.html', context)
+        recipient = [user.email,]
+        send_verification_mail.delay(subject, recipient , message )
         
         return HttpResponseRedirect(reverse('lms_admin:student_list'))
 
@@ -247,15 +247,15 @@ class StudentImportView(PasswordResetView, FormView):
                                                         last_name=last_name)
             track_obj = Track.active_objects.get(name=track)
             student = Student.objects.create(user=user, cohort=cohort, gender=gender, track=track_obj)
-            #subject = 'Account Setup Instructions' if created else 'Login Instructions'
-            #context = {
-            #        'first_name': first_name,
-            #        'verification_url': self.get_password_reset_url(user) if created else self._get_login_url(student),
-            #    }
-            #message = render_to_string('lms_admin/email_template.html', context)
-            #send_mail(subject, message, 'adeosunfaith0101@gmail.com', [email,])
-            #recipient = [email,]
-            #send_verification_mail.delay(subject, recipient, message)
+            subject = 'Account Setup Instructions' if created else 'Login Instructions'
+            context = {
+                    'first_name': first_name,
+                    'verification_url': self.get_password_reset_url(user) if created else self._get_login_url(student),
+               }
+            message = render_to_string('lms_admin/email_template.html', context)
+            send_mail(subject, message, 'adeosunfaith0101@gmail.com', [email,])
+            recipient = [email,]
+            send_verification_mail.delay(subject, recipient, message)
             
         return super().form_valid(form)
     
