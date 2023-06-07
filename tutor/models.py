@@ -51,8 +51,6 @@ class Topic(BaseContent):
     course=models.ForeignKey(Course, on_delete=models.CASCADE, blank=True, null=True, db_index=True)
     id=models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
 
-    
-
     def __str__(self):
          return f"{self.title}"
 

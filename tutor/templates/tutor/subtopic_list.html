@@ -8,7 +8,7 @@
   <div class="col-md">
     <h3>Add new content:</h3>
     <a class="btn btn-primary mt-4 mb-4" href="{% url 'course:create_subtopic' topic.course.slug topic.id 'text' %}">Text</a>
-    <a class="btn btn-primary mt-4 mb-4" href="{% url 'course:create_subtopic' topic.course.slug topic.id 'image' %}">Image</a>
+    <a class="btn btn-primary mt-4 mb-4" href="{% url 'course:create_subtopic' topic.course.slug topic.id 'file' %}">Image</a>
     <a class="btn btn-primary mt-4 mb-4" href="{% url 'course:create_subtopic' topic.course.slug topic.id 'video' %}">Video</a>
     <a class="btn btn-primary mt-4 mb-4" href="{% url 'course:create_subtopic' topic.course.slug topic.id 'file' %}">File</a>
   </div>
@@ -41,7 +41,7 @@
     {% else %}
     <h4>File Content:</h4>
     <p>
-      <a href="{{ subtopic.item.get_file_url }}" class="button">Download file</a>
+      <a href="{{ subtopic.item.get_file_url }}" class="button">View file</a>
     </p>
     {% endif %}
     {% endif %}
@@ -75,7 +75,6 @@
   </td>
 </tr>
 {% endfor %}
-
             </tbody>
           </table>
         </div>
@@ -83,6 +82,4 @@
     </div>
   </div>
 </div>
-
-
 {% endblock content %}
