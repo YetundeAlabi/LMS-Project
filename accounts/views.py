@@ -54,7 +54,6 @@ class LoginView(views.LoginView):
                 return reverse('student_home')
             elif user.tutor:
                 return reverse('course:tutor_dashboard_view')
-                return reverse('tutor_home')
             else:
                 return reverse('admin_home')
         else:
