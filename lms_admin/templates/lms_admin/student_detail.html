@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+<div class="content-wrapper">
+
+    <div class="row">
+        <div class="col-md-12 grid-margin">
+            <div class="row">
+                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                    <h4><strong>Name:</strong> {{ student.get_full_name }}</h4>
+                    {% if student.picture %}
+                    <img src="{{ student.picture.url }}" alt="Student Picture">
+                    {% else %}
+                    <p>No picture available.</p>
+                    {% endif %}
+                    <h6><strong>Gender:</strong> {{ student.gender }}</h6>
+                    <h6><strong>Cohort:</strong> {{ student.cohort }}</h6>
+                    <h6><strong>Track:</strong> {{ student.track }}</h6>
+                    <h6><strong>Is_verified:</strong> {{ student.is_verified |yesno|title }}</h6>
+                    <h6><strong>Is_suspended:</strong> {{ student.is_suspended |yesno|title }}</h6>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a class="btn btn-primary mt-4 mb-4" href="{% url 'lms_admin:student_update' pk=student.pk %}">Update Student Details</a>
+    <a class="btn btn-danger mt-4 mb-4" href="{% url 'lms_admin:student_delete' pk=student.pk %}">Delete Student </a>
+    </br>
+    <a href="{% url 'lms_admin:student_list' %}" class="btn btn-danger">Return To Students List</a>
+</div>
+{% endblock %}

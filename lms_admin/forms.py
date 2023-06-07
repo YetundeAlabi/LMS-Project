@@ -1,5 +1,5 @@
 import csv
-
+from io import TextIOWrapper
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils import timezone
@@ -51,7 +51,6 @@ class ApplicantForm(forms.ModelForm):
     )
 
 
-
 class ApplicantChecklistForm(forms.Form):
     applicants = forms.ModelMultipleChoiceField(
         queryset=Applicant.not_approved.filter(cohort__year=timezone.now().year),
@@ -60,20 +59,26 @@ class ApplicantChecklistForm(forms.Form):
 
 
 class StudentImportForm(forms.Form):
-    csv_file = forms.FileField(label='CSV File')
+    csv_file = forms.FileField(label='csv_file')
     cohort = forms.ModelChoiceField(queryset=Cohort.objects.all(), label="Cohort")
     
     def process_csv(self):
         csv_file = self.cleaned_data['csv_file']
         students = []
-        reader = csv.DictReader(csv_file)
+
+        file_wrapper = TextIOWrapper(csv_file, encoding='utf-8')
+        reader = csv.DictReader(file_wrapper)
 
         for row in reader:
             student = {
-                'email': row['Email'],
+                'email': row['email'],
                 'first_name': row['first_name'],
                 'last_name': row['last_name'],
+                'gender': row['gender'],
+                'track': row['track'],
                 'cohort': self.cleaned_data['cohort'], 
+                  
+                
             } # Add all student user attributes to student dictionary
             students.append(student)
         return students

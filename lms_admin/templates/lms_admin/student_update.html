@@ -6,9 +6,9 @@
     <div class="col-12 grid-margin stretch-card">
         <div class="card">
           <div class="card-body">
-                <h4 class="card-title">Track Update Form</h4>
+                <h4 class="card-title">Student Update Form</h4>
                 <p class="card-description">
-                    Edit details to update an existing Track
+                    Edit details to update an existing Student
                 </p>
                 <form method="POST" class="forms-sample">
   
@@ -29,14 +29,35 @@
                     {% endif %}
   
                     <div class="form-group">
-                        {{ form.name.label_tag }}
-                        {{ form.name }}
+                      {{ form.track.label_tag }}
+                      {{ form.track}}
                     </div>
         
                     <div class="form-group">
-                        {{ form.description.label_tag }}
-                        {{ form.description }}
+                        {{ form.email.label_tag }}
+                        {{ form.email }}
                     </div>
+
+                    <div class="form-group">
+                      {{ form.picture.label_tag }}
+                      {{ form.picture }}
+                    </div>
+                    
+                    <div class="form-group">
+                        {{ form.first_name.label_tag }}
+                        {{ form.first_name }}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.last_name.label_tag }}
+                        {{ form.last_name }}
+                    </div>
+
+                    <div class="form-group">
+                      {{ form.gender.label_tag }}
+                      {{ form.gender }}
+                    </div>
+                    
                     <input class="btn btn-primary mr-2" value="Submit" type="submit">
                 </form>
             </div>

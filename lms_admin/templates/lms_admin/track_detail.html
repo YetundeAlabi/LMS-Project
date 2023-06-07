@@ -45,8 +45,8 @@
                         <td> {{ student.user.last_name}} </td>
                         <td> {{ student.user.first_name}}</td>
                         <td><span>{{ student.user.email }}</span> </td>
-                        <td class="font-weight-medium"><a href="#"class="badge badge-info">Suspend</a></td>
-                        <td><a class="badge badge-primary" href="#">View</a></td>
+                        <td class="font-weight-medium"><a href="{% url 'lms_admin:student_toggle_suspend' pk=student.pk %}"class="badge badge-info">Suspend</a></td>
+                        <td><a class="badge badge-primary" href="{% url 'lms_admin:student_detail' pk=student.pk %}">View</a></td>
   
                       </tr>
                     {% empty %}
