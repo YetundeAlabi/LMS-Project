@@ -22,7 +22,7 @@
   </div>
 </div>
 
-
+{% if courses %}
 <div class="row">
     <div class="col-md grid-margin stretch-card">
       <div class="card">
@@ -32,9 +32,9 @@
             <table class="table table-striped-lms table-hover">
               <thead>
                 <tr>
+                  <th>S/N</th>
                   <th>Title</th>
                   <th>Date Created</th>
-                  <th>Status</th>
                   <th>Details</th>
                   <th>Topics</th>
                   
@@ -45,10 +45,9 @@
               <tbody>
                 {% for course in courses %}
                   <tr>
+                    <td>{{forloop.counter}}</td>
                     <td> {{ course.title}} </td>
                     <td> {{ course.created_at}}</td>
-                    <td><span>{{ course.is_active }}</span> </td>
-                    
                     <td class="font-weight-medium"><a href="{% url 'course:course_detail' course.slug %}"class="badge badge-info">details</a></td>
                     <td><a class="badge badge-primary" href="{% url 'course:topic_list' course.slug %}">View Topics</a></td>
 
@@ -62,5 +61,8 @@
     </div>
   </div>
 </div>
+{% else %}
+  <p> No course on track yet</p>
+{% endif %}
 
 {% endblock %}
