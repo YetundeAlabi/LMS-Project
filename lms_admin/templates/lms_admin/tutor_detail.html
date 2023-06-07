@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="content-wrapper">
+    <h1>
+        Tutor Information
+    </h1>
+
+    <h3 class="mt-5">Bio Data: </h3>
+    <br>
+    <div>
+        <p><strong>First Name:</strong> {{ tutor.user.first_name }} </p>   
+        <p><strong>Last Name:</strong> {{ tutor.user.last_name }} </p>   
+        <p> <strong>Email:</strong> {{ tutor.user.email }}</p>
+        <p> <strong>Gender:</strong> {{ tutor.gender }}</p>
+        <p> <strong>Track:</strong> {{ tutor.track.name }}</p>
+
+
+        <a class="btn btn-primary mt-5" href="{% url 'lms_admin:tutor_update' pk=tutor.pk %}">Update Tutor Details</a>
+
+    </div>
+</div>
+
+{% endblock %}

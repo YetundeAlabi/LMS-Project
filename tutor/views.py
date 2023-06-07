@@ -10,7 +10,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.views.generic.base import TemplateResponseMixin, View
-from accounts.models import Student
+from accounts.models import Student, Tutor
+from accounts.forms import TutorUpdateForm
 from .forms import CourseForm, TopicForm, TopicFormSet
 from .models import Course, Topic, SubTopic
 
@@ -299,6 +300,7 @@ class SubTopicCreateUpdateView(TemplateResponseMixin, View):
             return HttpResponseRedirect(reverse('course:subtopic_list', kwargs={'course_slug': self.topic.course.slug, 'pk': topic_id}))
         return self.render_to_response({'form': form, 'object': self.obj})
 
+
 class SubTopicDeleteView(View):
     
     def get(self, request, *args, **kwargs):
@@ -328,3 +330,6 @@ class SubTopicList(TutorUserRequiredMixin, ListView):
         topic_id = self.kwargs['pk']
         context['topic'] = get_object_or_404(Topic, id=topic_id)
         return context
+    
+
+        

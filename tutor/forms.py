@@ -19,8 +19,10 @@ class CourseForm(forms.ModelForm):
 
     def clean_title(self):
         title = self.cleaned_data['title']
-        if Course.objects.filter(title=title).exists():
-            raise ValidationError("A course with this title already exists.")
+        instance=getattr(self, 'instance', None)
+        if instance is None or instance.pk is None:
+            if Course.objects.filter(title=title).exists():
+                raise ValidationError("A course with this title already exists.")
         return title
 
 class TopicForm(ModelForm):
@@ -34,7 +36,7 @@ class TopicForm(ModelForm):
         }
 
 
-TopicFormSet = inlineformset_factory(Course, Topic, fields=['title', 'description'], extra=2, widgets={
+TopicFormSet = inlineformset_factory(Course, Topic, fields=['title', 'description'], extra=5, widgets={
     'title': forms.TextInput(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Topic Title'}),
     'description': forms.Textarea(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Topic Description'})
 })
