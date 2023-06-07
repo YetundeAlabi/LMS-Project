@@ -132,11 +132,10 @@ class StudentCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView)
                     'first_name': user.first_name,
                     'set_password_url': self.get_password_reset_url(user) if created else self._get_login_url(student),
                 }
-        message = render_to_string('email_template.html', context)
+        message = get_template('lms_admin/email_template.html').render(context)
         recipient = [user.email,]
         send_verification_mail.delay(subject, recipient , message )
-        
-        return super().form_valid(form)
+        return HttpResponseRedirect(reverse('lms_admin:student_list'))
 
     def get_password_reset_url(self, user):
         # Generate the password reset URL for the user
@@ -217,11 +216,9 @@ class StudentImportView(PasswordResetView, FormView):
                     'first_name': first_name,
                     'verification_url': self.get_password_reset_url(user) if created else self._get_login_url(student),
                 }
-            message = render_to_string('lms_admin/email_template.html', context)
-            send_mail(subject, message, 'adeosunfaith0101@gmail.com', [email,])
+            message = get_template('lms_admin/email_template.html').render(context)
             recipient = [email,]
             send_verification_mail.delay(subject, recipient, message)
-            
             
         return super().form_valid(form)
 
@@ -260,7 +257,7 @@ class CohortListView(ListView):
         return queryset
     
   
-    #Tutor Views 
+#Tutor Views 
 class TutorCreateFormView(LoginRequiredMixin, CreateView): #PermissionRequiredMixin,
     form_class = TutorCreationForm
     template_name = "lms_admin/tutor_create_form.html"
@@ -328,7 +325,7 @@ class TutorUpdateView(LoginRequiredMixin, UpdateView): #PermissionRequiredMixin,
         return HttpResponseRedirect(reverse('lms_admin:tutor_list'))
         
     
-class TutorDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+class TutorDetailView(DetailView):
     model = Tutor
     template_name = "lms_admin/tutor_detail.html"
 
