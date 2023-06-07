@@ -10,16 +10,17 @@ from .models import User, Student, Tutor
 from django.contrib.auth.views import PasswordChangeView
 from django.views.generic.edit import UpdateView
 from django.contrib.auth.views import LogoutView
+from django.contrib.auth import authenticate, login, logout
+from django.http import HttpResponseRedirect
 from .forms import LoginForm,SignUpForm 
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render, get_object_or_404, redirect
-from django.views import View
+from django.views import View, generic
 from .models import Tutor, Student
 from .forms import TutorUpdateForm, StudentUpdateForm, UserForm
 # Create your views here.
 
 User = get_user_model()
-
 
 class TutorSignUpView(CreateView):
     model = Tutor
@@ -27,35 +28,35 @@ class TutorSignUpView(CreateView):
     template_name = 'accounts/signup.html' 
     success_url = reverse_lazy('login')
 
-    # def form_valid(self, form):
-    #     user = form.save(commit=False)
-    #     user.role = User.TUTOR 
-    #     user.save()
-    #     tutor = Tutor(user=user)
-    #     tutor.save()
-    #     return super().form_valid(form)
-
 
 class SignOutView(LogoutView):
-    next_page = 'login'
+    next_page = reverse_lazy('accounts:login')
 
-
-class LoginView(views.LoginView):
+class LoginView(generic.FormView):
     form_class = LoginForm
     template_name = 'accounts/login.html'
 
-    def get_context_data(self, **kwargs) :
-        return super().get_context_data(**kwargs)
-    
+    def form_valid(self, form):
+        print(form.cleaned_data)
+        """Security check complete. Log the user in."""
+        email = form.cleaned_data["email"]
+        password = form.cleaned_data["password"]
+        user = authenticate(email=email, password=password)
+        if user is not None:
+            login(self.request, user)
+            return super().form_valid(form)
+        # return HttpResponseRedirect(self.get_success_url()
+        return super().form_invalid(form)
+
     def get_success_url(self) -> str:
         user = self.request.user
         if user.is_authenticated:
-            if user.student:
-                return reverse('student_home')
-            elif user.tutor:
-                return reverse('tutor_home')
+            if user.is_staff:
+                return reverse('lms_admin:dashboard')
+            elif hasattr(user, "tutor"):
+                return reverse('course:tutor_dashboard_view')
             else:
-                return reverse('admin_home')
+                return reverse('home_page')
         else:
             return reverse('login')
         
