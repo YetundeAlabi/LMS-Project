@@ -2,6 +2,7 @@ from django import forms
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
+
 from .forms import SignUpForm
 from .models import User, Student, Tutor
 # Register your models here.
@@ -15,36 +16,14 @@ class UserAdmin(BaseUserAdmin):
         (None, {'fields': ('email', 'password')}),
         ('Personal Info', {'fields': ('first_name', 'last_name')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser')}),
+        ("Dates", {"fields": ("last_login",)})
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'password1', 'password2', 'first_name', 'last_name'),
+            'fields': ('email', 'password1', 'password2', 'first_name', 'last_name', 'is_staff'),
         }),
     )
-    # list_display = ["email", "first_name", "last_name"]
-
-
-    # fieldsets = [
-    #     (None, {"fields": ["email", "password"]}),
-    #     ("Personal info", {"fields": [
-    #      "first_name", "last_name"]}),
-    #     ("Permissions", {"fields": ["is_active"]}),
-    #     ("Dates", {"fields": ["last_login",]})
-    # ]
-
-    # add_fieldsets = [
-    #     (
-    #         None,
-    #         {
-    #             "classes": ["wide"],
-    #             "fields": ["email", "first_name", "last_name", "password1", "password2"],
-    #         },
-    #     ),
-    # ]
-
-
-# search_fields = ("email",)
 
 
 admin.site.register(User, UserAdmin)

@@ -1,0 +1,46 @@
+{% extends 'base.html' %} 
+
+{% block content %}
+
+<div class="content-wrapper">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8 offset-md-2">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Application Form</h3>
+          </div>
+          <div class="card-body">
+            <form method="post">
+              {% csrf_token %}
+              <div class="form-group">
+                <label for="{{ form.first_name.id_for_label }}">First Name:</label>
+                {{ form.first_name }}
+              </div>
+              <div class="form-group">
+                <label for="{{ form.last_name.id_for_label }}">Last Name:</label>
+                {{ form.last_name }}
+              </div>
+              <div class="form-group">
+                <label for="{{ form.email.id_for_label }}">Email:</label>
+                {{ form.email }}
+              </div>
+              <div class="form-group">
+                <label for="{{ form.gender.id_for_label }}">Gender:</label>
+                {{ form.gender }}
+              </div>
+              <div class="form-group">
+                <label for="{{ form.track.id_for_label }}">Track:</label>
+                {{ form.track }}
+              </div>
+              <div class="text-center">
+                <button class="btn btn-primary" type="submit">Submit</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

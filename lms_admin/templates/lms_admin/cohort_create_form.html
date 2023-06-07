@@ -1,19 +1,19 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
 <div class="content-wrapper">
 
-    <div class="col-12 grid-margin stretch-card">
+    <div class="col-6 grid-margin stretch-card">
         <div class="card">
           <div class="card-body">
-                <h4 class="card-title">Track Creation Form</h4>
+                <h4 class="card-title">Cohort Creation Form</h4>
                 <p class="card-description">
-                    Enter details to create a new Track
+                    Enter details to create a new Cohort
                 </p>
                 <form method="POST" class="forms-sample">
   
                     {% csrf_token %}
-                    
                     {% if form.errors %}
                       <div class="alert alert-danger">
                         <strong>Oops! There was an error:</strong>
@@ -31,19 +31,12 @@
   
                     <div class="form-group">
                         {{ form.name.label_tag }}
-                        {{ form.name }}
-                    </div>
-        
-                    <div class="form-group">
-                        {{ form.description.label_tag }}
-                        {{ form.description }}
+                        {{ form.year }}
                     </div>
   
                     
-                    <input class="btn btn-primary mr-2" value="Submit" type="submit">
-                    <a href="{% url 'lms_admin:track_list' %}" class="btn btn-danger">Cancel</a>
-  
-                    
+                    <input class="btn btn-primary mr-2" value="Create Cohort" type="submit">
+                    <a href="{% url 'lms_admin:cohort_list' %}" class="btn btn-danger">Cancel</a>
   
                 </form>
             </div>
