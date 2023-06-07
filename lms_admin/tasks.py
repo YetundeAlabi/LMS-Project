@@ -1,0 +1,14 @@
+from celery import shared_task
+from django.core.mail import send_mail
+from LMS import settings
+
+@shared_task(bind=True)
+def send_verification_mail(self, mail_subject, target_mails, message):
+    send_mail(
+        subject = mail_subject,
+        message=message,
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=target_mails,
+        fail_silently=False,
+        )
+    return "Done"

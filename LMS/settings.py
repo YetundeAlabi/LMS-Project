@@ -46,6 +46,10 @@ INSTALLED_APPS = [
     'tutor',
     'accounts',
     'lms_admin',
+    'django_celery_beat',
+    'django_celery_results',
+    'embed_video',
+
 ]
 
 MIDDLEWARE = [
@@ -85,7 +89,7 @@ WSGI_APPLICATION = 'LMS.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME':BASE_DIR/'db.sqlite3' 
+        'NAME':BASE_DIR / 'db.sqlite3' 
     }
 }
 
@@ -150,3 +154,17 @@ EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL =os.environ.get('EMAIL_HOST_USER')
+
+# Celery Settings
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
+# CELERY_ACCEPT_CONTENT = ['application/json']
+accept_content = ['application/json']
+# CELERY_RESULT_SERIALIZER = 'json'
+result_serializer = 'json'
+# CELERY_TASK_SERIALIZER = 'json'
+task_serializer = 'json'
+# CELERY_TIMEZONE = 'Africa/Lagos'
+timezone = 'Africa/Lagos'
+
+# CELERY_RESULT_BACKEND = 'django-db'
+result_backend= 'django-db'

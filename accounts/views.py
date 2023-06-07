@@ -37,7 +37,6 @@ class LoginView(generic.FormView):
     template_name = 'accounts/login.html'
 
     def form_valid(self, form):
-        print(form.cleaned_data)
         """Security check complete. Log the user in."""
         email = form.cleaned_data["email"]
         password = form.cleaned_data["password"]
@@ -45,7 +44,6 @@ class LoginView(generic.FormView):
         if user is not None:
             login(self.request, user)
             return super().form_valid(form)
-        # return HttpResponseRedirect(self.get_success_url()
         return super().form_invalid(form)
 
     def get_success_url(self) -> str:
