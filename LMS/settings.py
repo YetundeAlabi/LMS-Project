@@ -156,3 +156,9 @@ timezone = 'Africa/Lagos'
 
 # CELERY_RESULT_BACKEND = 'django-db'
 result_backend= 'django-db'
+
+EMBED_VIDEO_BACKENDS = (
+    'embed_video.backends.YoutubeBackend',
+    'embed_video.backends.VimeoBackend',
+    'embed_video.backends.SoundCloudBackend',
+)

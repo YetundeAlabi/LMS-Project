@@ -48,11 +48,7 @@ class CourseDetail(TutorUserRequiredMixin, DetailView):
     slug_url_kwarg= 'course_slug'
     template_name = 'tutor/course_detail.html'
 
-    def get_object(self):
-        track = self.request.user.tutor.track
-        return super().get_object().filter(track=track)
 
-   
 class CourseAndTopicCreateView(TutorUserRequiredMixin, CreateView):
     model = Course
     form_class = CourseForm
@@ -167,7 +163,7 @@ class TopicList(TutorUserRequiredMixin, ListView):
         context['course_slug']=self.kwargs['course_slug']
         return context
     
-
+    
 class TopicUpdateView(TutorUserRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Topic
     success_message = 'Subtopic updated successfully'
@@ -286,13 +282,12 @@ class SubTopicCreateUpdateView(TemplateResponseMixin, View):
         form = self.get_form(self.model, instance=self.obj, data=request.POST, files=request.FILES)
         if form.is_valid():
             if id:
-                # Update existing object
                 obj = form.save(commit=False)
                 if 'file' in request.FILES:
                     obj.file = request.FILES['file']
                 obj.save()
-            else:
-                # Create new object
+
+            if not id:
                 obj = form.save(commit=False)
                 if 'file' in request.FILES:
                     obj.file = request.FILES['file']
