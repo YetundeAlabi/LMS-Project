@@ -13,6 +13,8 @@ coreschema==0.0.4
 cron-descriptor==1.4.0
 Django==4.2.1
 django-celery-beat==2.5.0
+django-celery-results==2.5.1
+django-embed-video==1.4.8
 django-smtp-ssl==1.0
 django-timezone-field==5.0
 djangorestframework==3.14.0
