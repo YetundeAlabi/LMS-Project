@@ -1,6 +1,4 @@
 {% extends 'base.html' %}
-
-
 {% block content %}
 
 <div class="content-wrapper">
@@ -31,17 +29,11 @@
                         <label for="is_suspended">Suspend/Unsuspended:</label>
                         <input type="checkbox" id="is_suspended" name="is_suspended" {% if student.is_suspended %}checked{% endif %} onchange="this.form.submit()">
                     </form>
-
                 </div>
             </div>
         </div>
     </div>
-
     <a class="btn btn-primary mt-4 mb-4" href="{% url 'course:tutor_dashboard_view' %}">Back</a>
-    
-
-    
-
 </div>
 
 {% endblock %}

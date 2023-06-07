@@ -15,10 +15,9 @@ urlpatterns = [
     path('course/<slug:course_slug>/topics/create', views.CreateTopicView.as_view(), name='create_topic'),
     path('courses/<slug:course_slug>/topic/<uuid:pk>/', views.TopicDetailView.as_view(), name='topic_detail'),
     path('courses/<slug:course_slug>/topic/<uuid:pk>/subtopic/create', views.TopicUpdateView.as_view(), name='update_topic'),
-    path('courses/topic/<uuid:topic_id>/subtopic/<model_name>/create/', views.SubTopicCreateUpdateView.as_view(), name='create_subtopic'),
+    # path('courses/topic/<uuid:topic_id>/subtopic/<str:model_name>/create/', views.SubTopicCreateUpdateView.as_view(), name='create_subtopic'),
     path('courses/<slug:course_slug>/topics/<uuid:pk>/subtopic/create', views.TopicUpdateView.as_view(), name='update_topic'),
     path('courses/<slug:course_slug>/topics/<uuid:pk>/subtopic/list', views.SubTopicList.as_view(), name='subtopic_list'),
-    path('courses/<slug:course_slug>/delete', views.CourseDeleteView.as_view(), name='update_course'),
     path('courses/<slug:course_slug>/topics', views.TopicList.as_view(), name='topic_list'),
     path('courses/<slug:course_slug>/topics/<int:id>/delete', views.TopicDeleteView.as_view(), name='create_topic'),
     path('courses/<slug:course_slug>/topics/<uuid:topic_id>/subtopic/<str:model_name>/create', views.SubTopicCreateUpdateView.as_view(), name='create_subtopic'),
@@ -26,6 +25,7 @@ urlpatterns = [
     path('subtopic/<int:id>/delete', views.SubTopicDeleteView.as_view(), name='delete_subtopic'),
     path('track/students/', views.TrackStudentListView.as_view(), name='track_student_list'),
     path('track/students/<int:pk>/', views.TrackStudentDetailView.as_view(), name='track_student_detail'),
+    # path('track/tutor_detail/', views.TutorProfileView.as_view(), name='tutor_profile'),
 ]
 
 

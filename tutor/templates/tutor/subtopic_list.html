@@ -8,12 +8,12 @@
   <div class="col-md">
     <h3>Add new content:</h3>
     <a class="btn btn-primary mt-4 mb-4" href="{% url 'course:create_subtopic' topic.course.slug topic.id 'text' %}">Text</a>
-    <a class="btn btn-primary mt-4 mb-4" href="{% url 'course:create_subtopic' topic.course.slug topic.id 'video' %}">Video</a>
-    <a class="btn btn-primary mt-4 mb-4" href="{% url 'course:create_subtopic' topic.course.slug topic.id 'file' %}">File</a>
-    <a class="btn btn-primary mt-4 mb-4" href="{% url 'course:create_subtopic' topic.course.slug topic.id 'file' %}">Image</a>
+    <a class="btn btn-info mt-4 mb-4" href="{% url 'course:create_subtopic' topic.course.slug topic.id 'video' %}">Video</a>
+    <a class="btn btn-danger mt-4 mb-4" href="{% url 'course:create_subtopic' topic.course.slug topic.id 'file' %}">File</a>
+    <a class="btn btn-warning mt-4 mb-4" href="{% url 'course:create_subtopic' topic.course.slug topic.id 'file' %}">Image</a>
   </div>
 </div>
-{% if subtopic %}
+{% if subtopics %}
 <div class="row">
   <div class="col-md grid-margin stretch-card">
     <div class="card">
@@ -56,7 +56,7 @@
         <div class="card card-tale" style="background-color: #3575c9; width: 1px;">
           <div class="card-body d-flex justify-content-center align-items-center">
             <h1 class="display1">
-              <a style="color: inherit; font-size: medium;" href="{% url 'course:update_subtopic' subtopic.topic.course.slug subtopic.topic.id subtopic.content_type.model subtopic.id %}">Update</a>
+              <a style="color: inherit; font-size: medium;" href="{% url 'course:update_subtopic' subtopic.topic.course.slug subtopic.topic.id subtopic.content_type.model subtopic.item.id %}">Update</a>
             </h1>
           </div>
         </div>
@@ -65,7 +65,7 @@
         <div class="card card-tale" style="background-color: #cf2c13; padding: 1px;">
           <div class="card-body d-flex justify-content-center align-items-center">
             <h1 class="display1">
-              <a style="color: inherit; font-size: medium;" href="{% url 'course:delete_subtopic' subtopic.id %}">Delete</a>
+              <a style="color: inherit; font-size: medium;" href="{% url 'course:delete_subtopic' subtopic.item.id %}">Delete</a>
             </h1>
           </div>
         </div>
@@ -75,7 +75,6 @@
   </td>
 </tr>
 {% endfor %}
-
             </tbody>
           </table>
         </div>
