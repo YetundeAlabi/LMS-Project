@@ -1,4 +1,30 @@
-<l1>{{ topic }}</l1><br>
-<l1>{{ topic.description }}</l1><br>
-<l1>{{ topic.created_at }}</l1><br>
-<l1>{{ topic.is_active }}</l1>
+
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="content-wrapper">
+
+    <div class="row">
+        <div class="col-md-12 grid-margin">
+            <div class="row">
+                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                    <h2>{{ topic }}</h2>
+                    <p class="text-muted">Topic Description: {{ topic.description }} </small></p>
+                    <p class="text-muted">Created at: {{ topic.created_at }} </small></p>
+                    <p class="text-muted">Availability status: {{ topic.is_active }} </small></p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a class="btn btn-primary mt-4 mb-4" href="{% url 'course:topic_list' topic.course.slug %}">Back</a>
+    
+
+    
+
+</div>
+
+{% endblock %}

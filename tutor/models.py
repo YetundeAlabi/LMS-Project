@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.urls import reverse
 from django.db.models.signals import post_save
@@ -5,10 +6,9 @@ from django.dispatch import receiver
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
-from accounts.models import Tutor
-import uuid
-from lms_admin.models import Track
 from django.utils.text import slugify
+from accounts.models import Tutor
+from lms_admin.models import Track
 
 # Create your models here.
 class ActiveManager(models.Manager):
@@ -33,7 +33,12 @@ class BaseContent(models.Model):
 class Course(BaseContent):
     course_tutor=models.ForeignKey(Tutor, on_delete=models.SET_NULL, null=True)
     track=models.ForeignKey(Track, on_delete=models.SET_NULL, null=True)
-    slug= models.SlugField(blank=True, null=True)
+    slug= models.SlugField(unique=True, blank=True, null=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['track','slug'])
+        ]
 
     def __str__(self):
         return self.slug
@@ -43,45 +48,48 @@ class Course(BaseContent):
 
 
 class Topic(BaseContent):
-    course=models.ForeignKey(Course, on_delete=models.CASCADE, blank=True, null=True)
+    course=models.ForeignKey(Course, on_delete=models.CASCADE, blank=True, null=True, db_index=True)
     id=models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
+
+    
 
     def __str__(self):
          return f"{self.title}"
 
 class SubTopic(BaseContent):
-    topic=models.ForeignKey(Topic, on_delete=models.CASCADE, blank=True, null=True)
-    id=models.UUIDField(primary_key=True, unique=True)
-    content_type=models.ForeignKey(ContentType,
-                                   on_delete=models.CASCADE,
-                                   limit_choices_to={'model__in':(
-                                       'text',
-                                       'file',
-                                       'image',
-                                       'video')})
-    object_id=models.PositiveIntegerField()
-    item = GenericForeignKey('content_type','object_id')
+    topic = models.ForeignKey(Topic, on_delete=models.CASCADE, blank=True, null=True, db_index=True)
+    # id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
+    content_type = models.ForeignKey(
+        ContentType,
+        on_delete=models.CASCADE,
+        limit_choices_to={'model__in': ('text', 'file', 'video')}
+    )
+    object_id = models.PositiveIntegerField()
+    item = GenericForeignKey('content_type', 'object_id')
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    objects = models.Manager()
+    active_objects=ActiveManager()
 
 
     def __str__(self):
-         return f"{self.title}"
+         return f"{self.object_id}"
     
 
 class Text(BaseContent):
-    content=models.TextField(blank=True, null=True)
-    tutor=models.ForeignKey(Tutor, on_delete=models.SET_NULL, null=True)
+    text =models.TextField(blank=True, null=True)
+
 
 class File(BaseContent):
-    file= models.FileField(upload_to='files')
-    tutor=models.ForeignKey(Tutor, on_delete=models.SET_NULL, null=True)
+    file=models.FileField(upload_to='files')
 
-class Image(BaseContent):
-    image=models.ImageField(upload_to='images')
-    tutor=models.ForeignKey(Tutor, on_delete=models.SET_NULL, null=True)
+    def get_file_url(self):
+        return self.file.url
 
 class Video(BaseContent):
     url = models.URLField()
-    tutor=models.ForeignKey(Tutor, on_delete=models.SET_NULL, null=True)
 
 
 @receiver(post_save, sender=Course)
