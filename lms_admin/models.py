@@ -17,7 +17,7 @@ class DeleteManager(models.Manager):
      
 
 class Track(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, unique=True)
     description = models.TextField()
     slug = models.SlugField(null=True, blank=True)
     is_deleted = models.BooleanField(default=False)
@@ -30,6 +30,12 @@ class Track(models.Model):
 
     class Meta:
         ordering = ['-created_date']
+
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)    
 
     def __str__(self):
         return self.name
