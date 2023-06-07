@@ -56,7 +56,7 @@
         <div class="card card-tale" style="background-color: #3575c9; width: 1px;">
           <div class="card-body d-flex justify-content-center align-items-center">
             <h1 class="display1">
-              <a style="color: inherit; font-size: medium;" href="{% url 'course:update_subtopic' subtopic.topic.course.slug subtopic.topic.id subtopic.content_type.model subtopic.id %}">Update</a>
+              <a style="color: inherit; font-size: medium;" href="{% url 'course:update_subtopic' subtopic.topic.course.slug subtopic.topic.id subtopic.content_type.model subtopic.item.id %}">Update</a>
             </h1>
           </div>
         </div>
@@ -65,7 +65,7 @@
         <div class="card card-tale" style="background-color: #cf2c13; padding: 1px;">
           <div class="card-body d-flex justify-content-center align-items-center">
             <h1 class="display1">
-              <a style="color: inherit; font-size: medium;" href="{% url 'course:delete_subtopic' subtopic.id %}">Delete</a>
+              <a style="color: inherit; font-size: medium;" href="{% url 'course:delete_subtopic' subtopic.item.id %}">Delete</a>
             </h1>
           </div>
         </div>

@@ -3,16 +3,17 @@ from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.forms.models import modelform_factory
+from django.forms.widgets import TextInput, Textarea
+from django.http import Http404
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.views.generic.base import TemplateResponseMixin, View
-from accounts.models import Student
+from accounts.models import Student, Tutor
+from accounts.forms import TutorUpdateForm
 from .forms import CourseForm, TopicForm, TopicFormSet
 from .models import Course, Topic, SubTopic
-from django.http import Http404
-
 
 
 class TutorUserRequiredMixin(UserPassesTestMixin):
@@ -258,7 +259,7 @@ class SubTopicCreateUpdateView(TemplateResponseMixin, View):
         ])
 
         for field_name, field in Form.base_fields.items():
-            if isinstance(field.widget, TextInput):
+            if isinstance(field.widget, TextInput) or isinstance(field.widget, Textarea):
                 field.widget.attrs['class'] = 'form-control form-control-lg'
         return Form(*args, **kwargs)
 
@@ -304,6 +305,7 @@ class SubTopicCreateUpdateView(TemplateResponseMixin, View):
             return HttpResponseRedirect(reverse('course:subtopic_list', kwargs={'course_slug': self.topic.course.slug, 'pk': topic_id}))
         return self.render_to_response({'form': form, 'object': self.obj})
 
+
 class SubTopicDeleteView(View):
     
     def get(self, request, *args, **kwargs):
@@ -333,3 +335,6 @@ class SubTopicList(TutorUserRequiredMixin, ListView):
         topic_id = self.kwargs['pk']
         context['topic'] = get_object_or_404(Topic, id=topic_id)
         return context
+    
+
+        
