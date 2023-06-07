@@ -113,7 +113,7 @@ class TutorCreationForm(forms.Form):
         return tutor
 
      
-class LoginForm(AuthenticationForm):
+class LoginForm(forms.Form):
     email = forms.EmailField(max_length=150, 
                              widget=forms.EmailInput(attrs={'class': 'form-control form-control-lg', 'id': 'email', 'placeholder': 'Enter Email Address'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control form-control-lg', 'id': 'password', 'placeholder': 'Enter Password'}))
@@ -135,9 +135,7 @@ class TutorUpdateForm(forms.Form):
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}))
     
     def __init__(self, *args, **kwargs):
-        print(kwargs)
-        if kwargs['instance']:
-            kwargs.pop("instance")
+        kwargs.pop("instance")
         super().__init__(*args, **kwargs)
     
 
@@ -146,3 +144,9 @@ class StudentUpdateForm(forms.ModelForm):
     class Meta:
         model = Student
         exclude = ("is_verified", "is_suspended")
+
+class ProfilePictureForm(forms.ModelForm):
+    picture = forms.CharField(
+        label="Profile picture",
+        widget=forms.ClearableFileInput(attrs={'class': 'form_control'})
+    )
