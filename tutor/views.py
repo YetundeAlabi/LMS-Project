@@ -15,7 +15,6 @@ from .forms import CourseForm, TopicForm, TopicFormSet
 from .models import Course, Topic, SubTopic
 
 
-
 class TutorUserRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.tutor
@@ -163,7 +162,7 @@ class TopicList(TutorUserRequiredMixin, ListView):
         context['course_slug']=self.kwargs['course_slug']
         return context
     
-    
+
 class TopicUpdateView(TutorUserRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Topic
     success_message = 'Subtopic updated successfully'
