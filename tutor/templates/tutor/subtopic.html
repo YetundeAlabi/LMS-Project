@@ -1,21 +1,68 @@
-{% if object %}
-    Edit content "{{ object.title }}"
-{% else %}
-    Add new content
-{% endif %}
+{% extends 'base.html' %}
 
+{% block content %}
+  <h1>
+    {% if object %}
+      Edit content "{{ object.title }}"
+    {% else %}
+      Add new content
+    {% endif %}
+  </h1>
+  <div class="module">
+    <div class="content-wrapper">
+      <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">SubTopic</h4>
+            <p class="card-description">Enter details to create a new SubTopic</p>
+            <form method="POST" class="forms-sample" enctype="multipart/form-data">
+              {% csrf_token %}
+              {% if form.errors %}
+                <div class="alert alert-danger">
+                  <strong>Oops! There was an error:</strong>
+                  <ul>
+                    {% for field, error in form.errors.items %}
+                      {% if field != NON_FIELD_ERRORS %}
+                        <li>{{ field }}: {{ error }}</li>
+                      {% else %}
+                        <li>{{ error }}</li>
+                      {% endif %}
+                    {% endfor %}
+                  </ul>
+                </div>
+              {% endif %}
 
- <h1>
- {% if object %}
- Edit content "{{ object.title }}"
- {% else %}
- Add new content
- {% endif %}
- </h1>
- <div class="module">
- <h2>Course info</h2>
-<form action="" method="post" enctype="multipart/form-data">
-    {{ form.as_p }}
-    {% csrf_token %}
-    <p><input type="submit" value="Save content"></p>
-</form>
+              <div class="form-group">
+                {{ form.title.label_tag }}
+                {{ form.title }}
+              </div>
+
+              <div class="form-group">
+                {{ form.description.label_tag }}
+                {{ form.description }}
+              </div>
+
+              <div class="form-group">
+                {{ form.url.label_tag }}
+                {{ form.url }}
+              </div>
+
+              <div class="form-group">
+                {{ form.file.label_tag }}
+                {{ form.file }}
+              </div>
+
+              <div class="form-group">
+                {{ form.text.label_tag }}
+                {{ form.text }}
+              </div>
+
+              <input class="btn btn-primary mr-2" value="Submit" type="submit">
+              <a href="{% url 'lms_admin:track_list' %}" class="btn btn-danger">Cancel</a>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
