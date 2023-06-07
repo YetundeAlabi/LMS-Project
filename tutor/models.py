@@ -10,11 +10,10 @@ from django.utils.text import slugify
 from accounts.models import Tutor
 from lms_admin.models import Track
 
-# Create your models here.
+
 class ActiveManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(is_active=True)
-
 
 class BaseContent(models.Model):
     title=models.CharField(max_length=225, blank=True, null=True)
@@ -55,19 +54,18 @@ class Topic(BaseContent):
          return f"{self.title}"
 
 class SubTopic(BaseContent):
-    topic=models.ForeignKey(Topic, on_delete=models.CASCADE, blank=True, null=True, db_index=True)
-    id=models.UUIDField(primary_key=True, unique=True)
-    content_type=models.ForeignKey(ContentType,
-                                   on_delete=models.CASCADE,
-                                   limit_choices_to={'model__in':(
-                                       'text',
-                                       'file',
-                                       'video')})
-    object_id=models.PositiveIntegerField()
-    item = GenericForeignKey('content_type','object_id')
-    is_active=models.BooleanField(default=True)
-    created_at= models.DateTimeField(auto_now_add=True)
-    updated_at=models.DateTimeField(auto_now=True)
+    topic = models.ForeignKey(Topic, on_delete=models.CASCADE, blank=True, null=True, db_index=True)
+    # id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
+    content_type = models.ForeignKey(
+        ContentType,
+        on_delete=models.CASCADE,
+        limit_choices_to={'model__in': ('text', 'file', 'video')}
+    )
+    object_id = models.PositiveIntegerField()
+    item = GenericForeignKey('content_type', 'object_id')
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     objects = models.Manager()
     active_objects=ActiveManager()

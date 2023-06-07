@@ -8,38 +8,38 @@
   <div class="col-md">
     <h3>Add new content:</h3>
     <a class="btn btn-primary mt-4 mb-4" href="{% url 'course:create_subtopic' topic.course.slug topic.id 'text' %}">Text</a>
-    <a class="btn btn-primary mt-4 mb-4" href="{% url 'course:create_subtopic' topic.course.slug topic.id 'file' %}">Image</a>
     <a class="btn btn-primary mt-4 mb-4" href="{% url 'course:create_subtopic' topic.course.slug topic.id 'video' %}">Video</a>
     <a class="btn btn-primary mt-4 mb-4" href="{% url 'course:create_subtopic' topic.course.slug topic.id 'file' %}">File</a>
+    <a class="btn btn-primary mt-4 mb-4" href="{% url 'course:create_subtopic' topic.course.slug topic.id 'file' %}">Image</a>
   </div>
 </div>
-
+{% if subtopic %}
 <div class="row">
   <div class="col-md grid-margin stretch-card">
     <div class="card">
       <div class="card-body">
-        <p class="card-title mb-0">Sub Topics</p>
+        <p class="card-title mb-0">Sub-Topics</p>
         <div class="table-responsive">
           <table class="table table-striped-lms table-hover">
             <tbody>
               {% for subtopic in subtopics %}
 <tr>
   <td style="height: 100px; overflow: hidden;">
-    <h4>Sub topic: {{ forloop.counter }}</h4>
+    <h4>S/N: {{ forloop.counter }}</h4>
     <h4>Topic: {{ subtopic.topic }}</h4>
-    <h2>Subtopic title: {{ subtopic.title }}</h2>
+    <h6>Subtopic title: {{ subtopic.title }}</h6>
 
     {% if subtopic.content_type.model == 'text' %}
-    <h4>Text Content:</h4>
-    <p>{{ subtopic.item.text }}</p>
+    <h5><b>Content Type</b>: Text </h5>
+    <p><b>Content</b>:{{ subtopic.item.text }}</p>
 
     {% elif subtopic.content_type.model == 'file' %}
     {% if subtopic.item.file.url %}
     {% if subtopic.item.file.url|lower|slice:'-4:' == ".jpg" or subtopic.item.file.url|lower|slice:'-5:' == ".jpeg" or subtopic.item.file.url|lower|slice:'-4:' == ".png" %}
-    <h4>Image Content:</h4>
-    <img src="{{ subtopic.item.get_file_url }}" alt="{{ item.title }}">
+    <h5><b>Content Type</b>: Image/pdf </h5>
+    <img style="width: 300px; height: 300px;" src="{{ subtopic.item.get_file_url }}" alt="{{ item.title }}">
     {% else %}
-    <h4>File Content:</h4>
+    <h4>File Content</h4>
     <p>
       <a href="{{ subtopic.item.get_file_url }}" class="button">View file</a>
     </p>
@@ -47,7 +47,7 @@
     {% endif %}
 
     {% elif subtopic.content_type.model == 'video' %}
-    <h4>Video Content:</h4>
+    <h5><b>Content Type</b>: Video </h5>
     {% video subtopic.item.url "small" %}
     {% endif %}
 
@@ -82,4 +82,8 @@
     </div>
   </div>
 </div>
+{% else %}
+<p>No subtopic under this topic yet</p>
+{% endif %}
+
 {% endblock content %}

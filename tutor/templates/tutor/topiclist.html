@@ -23,7 +23,7 @@
 </div>
 </div>
 
-    
+    {% if topics %}
     <div class="row">
         <div class="col-md grid-margin stretch-card">
           <div class="card">
@@ -34,6 +34,7 @@
                 <table class="table table-striped-lms table-hover">
                   <thead>
                     <tr>
+                      <th>S/N</th>
                       <th>Title</th>
                       <th>Date Created</th>
                       <th>Detail</th>
@@ -43,20 +44,19 @@
                       
                     </tr>  
                   </thead>
-                 
-    
-                  <tbody>
-                    {% for topic in topics %}
-                      <tr>
-                        <td> {{ topic.title}} </td>
-                        <td> {{ topic.created_at}}</td>
-                        <td class="font-weight-medium"><a href="{% url 'course:topic_detail' topic.course.slug topic.id %}"class="badge badge-info">details</a></td>
-                        <td><a class="badge badge-primary" href="{% url 'course:subtopic_list' topic.course.slug topic.id %}">View Subtopics</a></td>
-                        <td class="font-weight-medium"><a href="{% url 'course:update_topic' topic.course.slug topic.id %}"class="badge badge-info">Update</a></td>
-                        <td><a class="badge badge-danger" href="{% url 'course:delete_topic' topic.course.slug topic.id %}">Delete</a></td>
-    
-                      </tr>
-                    {% endfor %}
+                
+                    <tbody>
+                      {% for topic in topics %}
+                        <tr>
+                          <td>{{ forloop.counter }}</td> <!-- Add S/N column using forloop.counter -->
+                          <td>{{ topic.title }}</td>
+                          <td>{{ topic.created_at }}</td>
+                          <td class="font-weight-medium"><a href="{% url 'course:topic_detail' topic.course.slug topic.id %}" class="badge badge-info">details</a></td>
+                          <td><a class="badge badge-primary" href="{% url 'course:subtopic_list' topic.course.slug topic.id %}">View Subtopics</a></td>
+                          <td class="font-weight-medium"><a href="{% url 'course:update_topic' topic.course.slug topic.id %}" class="badge badge-info">Update</a></td>
+                          <td><a class="badge badge-danger" href="{% url 'course:delete_topic' topic.course.slug topic.id %}">Delete</a></td>
+                        </tr>
+                      {% endfor %}
                   </tbody>
                 </table>
               </div>
@@ -65,6 +65,10 @@
         </div>
       </div>
       </div>
+
+      {% else %}
+        <p>No topic under this course yet</p>
+      {% endif %}
 <!-- {% for topic in topics %}
     <h1>{{ topic.course.title }}</h1>
     {{ topic }}

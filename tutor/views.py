@@ -1,5 +1,3 @@
-from typing import Any, Dict
-import uuid
 from django.apps import apps
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -13,6 +11,8 @@ from django.views.generic.base import TemplateResponseMixin, View
 from accounts.models import Student
 from .forms import CourseForm, TopicForm, TopicFormSet
 from .models import Course, Topic, SubTopic
+from django.http import Http404
+from django.forms.widgets import TextInput, Textarea
 
 
 class TutorUserRequiredMixin(UserPassesTestMixin):
@@ -26,7 +26,6 @@ class TutorDashboardView(TutorUserRequiredMixin, View):
         context = {
             'tutor':tutor,
             'students':students
-
         }
         return render (self.request, 'tutor/tutor_dashboard.html', context=context)
 
@@ -47,8 +46,12 @@ class CourseDetail(TutorUserRequiredMixin, DetailView):
     slug_field= 'slug'
     slug_url_kwarg= 'course_slug'
     template_name = 'tutor/course_detail.html'
-   
 
+    def get_object(self):
+        track = self.request.user.tutor.track
+        return super().get_object().filter(track=track)
+
+   
 class CourseAndTopicCreateView(TutorUserRequiredMixin, CreateView):
     model = Course
     form_class = CourseForm
@@ -236,7 +239,6 @@ class TrackStudentDetailView(TutorUserRequiredMixin, DetailView):
         messages.success(request, "Student suspension status has been changed successfully.")
         return HttpResponseRedirect(reverse('course:track_student_detail', kwargs={'pk':student.id}))
 
-
 class SubTopicCreateUpdateView(TemplateResponseMixin, View):
     topic = None
     model = None
@@ -254,6 +256,10 @@ class SubTopicCreateUpdateView(TemplateResponseMixin, View):
             'updated_at',
             'is_active',
         ])
+
+        for field_name, field in Form.base_fields.items():
+            if isinstance(field.widget, TextInput) or isinstance(field.widget, Textarea):
+                field.widget.attrs['class'] = 'form-control form-control-lg'
         return Form(*args, **kwargs)
 
     def dispatch(self, request, course_slug, topic_id, model_name, id=None):
@@ -265,7 +271,10 @@ class SubTopicCreateUpdateView(TemplateResponseMixin, View):
         )
         self.model = self.get_model(model_name)
         if id:
-            self.obj = get_object_or_404(self.model, id=id)
+            try:
+                self.obj = self.model.objects.get(id=id)
+            except self.model.DoesNotExist:
+                raise Http404
         return super().dispatch(request, course_slug, topic_id, model_name, id)
 
     def get(self, request, course_slug, topic_id, model_name, id=None):
@@ -275,20 +284,24 @@ class SubTopicCreateUpdateView(TemplateResponseMixin, View):
     def post(self, request, course_slug, topic_id, model_name, id=None):
         form = self.get_form(self.model, instance=self.obj, data=request.POST, files=request.FILES)
         if form.is_valid():
-            obj = form.save(commit=False)
+            if id:
+                # Update existing object
+                obj = form.save(commit=False)
+                if 'file' in request.FILES:
+                    obj.file = request.FILES['file']
+                obj.save()
+            else:
+                # Create new object
+                obj = form.save(commit=False)
+                if 'file' in request.FILES:
+                    obj.file = request.FILES['file']
+                obj.save()
 
-            # Handle the file field separately
-            if 'file' in request.FILES:
-                obj.file = request.FILES['file']
-            
-            obj.save()
-
-            if not id:
-                subtopic = SubTopic(id=uuid.uuid4(), topic=self.topic, item=obj)
+                subtopic = SubTopic(topic=self.topic, item=obj)
                 subtopic.title = form.cleaned_data['title']
                 subtopic.description = form.cleaned_data['description']
                 subtopic.save()
-            return HttpResponseRedirect(reverse('course:topic_list', kwargs={'course_slug': self.topic.course.slug}))
+            return HttpResponseRedirect(reverse('course:subtopic_list', kwargs={'course_slug': self.topic.course.slug, 'pk': topic_id}))
         return self.render_to_response({'form': form, 'object': self.obj})
 
 class SubTopicDeleteView(View):
@@ -299,7 +312,6 @@ class SubTopicDeleteView(View):
 
     def post(self, request, id):
         sub_topic = get_object_or_404(SubTopic, id=id, topic__course__course_tutor=request.user.tutor)
-        # topic = sub_topic.topic
         sub_topic.is_active = False
         sub_topic.save()
         return HttpResponseRedirect(reverse('course:subtopic_list', kwargs={'course_slug': sub_topic.topic.course.slug, 'pk':sub_topic.topic.id}))
@@ -314,8 +326,6 @@ class SubTopicList(TutorUserRequiredMixin, ListView):
     def get_queryset(self):
         topic_id=self.kwargs['pk']
         course_slug=self.kwargs['course_slug']
-        # print(course_slug)
-        # track = self.request.user.tutor.track
         return super().get_queryset().filter(topic=get_object_or_404(Topic, id=topic_id))
     
     def get_context_data(self, **kwargs):
