@@ -3,8 +3,6 @@ from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.forms.models import modelform_factory
-from django.forms.widgets import TextInput, Textarea
-from django.http import Http404
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
@@ -13,6 +11,7 @@ from django.views.generic.base import TemplateResponseMixin, View
 from accounts.models import Student
 from .forms import CourseForm, TopicForm, TopicFormSet
 from .models import Course, Topic, SubTopic
+from django.http import Http404
 
 
 
@@ -256,7 +255,7 @@ class SubTopicCreateUpdateView(TemplateResponseMixin, View):
         ])
 
         for field_name, field in Form.base_fields.items():
-            if isinstance(field.widget, TextInput) or isinstance(field.widget, Textarea):
+            if isinstance(field.widget, TextInput):
                 field.widget.attrs['class'] = 'form-control form-control-lg'
         return Form(*args, **kwargs)
 
