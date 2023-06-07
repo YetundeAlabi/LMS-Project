@@ -10,7 +10,7 @@ from django.db.models.query import QuerySet
 from django.forms.models import BaseModelForm
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
-from django.template.loader import render_to_string
+from django.template.loader import render_to_string, get_template
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.encoding import force_bytes
@@ -90,6 +90,16 @@ class TrackUpdateView(UpdateView):
     def get_success_url(self):
         return self.object.get_absolute_url()
 
+class TrackConfirmDeleteView(TemplateView):
+    template_name = "lms_admin/track_confirm_delete.html"
+    slug_url_kwarg = 'slug'
+    slug_field = 'slug'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['track'] = Track.objects.get(slug=self.kwargs['slug'])
+        return context 
+
 
 class TrackDeleteView(View):
     """Track delete view to set is_deleted attribute to True"""
@@ -122,16 +132,15 @@ class StudentCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView)
                     'first_name': user.first_name,
                     'set_password_url': self.get_password_reset_url(user) if created else self._get_login_url(student),
                 }
-        message = render_to_string('email_template.html', context)
+        message = get_template('lms_admin/email_template.html').render(context)
         recipient = [user.email,]
         send_verification_mail.delay(subject, recipient , message )
-        
-        return super().form_valid(form)
+        return HttpResponseRedirect(reverse('lms_admin:student_list'))
 
     def get_password_reset_url(self, user):
         # Generate the password reset URL for the user
         token = default_token_generator.make_token(user) #generate token to ensure one time use of URL
-        uid = urlsafe_base64_encode(force_bytes(user.pk)).decode() #encode user pk for security
+        uid = urlsafe_base64_encode(force_bytes(user.pk)) #encode user pk for security
         url = reverse('password_reset_confirm', args=[uid, token])
         return self.request.build_absolute_uri(url)
 
@@ -207,18 +216,16 @@ class StudentImportView(PasswordResetView, FormView):
                     'first_name': first_name,
                     'verification_url': self.get_password_reset_url(user) if created else self._get_login_url(student),
                 }
-            message = render_to_string('lms_admin/email_template.html', context)
-            send_mail(subject, message, 'adeosunfaith0101@gmail.com', [email,])
+            message = get_template('lms_admin/email_template.html').render(context)
             recipient = [email,]
             send_verification_mail.delay(subject, recipient, message)
-            
             
         return super().form_valid(form)
 
     def get_password_reset_url(self, user):
         # Generate the password reset URL for the user
         token = default_token_generator.make_token(user)
-        uid = urlsafe_base64_encode(force_bytes(user.pk)).decode()
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
         url = reverse('password_reset_confirm', args=[uid, token])
         return self.request.build_absolute_uri(url)
 
@@ -250,7 +257,7 @@ class CohortListView(ListView):
         return queryset
     
   
-    #Tutor Views 
+#Tutor Views 
 class TutorCreateFormView(LoginRequiredMixin, CreateView): #PermissionRequiredMixin,
     form_class = TutorCreationForm
     template_name = "lms_admin/tutor_create_form.html"
@@ -260,35 +267,21 @@ class TutorCreateFormView(LoginRequiredMixin, CreateView): #PermissionRequiredMi
         tutor = form.save()
         user = tutor.user
         self.object = tutor
-        return HttpResponseRedirect(reverse('lms_admin:tutor_list'))
-    
-        # return super().form_valid()
-        
-
-        # user = User.objects.create_user(email=form.cleaned_data['email'], 
-        #                                 first_name=form.cleaned_data['first_name'],
-        #                                 last_name=form.cleaned_data['last_name'])
-        
-        # tutor = Tutor.objects.create(user=user, 
-        #                             track=form.cleaned_data['track'])
-        # tutor.save()
-        # subject = 'Account Setup Instructions'
-        # context = {
-        #             'user': user,
-        #             'set_password_url': self.get_password_reset_url(user),
-        #         }
-        # message = render_to_string('email_template.html', context)
+        subject = 'Account Setup Instructions'
+        context = {
+                    'user': user,
+                    'set_password_url': self.get_password_reset_url(user),
+                }
+        message = get_template('lms_admin/email_template.html').render(context)
         recipient = [user.email,]
-        # send_verification_mail.delay(subject, recipient, message)
-        
-        # return super().form_valid(form)
-    
+        send_verification_mail.delay(subject, recipient, message)
+        return HttpResponseRedirect(reverse('lms_admin:tutor_list'))
 
     def get_password_reset_url(self, user):
         """ Generate the password reset URL for the user"""
         token = default_token_generator.make_token(user) # generate token to ensure one time use of URL
-        uid = urlsafe_base64_encode(force_bytes(user.pk)).decode() # encode user pk for security
-        url = reverse('password_reset_confirm', args=[uid, token])
+        uid = urlsafe_base64_encode(force_bytes(user.pk)) # encode user pk for security
+        url = reverse('accounts:set_password', args=[uid, token])
         return self.request.build_absolute_uri(url)
 
 
@@ -332,7 +325,7 @@ class TutorUpdateView(LoginRequiredMixin, UpdateView): #PermissionRequiredMixin,
         return HttpResponseRedirect(reverse('lms_admin:tutor_list'))
         
     
-class TutorDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+class TutorDetailView(DetailView):
     model = Tutor
     template_name = "lms_admin/tutor_detail.html"
 
