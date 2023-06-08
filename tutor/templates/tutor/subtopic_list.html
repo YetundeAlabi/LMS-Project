@@ -25,8 +25,9 @@
             {% for subtopic in subtopics %}
             <tr>
               <td style="height: 100px; overflow: hidden;">
-                <h4>S/N: {{ forloop.counter }}</h4>
-                <h4>Topic: {{ subtopic.topic }}</h4>
+                <h4>S/N: {{ topic.order|add:1 }}.{{ subtopic.order|add:1 }}</h4>
+                <h4>Topic: {{ subtopic.topic.title }}</h4>
+                
                 <h6>Subtopic title: {{ subtopic.item.title }}</h6>
 
                 {% if subtopic.content_type.model == 'text' %}

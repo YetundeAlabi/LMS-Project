@@ -8,8 +8,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.utils.text import slugify
 from accounts.models import Tutor
+from .fields import OrderField
 from lms_admin.models import Track
-
 
 class ActiveManager(models.Manager):
     def get_queryset(self):
@@ -26,36 +26,39 @@ class BaseContent(models.Model):
     active_objects=ActiveManager()
 
     class Meta:
-         abstract = True
-         ordering= ['created_at']
-
+        abstract = True
+         
 class Course(BaseContent):
     course_tutor=models.ForeignKey(Tutor, on_delete=models.SET_NULL, null=True)
     track=models.ForeignKey(Track, on_delete=models.SET_NULL, null=True)
     slug= models.SlugField(unique=True, blank=True, null=True)
-
+    order = OrderField(blank=True, for_fields=['title'])
+    
     class Meta:
-        indexes = [
-            models.Index(fields=['track','slug'])
-        ]
+        ordering= ['order']
+        indexes = [ models.Index(fields=['track','slug'])]
+       
 
     def __str__(self):
-        return self.slug
+        return f"{self.order}_{self.title}"
     
     def get_absolute_url(self):
         return reverse('course_detail', args=[str(self.slug)])
 
 
 class Topic(BaseContent):
-    course=models.ForeignKey(Course, on_delete=models.CASCADE, blank=True, null=True, db_index=True)
+    course=models.ForeignKey(Course, on_delete=models.SET_NULL, blank=True, null=True, db_index=True)
     id=models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
-
+    order = OrderField(blank=True, for_fields=['course'])
+    
+    class Meta:
+        ordering= ['order']
+        
     def __str__(self):
-         return f"{self.title}"
+        return f"{self.order}_{self.title}"
 
 class SubTopic(BaseContent):
-    topic = models.ForeignKey(Topic, on_delete=models.CASCADE, blank=True, null=True, db_index=True)
-    # id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
+    topic = models.ForeignKey(Topic, on_delete=models.SET_NULL, blank=True, null=True, db_index=True)
     content_type = models.ForeignKey(
         ContentType,
         on_delete=models.CASCADE,
@@ -63,18 +66,15 @@ class SubTopic(BaseContent):
     )
     object_id = models.PositiveIntegerField()
     item = GenericForeignKey('content_type', 'object_id')
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    order = OrderField(blank=True, for_fields=['topic'])
 
-    objects = models.Manager()
-    active_objects=ActiveManager()
-
-
+    class Meta:
+        ordering= ['order']
+        
     def __str__(self):
-         return f"{self.object_id}"
+        return f"{self.order}_{self.object_id}"
+  
     
-
 class Text(BaseContent):
     text =models.TextField(blank=True, null=True)
 

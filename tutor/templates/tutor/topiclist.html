@@ -48,7 +48,7 @@
                     <tbody>
                       {% for topic in topics %}
                         <tr>
-                          <td>{{ forloop.counter }}</td> <!-- Add S/N column using forloop.counter -->
+                          <td>{{ topic.order|add:1 }}</td> 
                           <td>{{ topic.title }}</td>
                           <td>{{ topic.created_at }}</td>
                           <td class="font-weight-medium"><a href="{% url 'course:topic_detail' topic.course.slug topic.id %}" class="badge badge-info">details</a></td>
