@@ -69,6 +69,13 @@ class StudentCreationForm(forms.Form):
         label="Cohort",
         queryset=Cohort.objects.all(),
         widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Cohort'}))
+    track = forms.ModelChoiceField(
+        label="Track",
+        queryset=Track.active_objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Track'}))
+    gender = forms.CharField(
+        label='Gender',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Gender'}))
     email = forms.EmailField(
         label='Email',
         widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}))
@@ -78,6 +85,29 @@ class StudentCreationForm(forms.Form):
     last_name = forms.CharField(
         label='Last Name',
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}))
+    picture = forms.ImageField(
+        label='Profile Image',
+        required=False,
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control-file', 'placeholder': 'Picture' }))
+
+    def __init__(self, *args, **kwargs):
+        kwargs.pop("instance")
+        super().__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        user = User.objects.create_user(
+            email=self.cleaned_data['email'], 
+            first_name=self.cleaned_data['first_name'],
+            last_name=self.cleaned_data['last_name'])
+        
+        student = Student.objects.create(user=user, 
+                                        cohort=self.cleaned_data['cohort'],
+                                        track=self.cleaned_data['track'],
+                                        gender=self.cleaned_data['gender'],
+                                        picture=self.cleaned_data['picture'])
+        student.save()
+        return student
+
 
 
 """ Tutor creation form """
@@ -85,7 +115,7 @@ class TutorCreationForm(forms.Form):
 
     track = forms.ModelChoiceField(
         label="Track",
-        queryset=Track.objects.all(),
+        queryset=Track.active_objects.all(),
         widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Track'}))
     email = forms.EmailField(
         label='Email',
@@ -154,11 +184,35 @@ class TutorUpdateForm(forms.Form):
         super().__init__(*args, **kwargs)
     
 
-class StudentUpdateForm(forms.ModelForm):
+class StudentUpdateForm(forms.Form):
+    track = forms.ModelChoiceField(
+        label="Track",
+        queryset=Track.active_objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Track'}))
+    email = forms.EmailField(
+        label='Email',
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}))
+    gender = forms.CharField(
+        label='First Name',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Gender'}))
+    first_name = forms.CharField(
+        label='First Name',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}))
+    last_name = forms.CharField(
+        label='Last Name',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}))
+    picture = forms.ImageField(
+        label='Profile Image',
+        required=False,
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control-file', 'placeholder': 'Picture' }))
+    
+    def __init__(self, *args, **kwargs):
+        print(kwargs)
+        if kwargs['instance']:
+            kwargs.pop("instance")
+        super().__init__(*args, **kwargs)
 
-    class Meta:
-        model = Student
-        exclude = ("is_verified", "is_suspended")
+    
 
 class ProfilePictureForm(forms.ModelForm):
     picture = forms.CharField(

@@ -29,7 +29,7 @@ urlpatterns = [
     path('tutor_update/<int:tutor_id>/profile', TutorUpdateView.as_view(), name='tutor_update'),
     path('student_update/<int:student_id>/profile', StudentUpdateView.as_view(), name='student_update'),
     path('set_password/<str:uidb64>/<str:token>', 
-         auth_views.PasswordResetConfirmView.as_view(template_name='accounts/password_reset_confirm.html', 
+         auth_views.PasswordResetConfirmView.as_view(template_name='accounts/set_password.html', 
                                                      form_class = CustomSetPasswordForm,
                                                      success_url = reverse_lazy("accounts:password_reset_complete")
                                                      ),
