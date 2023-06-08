@@ -19,7 +19,6 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATES_DIR = BASE_DIR / 'templates'
-# SECRET_KEY= 'django-insecure-$$z=kt(08)a)%q11q@@=#gt5^q+v4^p2!c@x@x@r42h6$wb^'
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY')
@@ -125,7 +124,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
-    BASE_DIR /'static',
+    BASE_DIR / 'static',
      ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
