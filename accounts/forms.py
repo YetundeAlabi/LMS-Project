@@ -115,11 +115,13 @@ class TutorCreationForm(forms.Form):
      
 class LoginForm(forms.Form):
     email = forms.EmailField(max_length=150, 
-                             widget=forms.EmailInput(attrs={'class': 'form-control form-control-lg', 'id': 'email', 'placeholder': 'Enter Email Address'}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control form-control-lg', 'id': 'password', 'placeholder': 'Enter Password'}))
+                             error_messages= {"required": "Please enter a valid email"},
+                             widget=forms.EmailInput(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Enter Email Address'}))
+    password = forms.CharField(error_messages= {"required": "Please enter a valid password"},
+        widget=forms.PasswordInput(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Enter Password'}))
 
 
-class TutorUpdateForm(forms.Form):
+class TutorUpdateForm(forms.ModelForm):
     track = forms.ModelChoiceField(
         label="Track",
         queryset=Track.objects.all(),
@@ -134,10 +136,11 @@ class TutorUpdateForm(forms.Form):
         label='Last Name',
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}))
     
-    def __init__(self, *args, **kwargs):
-        kwargs.pop("instance")
-        super().__init__(*args, **kwargs)
-    
+    # def __init__(self, *args, **kwargs):
+    #     kwargs.pop("instance")
+    #     super().__init__(*args, **kwargs)
+    model = User
+    fields = ["email", "first_name", "last_name", "track"]
 
 class StudentUpdateForm(forms.ModelForm):
 
