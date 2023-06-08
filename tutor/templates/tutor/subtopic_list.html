@@ -3,24 +3,32 @@
 
 {% block content %}
 
-
 <div class="row">
   <div class="col-md">
-    <h3>Add new content:</h3>
+    <h3>Add new Lesson:</h3>
     <a class="btn btn-primary mt-4 mb-4" href="{% url 'course:create_subtopic' topic.course.slug topic.id 'text' %}">Text</a>
     <a class="btn btn-info mt-4 mb-4" href="{% url 'course:create_subtopic' topic.course.slug topic.id 'video' %}">Video</a>
     <a class="btn btn-danger mt-4 mb-4" href="{% url 'course:create_subtopic' topic.course.slug topic.id 'file' %}">File</a>
     <a class="btn btn-warning mt-4 mb-4" href="{% url 'course:create_subtopic' topic.course.slug topic.id 'file' %}">Image</a>
   </div>
 </div>
+
 {% if subtopics %}
 <div class="row">
   <div class="col-md grid-margin stretch-card">
     <div class="card">
       <div class="card-body">
-        <p class="card-title mb-0">Sub-Topics</p>
+        <p class="card-title mb-0">Lessons in {{topic.title}}</p>
         <div class="table-responsive">
           <table class="table table-striped-lms table-hover">
+            <thead>
+              <tr>
+                <th>S/N</th>
+                <th>Title</th>
+                <th>Content_type</th>
+
+              </tr>
+            </thead>
             <tbody>
             {% for subtopic in subtopics %}
             <tr>

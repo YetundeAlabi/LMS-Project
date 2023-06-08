@@ -61,9 +61,21 @@
           <ul class="navbar-nav navbar-nav-right">
             <li class="nav-item">
               {% if user.is_authenticated %}
-                <p class="mb-0 font-weight-normal float-left"><a class="nav-link" href="{% url 'accounts:logout' %}">
-                  <i class="mdi mdi-logout"></i>
-                  Logout<a></p>
+                <p class="mb-0 font-weight-normal float-left">
+                  <a class="nav-link" href="{% url 'accounts:change_password' %}">
+                    <i class="mdi mdi-logout"></i>
+                    change password
+                  </a>
+                </p>
+
+                    
+                <p class="mb-0 font-weight-normal float-left" style="margin-left: 10px;">
+                  <a class="nav-link" href="{% url 'accounts:logout' %}">
+                    <i class="mdi mdi-logout"></i>
+                    Logout
+                  </a>
+                </p>
+                
               {% else %}
                 <p><a class="nav-link" href="{% url 'accounts:login' %}">Login<a></p>  
               {% endif %}
@@ -83,6 +95,7 @@
                   <i class="mdi mdi-logout"></i>
                   Logout
                 </a>
+                
                 {% endif %}
               </div>
             </li>
@@ -94,6 +107,7 @@
       </nav>
 
       <div class="container-fluid page-body-wrapper">
+        {% block navbar %}
         <nav class="sidebar sidebar-offcanvas" id="sidebar">
             <ul class="nav">
               <li class="nav-item">
@@ -104,6 +118,7 @@
               </li>
             </ul>
           </nav>
+        {% endblock %}
           
         <div class="main-panel">
           {% if messages %}

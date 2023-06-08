@@ -28,7 +28,7 @@
         <div class="col-md grid-margin stretch-card">
           <div class="card">
             <div class="card-body">
-              <p class="card-title mb-0">Topics List</p> 
+              <p class="card-title mb-0">Topics List in {{course.title}} course</p> 
     
               <div class="table-responsive">
                 <table class="table table-striped-lms table-hover">
@@ -37,11 +37,7 @@
                       <th>S/N</th>
                       <th>Title</th>
                       <th>Date Created</th>
-                      <th>Detail</th>
-                      <th>Subtopics</th>
-                      <th>Update</th>
-                      <th>Delete</th>
-                      
+                      <th></th>           
                     </tr>  
                   </thead>
                 
@@ -57,6 +53,28 @@
                           <td><a class="badge badge-danger" href="{% url 'course:delete_topic' topic.course.slug topic.id %}">Delete</a></td>
                         </tr>
                       {% endfor %}
+                  <tbody>
+                    {% for topic in topics %}
+                    <a>
+                      <tr>
+                      
+                        <td>{{ forloop.counter }}</td> <!-- Add S/N column using forloop.counter -->
+                        <td><a href="{% url 'course:topic_detail' topic.course.slug topic.id %}">{{ topic.title }}</a></td>
+                        <td>{{ topic.created_at }}</td>
+                       
+                  
+                        <td style="padding: 0;">
+                          <div class="row" style="margin: 0;">
+                            <div class="col-md-2 mt-4" style="padding: 0;">
+                              <div class="d-flex justify-content-start">
+                                <a class="btn btn-info mb-4 mr-2" href="{% url 'course:subtopic_list' topic.course.slug topic.id %}" style="font-size: 12px; padding: 12px 20px;">Lessons</a>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                  
+                      </tr>
+                    {% endfor %}
                   </tbody>
                 </table>
               </div>
@@ -76,3 +94,29 @@
     <a href="{% url 'course:delete_topic' topic.course.slug topic.id %}">delete</a><br>
 {% endfor %} -->
 {% endblock %}
+
+
+
+<tbody>
+  {% for topic in topics %}
+  <a>
+    <tr>
+    
+      <td>{{ forloop.counter }}</td> <!-- Add S/N column using forloop.counter -->
+      <td><a href="{% url 'course:topic_detail' topic.course.slug topic.id %}">{{ topic.title }}</a></td>
+      <td>{{ topic.created_at }}</td>
+     
+
+      <td style="padding: 0;">
+        <div class="row" style="margin: 0;">
+          <div class="col-md-2 mt-4" style="padding: 0;">
+            <div class="d-flex justify-content-start">
+              <a class="btn btn-info mb-4 mr-2" href="{% url 'course:subtopic_list' topic.course.slug topic.id %}" style="font-size: 12px; padding: 12px 20px;">Sub topics</a>
+            </div>
+          </div>
+        </div>
+      </td>
+
+    </tr>
+  {% endfor %}
+</tbody>

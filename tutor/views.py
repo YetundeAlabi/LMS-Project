@@ -48,7 +48,7 @@ class CourseDetail(TutorUserRequiredMixin, DetailView):
     slug_url_kwarg= 'course_slug'
     template_name = 'tutor/course_detail.html'
 
-
+   
 class CourseAndTopicCreateView(TutorUserRequiredMixin, CreateView):
     model = Course
     form_class = CourseForm
@@ -160,7 +160,9 @@ class TopicList(TutorUserRequiredMixin, ListView):
     
     def get_context_data(self, **kwargs):
         context=super().get_context_data(*kwargs)
-        context['course_slug']=self.kwargs['course_slug']
+        course_slug=self.kwargs['course_slug']
+        context['course_slug']=course_slug
+        context['course'] = get_object_or_404(Course, slug=course_slug)
         return context
     
 
@@ -330,6 +332,13 @@ class SubTopicList(TutorUserRequiredMixin, ListView):
         topic_id = self.kwargs['pk']
         context['topic'] = get_object_or_404(Topic, id=topic_id)
         return context
+    
+
+class SubTopicDetailView(TutorUserRequiredMixin, DetailView):
+    model = SubTopic
+    context_object_name='subtopic'
+    template_name = 'tutor/subtopic_detail.html'
+    pk_url_kwarg ='id'
     
 
         
