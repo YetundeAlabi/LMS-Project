@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from django.db.models import F, Max
 from django.urls import reverse
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -56,6 +57,22 @@ class Topic(BaseContent):
         
     def __str__(self):
         return f"{self.order}_{self.title}"
+    
+  
+
+def save(self, *args, **kwargs):
+    if not self.is_active:
+        max_order = Topic.active_objects.aggregate(max_order=Max('order')).get('max_order', 0)
+        self.order = max_order
+        Topic.active_objects.filter(order__gt=0).update(order=F('order') - 1)
+        self.order = 0
+    else:
+        Topic.active_objects.update(order=F('order') + 1)  
+        max_order = Topic.active_objects.aggregate(max_order=Max('order')).get('max_order', 0)
+        self.order = max_order + 1
+
+    super().save(*args, **kwargs)
+
 
 class SubTopic(BaseContent):
     topic = models.ForeignKey(Topic, on_delete=models.SET_NULL, blank=True, null=True, db_index=True)
