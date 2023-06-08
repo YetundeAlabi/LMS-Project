@@ -107,6 +107,7 @@
       </nav>
 
       <div class="container-fluid page-body-wrapper">
+        {% block navbar %}
         <nav class="sidebar sidebar-offcanvas" id="sidebar">
             <ul class="nav">
               <li class="nav-item">
@@ -117,6 +118,7 @@
               </li>
             </ul>
           </nav>
+        {% endblock %}
           
         <div class="main-panel">
           {% if messages %}
