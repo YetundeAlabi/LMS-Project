@@ -400,14 +400,14 @@ class ToggleTutorSuspendView(LoginRequiredMixin, View): #PermissionRequiredMixin
 # Applicant Views
 class ApplicantCreateView(CreateView):
     form_class = ApplicantForm
-    template_name = "lms_admin/application_form.html"
+    template_name = "lms_admin/application_form2.html"
     success_url = reverse_lazy('lms_admin:applicant_thank_you')
 
     def form_valid(self, form):
         applicant = form.save(commit=False)
         applicant.cohort = Cohort.objects.get(year=timezone.now().year)
         applicant.save()
-        messages.success(self.request, "Thank you for applying. Your application has been submitted successfully.")
+        # messages.success(self.request, "Thank you for applying. Your application has been submitted successfully.")
         return super().form_valid(form)
     
 
