@@ -1,5 +1,10 @@
 {% extends 'base.html' %}
 
+
+{% block navbar %}
+        {% include 'tutor/tutor_nav_bar.html' %}
+{% endblock %} 
+
 {% block content %}
 <form method="POST" id="course-form">
   {% csrf_token %}
