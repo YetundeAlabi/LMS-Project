@@ -1,9 +1,13 @@
 {% extends 'base.html' %}
 
+
+{% block navbar %}
+        {% include 'tutor/tutor_nav_bar.html' %}
+{% endblock %} 
 {% block content %}
   <h1>
     {% if object %}
-      Edit content "{{ object.title }}"
+      Edit content {{ object.title }}
     {% else %}
       Add new content
     {% endif %}
