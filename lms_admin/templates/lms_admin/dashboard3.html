@@ -1,0 +1,232 @@
+{% extends 'base.html' %} {% block content %}
+
+<div class="content-wrapper">
+  <div class="card-group">
+    <div class="col-sm-3">
+      <div class="card card-red">
+        <div class="card-body">
+          <h5 class="card-title">Students</h5>
+          <div class="d-flex align-items-center">
+            <div
+              class="rounded-circle d-flex align-items-center justify-content-center mr-2"
+            >
+              <i style="font-size: 1.5rem" class="fas fa-user-check menu-icon"></i>
+            </div>
+            <p class="fs-30 mb-2">{{students.count}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="card card-grey">
+        <div class="card-body">
+          <h3 class="card-title">Tracks</h3>
+          <div class="d-flex align-items-center">
+            <div
+              class="rounded-circle d-flex align-items-center justify-content-center mr-2"
+            >
+              <i style="font-size: 1.5rem" class="mdi mdi-group menu-icon"></i>
+            </div>
+            <p class="fs-30 mb-2">{{tracks.count}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="card card-green">
+        <div class="card-body">
+          <h5 class="card-title">Tutors</h5>
+          <div class="d-flex align-items-center">
+            <div
+              class="rounded-circle d-flex align-items-center justify-content-center mr-2">
+              <i style="font-size: 1.5rem" class="fas fa-chalkboard-teacher menu-icon"></i>
+            </div>
+            <p class="fs-30 mb-2">{{tutors.count}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="card card-brown">
+        <div class="card-body">
+          <h5 class="card-title">Applicants</h5>
+          <div class="d-flex align-items-center">
+            <div
+              class="rounded-circle d-flex align-items-center justify-content-center mr-2">
+              <i style="font-size: 1.5rem" class="fas fa-user-clock menu-icon"></i>
+            </div>
+            <p class="fs-30 mb-2">{{applicants.count}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row mt-5">
+   
+    <div class="col-lg-6">
+      <div class="card chart mt-5">
+        <div class="card-body">
+          <h5 class="card-title chart">Student CHart</h5>
+          <canvas id="studentChart" style="max-height: 400px;"></canvas>
+          <p>Bar Chart</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="card mt-5">
+        <div class="card-body">
+          <h5 class="card-title">Doughnut Chart</h5>
+          <canvas id="doughnutChart" style="max-height: 400px;"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!--Student track barchart -->
+<div class="row">
+  <div class="card">
+    <div class="card-body">
+      <p class="card-title mb-5"></p>
+      <div class="table-responsive">
+        <table class="table table-striped-lms table-hover">
+          <thead>
+            <tr>
+              <th>S/N</th>
+              <th>Full Name</th>
+              <th>Email</th>
+              <th>Track</th>
+              <th>Suspension Status</th>
+            </tr>  
+          </thead>
+          <tbody>
+            {% for tutor in tutors %}
+            <tr>
+              <th scope="row">{{forloop.counter}}</th>
+              <td> {{ tutor.user.first_name}} {{ tutor.user.last_name}} </td>
+              <td><span>{{ tutor.user.email }}</span> </td>
+              <td>{{ tutor.track.name }}</td>
+              <td class="font-weight-medium"><a href="{% url 'lms_admin:tutor_toggle_suspend' pk=tutor.pk%}" class="btn {%if not tutor.is_suspended %}
+                  btn-info"> Active</a></td>
+                  {% else %}
+                  btn-warning">Inactive</a></td>
+                  {%endif%}
+            </tr>
+          {% endfor %} 
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+{%block script%}
+
+      <!-- Bar Chart -->
+      
+
+
+ <!-- Doughnut CHart -->     
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    
+    new Chart(document.querySelector('#doughnutChart'), {
+      type: 'doughnut',
+      data: {
+        labels: [
+          'Male',
+          'Female',
+          
+        ],
+        datasets: [{
+          label: 'Total',
+          data: [{{male_applicants}}, {{female_applicants}}],
+          backgroundColor: [
+            'rgb(225, 38, 28)',
+            'rgb(84, 86, 91)',
+            
+          ],
+          hoverOffset: 4
+        }]
+      }
+    });
+  });
+</script>
+<!-- End Doughnut CHart -->
+
+
+      <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var studentCounts = [];
+    var trackNames = [];
+
+    {% for track in tracks %}
+      studentCounts.push({{ track.get_students_count }});
+      trackNames.push('{{ track.name }}');
+    {% endfor %}
+
+    var ctx = document.getElementById('studentChart').getContext('2d');
+    var chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: trackNames,
+        datasets: [{
+          label: 'Students',
+          data: studentCounts,
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  });
+</script>
+<div class="col-lg-6">
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Bar Chart</h5>
+
+      <!-- Bar Chart -->
+      <div id="barChart"></div>
+
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          new ApexCharts(document.querySelector("#barChart"), {
+            series: [{
+              data: [400, 430, 448, 470, 540, 580, 690, 1100, 1200, 1380]
+            }],
+            chart: {
+              type: 'bar',
+              height: 350
+            },
+            plotOptions: {
+              bar: {
+                borderRadius: 4,
+                horizontal: true,
+              }
+            },
+            dataLabels: {
+              enabled: false
+            },
+            xaxis: {
+              categories: ['South Korea', 'Canada', 'United Kingdom', 'Netherlands', 'Italy', 'France', 'Japan',
+                'United States', 'China', 'Germany'
+              ],
+            }
+          }).render();
+        });
+      </script>
+      <!-- End Bar Chart -->
+
+
+{%endblock%}
+
+{% endblock %}

@@ -17,7 +17,7 @@ class DeleteManager(models.Manager):
      
 
 class Track(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, unique=True)
     description = models.TextField()
     slug = models.SlugField(null=True, blank=True)
     is_deleted = models.BooleanField(default=False)
@@ -31,11 +31,20 @@ class Track(models.Model):
     class Meta:
         ordering = ['-created_date']
 
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)    
+
     def __str__(self):
         return self.name
 
     def get_absolute_url(self):
         return reverse('lms_admin:track_detail', kwargs={'slug': self.slug})
+    
+    def get_students_count(self):
+        return self.students.count()
 
 
 class Cohort(models.Model):
@@ -46,6 +55,9 @@ class Cohort(models.Model):
     
     def __str__(self):
         return self.get_name()
+    
+    def get_students_count(self):
+        return self.students.count()
 
 
 

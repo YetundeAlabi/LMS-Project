@@ -1,23 +1,17 @@
-{% extends 'base.html'%}
-{%block content%}
+{% extends 'base.html' %}
 
+{% block content %}
 <div class="content-wrapper">
 
     <div class="col-12 grid-margin stretch-card">
         <div class="card">
           <div class="card-body">
-                <h4 class="card-title">Tutor Update Form</h4>
-                <p class="card-description">
-                    Enter details to edit a Tutor
-                </p>
-                <form method="POST" class="form-control">
+                <h4 class="card-title">Student Creation Form With Csv</h4>
+                
+                <form method="POST"  enctype="multipart/form-data" class="forms-sample">
   
                     {% csrf_token %}
                     
-                    {% for errors in forms.non_field_errors %}
-                        {{ error }}
-                    {% endfor %}
-
                     {% if form.errors %}
                       <div class="alert alert-danger">
                         <strong>Oops! There was an error:</strong>
@@ -34,16 +28,23 @@
                     {% endif %}
   
                     <div class="form-group">
-                        {{ form.as_p }} 
+                        {{ form.cohort.label_tag }}
+                        {{ form.cohort }}
                     </div>
-
-                    <input class="btn btn-primary mr-2" value="Submit" type="submit">
-                    <a href="{% url 'lms_admin:tutor_list' %}" class="btn btn-danger">Cancel</a>
+                    
+                    <div class="form-group">
+                      {{ form.csv_file.label_tag }}
+                      {{ form.csv_file }}
+                   </div>
+                    
+                      
+                      <button type="submit" class="btn btn-primary">Upload</button>
   
+                
                 </form>
             </div>
         </div>
     </div>
   </div>
 
-  {%endblock%}
+{% endblock %}

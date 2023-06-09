@@ -10,11 +10,10 @@ from django.utils.text import slugify
 from accounts.models import Tutor
 from lms_admin.models import Track
 
-# Create your models here.
+
 class ActiveManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(is_active=True)
-
 
 class BaseContent(models.Model):
     title=models.CharField(max_length=225, blank=True, null=True)
@@ -50,8 +49,6 @@ class Course(BaseContent):
 class Topic(BaseContent):
     course=models.ForeignKey(Course, on_delete=models.CASCADE, blank=True, null=True, db_index=True)
     id=models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
-
-    
 
     def __str__(self):
          return f"{self.title}"

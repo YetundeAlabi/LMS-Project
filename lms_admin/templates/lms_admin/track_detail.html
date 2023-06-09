@@ -8,7 +8,8 @@
             <div class="row">
                 <div class="col-12 col-xl-8 mb-4 mb-xl-0">
                     <h2>{{ track.name }}</h2>
-                    <p>{{ track.description }} </small></p>
+                    <h5> {{ track.slug }} </h5>
+                    <p class="text-muted">{{ track.description }} </small></p>
 
                 </div>
             </div>
@@ -16,7 +17,7 @@
     </div>
 
     <a class="btn btn-primary mt-4 mb-4" href="{% url 'lms_admin:track_update' slug=track.slug %}">Update Track Details</a>
-    <a class="btn btn-danger mt-4 mb-4" href="{% url 'lms_admin:track_delete' slug=track.slug %}">Delete Track </a>
+    <a class="btn btn-danger mt-4 mb-4" href="{% url 'lms_admin:track_confirm_delete' slug=track.slug %}">Delete Track </a>
 
     
     <div class="row">
@@ -44,8 +45,8 @@
                         <td> {{ student.user.last_name}} </td>
                         <td> {{ student.user.first_name}}</td>
                         <td><span>{{ student.user.email }}</span> </td>
-                        <td class="font-weight-medium"><a href="#"class="badge badge-info">Suspend</a></td>
-                        <td><a class="badge badge-primary" href="#">View</a></td>
+                        <td class="font-weight-medium"><a href="{% url 'lms_admin:student_toggle_suspend' pk=student.pk %}"class="badge badge-info">Suspend</a></td>
+                        <td><a class="badge badge-primary" href="{% url 'lms_admin:student_detail' pk=student.pk %}">View</a></td>
   
                       </tr>
                     {% empty %}
@@ -60,7 +61,8 @@
           </div>
         </div>
       </div>
-
+      
+      <a href="{% url 'lms_admin:track_list' %}" class="btn btn-danger">Return To Tracks List</a>
 </div>
 
 {% endblock %}

@@ -1,7 +1,7 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UserChangeForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UserChangeForm, SetPasswordForm
 from django.core.exceptions import ValidationError
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, password_validation
 
 from lms_admin.models import Cohort, Track
 from .models import Tutor, Student
@@ -69,6 +69,13 @@ class StudentCreationForm(forms.Form):
         label="Cohort",
         queryset=Cohort.objects.all(),
         widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Cohort'}))
+    track = forms.ModelChoiceField(
+        label="Track",
+        queryset=Track.active_objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Track'}))
+    gender = forms.CharField(
+        label='Gender',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Gender'}))
     email = forms.EmailField(
         label='Email',
         widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}))
@@ -78,6 +85,29 @@ class StudentCreationForm(forms.Form):
     last_name = forms.CharField(
         label='Last Name',
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}))
+    picture = forms.ImageField(
+        label='Profile Image',
+        required=False,
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control-file', 'placeholder': 'Picture' }))
+
+    def __init__(self, *args, **kwargs):
+        kwargs.pop("instance")
+        super().__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        user = User.objects.create_user(
+            email=self.cleaned_data['email'], 
+            first_name=self.cleaned_data['first_name'],
+            last_name=self.cleaned_data['last_name'])
+        
+        student = Student.objects.create(user=user, 
+                                        cohort=self.cleaned_data['cohort'],
+                                        track=self.cleaned_data['track'],
+                                        gender=self.cleaned_data['gender'],
+                                        picture=self.cleaned_data['picture'])
+        student.save()
+        return student
+
 
 
 """ Tutor creation form """
@@ -85,7 +115,7 @@ class TutorCreationForm(forms.Form):
 
     track = forms.ModelChoiceField(
         label="Track",
-        queryset=Track.objects.all(),
+        queryset=Track.active_objects.all(),
         widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Track'}))
     email = forms.EmailField(
         label='Email',
@@ -115,10 +145,23 @@ class TutorCreationForm(forms.Form):
      
 class LoginForm(forms.Form):
     email = forms.EmailField(max_length=150, 
-                             error_messages= {"required": "Please enter a valid email"},
-                             widget=forms.EmailInput(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Enter Email Address'}))
-    password = forms.CharField(error_messages= {"required": "Please enter a valid password"},
-        widget=forms.PasswordInput(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Enter Password'}))
+                             widget=forms.EmailInput(attrs={'class': 'form-control form-control-lg', 'id': 'email', 'placeholder': 'Enter Email Address'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control form-control-lg', 'id': 'password', 'placeholder': 'Enter Password'}))
+
+
+class CustomSetPasswordForm(SetPasswordForm):
+
+    new_password1 = forms.CharField(
+        label="New password",
+        widget=forms.PasswordInput(attrs={"autocomplete": "new-password", "class": "form-control"}),
+        strip=False,
+        help_text=password_validation.password_validators_help_text_html(),
+    )
+    new_password2 = forms.CharField(
+        label="New password confirmation",
+        strip=False,
+        widget=forms.PasswordInput(attrs={"autocomplete": "new-password", "class": "form-control"}),
+    )
 
 
 class TutorUpdateForm(forms.ModelForm):

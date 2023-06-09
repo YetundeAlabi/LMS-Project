@@ -1,23 +1,18 @@
-{% extends 'base.html'%}
-{%block content%}
+{% extends 'base.html' %}
 
+{% block content %}
 <div class="content-wrapper">
 
     <div class="col-12 grid-margin stretch-card">
         <div class="card">
           <div class="card-body">
-                <h4 class="card-title">Tutor Update Form</h4>
+                <h4 class="card-title">Track Update Form</h4>
                 <p class="card-description">
-                    Enter details to edit a Tutor
+                    Edit details to update an existing Track
                 </p>
-                <form method="POST" class="form-control">
+                <form method="POST" class="forms-sample">
   
                     {% csrf_token %}
-                    
-                    {% for errors in forms.non_field_errors %}
-                        {{ error }}
-                    {% endfor %}
-
                     {% if form.errors %}
                       <div class="alert alert-danger">
                         <strong>Oops! There was an error:</strong>
@@ -34,16 +29,19 @@
                     {% endif %}
   
                     <div class="form-group">
-                        {{ form.as_p }} 
+                        {{ form.name.label_tag }}
+                        {{ form.name }}
                     </div>
-
+        
+                    <div class="form-group">
+                        {{ form.description.label_tag }}
+                        {{ form.description }}
+                    </div>
                     <input class="btn btn-primary mr-2" value="Submit" type="submit">
-                    <a href="{% url 'lms_admin:tutor_list' %}" class="btn btn-danger">Cancel</a>
-  
                 </form>
             </div>
         </div>
     </div>
   </div>
 
-  {%endblock%}
+{% endblock %}

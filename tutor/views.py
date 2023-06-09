@@ -10,10 +10,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.views.generic.base import TemplateResponseMixin, View
-from accounts.models import Student
+from accounts.models import Student, Tutor
+from accounts.forms import TutorUpdateForm
 from .forms import CourseForm, TopicForm, TopicFormSet
 from .models import Course, Topic, SubTopic
-
 
 
 class TutorUserRequiredMixin(UserPassesTestMixin):
@@ -27,7 +27,6 @@ class TutorDashboardView(TutorUserRequiredMixin, View):
         context = {
             'tutor':tutor,
             'students':students
-
         }
         return render (self.request, 'tutor/tutor_dashboard.html', context=context)
 
@@ -48,8 +47,12 @@ class CourseDetail(TutorUserRequiredMixin, DetailView):
     slug_field= 'slug'
     slug_url_kwarg= 'course_slug'
     template_name = 'tutor/course_detail.html'
-   
 
+    def get_object(self):
+        track = self.request.user.tutor.track
+        return super().get_object().filter(track=track)
+
+   
 class CourseAndTopicCreateView(TutorUserRequiredMixin, CreateView):
     model = Course
     form_class = CourseForm
@@ -302,6 +305,7 @@ class SubTopicCreateUpdateView(TemplateResponseMixin, View):
             return HttpResponseRedirect(reverse('course:subtopic_list', kwargs={'course_slug': self.topic.course.slug, 'pk': topic_id}))
         return self.render_to_response({'form': form, 'object': self.obj})
 
+
 class SubTopicDeleteView(View):
     
     def get(self, request, *args, **kwargs):
@@ -310,7 +314,6 @@ class SubTopicDeleteView(View):
 
     def post(self, request, id):
         sub_topic = get_object_or_404(SubTopic, id=id, topic__course__course_tutor=request.user.tutor)
-        # topic = sub_topic.topic
         sub_topic.is_active = False
         sub_topic.save()
         return HttpResponseRedirect(reverse('course:subtopic_list', kwargs={'course_slug': sub_topic.topic.course.slug, 'pk':sub_topic.topic.id}))
@@ -325,8 +328,6 @@ class SubTopicList(TutorUserRequiredMixin, ListView):
     def get_queryset(self):
         topic_id=self.kwargs['pk']
         course_slug=self.kwargs['course_slug']
-        # print(course_slug)
-        # track = self.request.user.tutor.track
         return super().get_queryset().filter(topic=get_object_or_404(Topic, id=topic_id))
     
     def get_context_data(self, **kwargs):
@@ -334,3 +335,6 @@ class SubTopicList(TutorUserRequiredMixin, ListView):
         topic_id = self.kwargs['pk']
         context['topic'] = get_object_or_404(Topic, id=topic_id)
         return context
+    
+
+        

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 
@@ -16,6 +17,7 @@
         width: 300px;
         height: 300px;
         border-radius: 40px;
+        align-items: center;
       box-shadow: 5px 5px 30px 7px rgba(0,0,0,0.25), -5px -5px 30px 7px rgba(0,0,0,0.22);
         cursor: pointer;
         transition: 0.4s;
@@ -57,6 +59,10 @@
       .title-black {
         color: black;
       }
+
+      a:hover {
+        text-decoration: none;
+      }
       
       @media all and (max-width: 500px) {
         .card-list {
@@ -70,32 +76,53 @@
         width: 300px;
         height: 300px;
         border-radius: 40px;
-        background-image: url('https://i.redd.it/b3esnz5ra34y.jpg');
+        background-image: url("https://i.redd.it/b3esnz5ra34y.jpg");
         background-size: cover;
         background-repeat: no-repeat;
         background-position: center;
         background-repeat: no-repeat;
-      box-shadow: 5px 5px 30px 7px rgba(0,0,0,0.25), -5px -5px 30px 7px rgba(0,0,0,0.22);
+        box-shadow: 5px 5px 30px 7px rgba(0,0,0,0.25), -5px -5px 30px 7px rgba(0,0,0,0.22);
         transition: 0.4s;
       }
           
 </style>
 
 <div class="content-wrapper">
-    <div class="cards-list">
+
+    <div class="row">
+      <div class="col-md-12 grid-margin">
+          <div class="row">
+              <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                  <h1>Tracks</h1>
+              </div>
+          </div>
+      </div>
+    </div>
+
+    <div>
+      <a class="btn btn-primary mr-2" href="{% url 'lms_admin:track_create' %}"> Create New Track </a>
+    </div>
+
+    <div class="cards-list mt-5">
     {% for track in tracks %}
     <a href="{% url 'lms_admin:track_detail' slug=track.slug %}">
         <div class="card">
             <div class="card_image"> 
                 <img src="https://i.redd.it/b3esnz5ra34y.jpg" /> 
             </div>
-            <div class="card_title title-white">
-                <p>{{ track.name }}</p>
+            <div class="card_title title-black">
+                <p class="fs-2">{{ track.name }}</p>
             </div>
         </div>
     </a>
+    {% empty %}
+    <div class="row">
+      <h5>There are currently no active tracks</h5>
+    </div>
     {% endfor %}
     </div>
+
+    
         
 
         

@@ -53,12 +53,12 @@
 <body>
     <div class="container">
         <div class="logo">
-            <img src="{% static 'assets/images/lms_logo.svg'%}" alt="Logo">
+            <img src="{% static 'assets/images/lms_logo_email.png'%}" alt="Logo">
         </div>
         <div class="content">
-            <p>Hello {{ first_name }},</p>
+            <p>Hello {{ user.first_name }},</p>
             <p>Thank you for signing up. Please click the button below to verify your email address and set your password:</p>
-            <p><a class="button" href="{{ verification_url }}">Verify Email and Set Password</a></p>
+            <p><a class="button" href="{{ set_password_url }}">Verify Email and Set Password</a></p>
             <p>If you didn't request this email, you can ignore it.</p>
         </div>
     </div>

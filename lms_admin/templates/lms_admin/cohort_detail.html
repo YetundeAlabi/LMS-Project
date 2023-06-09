@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="content-wrapper">
+
+    <div class="row">
+        <div class="col-md-12 grid-margin">
+            <div class="row">
+                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                    <h2>{{ cohort.year }}</h2>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="row">
+        <div class="col-md grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <p class="card-title mb-0">Registered Students </p>
+              <div class="table-responsive">
+                <table class="table table-striped-lms table-hover">
+                  <thead>
+                    <tr>
+                      <th>Last Name</th>
+                      <th>First Name</th>
+                      <th>Email</th>
+                      <th>Status</th>
+                      <th>View</th>
+  
+                    </tr>  
+                  </thead>
+                 
+  
+                  <tbody>
+                    {% for student in cohort_students %}
+                      <tr>
+                        <td> {{ student.user.last_name}} </td>
+                        <td> {{ student.user.first_name}}</td>
+                        <td><span>{{ student.user.email }}</span> </td>
+                        <td class="font-weight-medium"><a href="{% url 'lms_admin:student_toggle_suspend' pk=student.pk %}"class="badge badge-info">Suspend</a></td>
+                        <td><a class="badge badge-primary" href="{% url 'lms_admin:student_detail' pk=student.pk %}">View</a></td>
+  
+                      </tr>
+                    {% empty %}
+                      <tr>
+                        <td>There are no registered students under this track.</td>
+                      <tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <a href="{% url 'lms_admin:cohort_list' %}" class="btn btn-danger">Return To Cohort List</a>
+</div>
+
+{% endblock %}
