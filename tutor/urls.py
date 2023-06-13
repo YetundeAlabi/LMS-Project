@@ -22,6 +22,7 @@ urlpatterns = [
     path('courses/<slug:course_slug>/topics/<int:id>/delete', views.TopicDeleteView.as_view(), name='create_topic'),
     path('courses/<slug:course_slug>/topics/<uuid:topic_id>/subtopic/<str:model_name>/create', views.SubTopicCreateUpdateView.as_view(), name='create_subtopic'),
     path('courses/<slug:course_slug>/topics/<uuid:topic_id>/subtopic/<str:model_name>/update/<int:id>', views.SubTopicCreateUpdateView.as_view(), name='update_subtopic'),
+    path('courses/<slug:course_slug>/topics/<uuid:topic_id>/subtopic/<str:model_name>/subtopic/<int:id>', views.SubTopicDetailView.as_view(), name='subtopic_detail'),
     path('subtopic/<int:id>/delete', views.SubTopicDeleteView.as_view(), name='delete_subtopic'),
     path('track/students/', views.TrackStudentListView.as_view(), name='track_student_list'),
     path('track/students/<int:pk>/', views.TrackStudentDetailView.as_view(), name='track_student_detail'),

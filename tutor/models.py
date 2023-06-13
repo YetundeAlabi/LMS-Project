@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from django.utils.text import slugify
 from accounts.models import Tutor, Student
 from lms_admin.models import Track
+from django.core.validators import FileExtensionValidator
 
 
 class ActiveManager(models.Manager):
@@ -42,7 +43,7 @@ class Course(BaseContent):
         ]
 
     def __str__(self):
-        return f"{self.order}_{self.title}"
+        return f"{self.title}"
     
     def get_absolute_url(self):
         return reverse('course_detail', args=[str(self.slug)])
@@ -67,8 +68,6 @@ class SubTopic(BaseContent):
     item = GenericForeignKey('content_type', 'object_id')
  
 
-    class Meta:
-        ordering= ['order']
         
     def __str__(self):
         return f"{self.object_id}"
