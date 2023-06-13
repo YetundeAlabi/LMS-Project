@@ -1,0 +1,88 @@
+{% extends 'home.html' %}
+
+{% block content %}
+
+<div class="untree_co-section">
+    <div class="container">
+
+        <div class="row mb-5">
+            <div class="col-lg-4 mb-5 mt-5 order-2 mb-lg-0" data-aos="fade-up" data-aos-delay="100">
+                <div class="contact-info">
+
+                    <div class="address mt-4">
+                        <i class="icon-room"></i>
+                        <h4 class="mb-2">Location:</h4>
+                        <p>Christina Oyinade House, Iwo Road, Ibadan, Oyo State</p>
+                    </div>
+
+                    <div class="open-hours mt-4">
+                        <i class="icon-clock-o"></i>
+                        <h4 class="mb-2">Open Hours:</h4>
+                        <p>
+                            Monday-Friday:<br>
+                            09:00 AM - 6:00 PM
+                        </p>
+                    </div>
+
+                    <div class="email mt-4">
+                        <i class="icon-envelope"></i>
+                        <h4 class="mb-2">Email:</h4>
+                        <p>info@afexats.com</p>
+                    </div>
+
+                    <div class="phone mt-4">
+                        <i class="icon-phone"></i>
+                        <h4 class="mb-2">Call:</h4>
+                        <p>+1 1234 55488 55</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-lg-7 mr-auto order-1" data-aos="fade-up" data-aos-delay="200">
+
+                <h2 class="mb-3">Application Form</h2>
+            
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="col-12 mb-3">
+                        <label for="{{ form.first_name.id_for_label }}">First Name:</label>
+                        {{ form.first_name }}
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <label for="{{ form.last_name.id_for_label }}">Last Name:</label>
+                        {{ form.last_name }}
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <label for="{{ form.email.id_for_label }}">Email:</label>
+                        {{ form.email }}
+                    </div>
+
+                    <div class="row ml-auto">
+                        <div class="col-5 mb-3">
+                            <label for="{{ form.gender.id_for_label }}">Gender:</label>
+                            {{ form.gender }}
+                        </div>
+
+                        <div class="col-5 mb-3">
+                            <label for="{{ form.track.id_for_label }}">Track:</label>
+                            {{ form.track }}
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <input type="submit" value="Apply" class="btn btn-primary">
+                    </div>
+
+                </form>
+            </div>
+        </div>
+      
+    </div>
+</div>
+
+
+{% endblock %}
