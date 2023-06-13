@@ -78,7 +78,7 @@ class Student(models.Model):
         return f'{self.user.first_name} {self.user.last_name}'
     
     def __str__(self):
-        return self.user.email
+        return self.gender
 
     def get_absolute_url(self):
         return reverse('student_detail', args=[str(self.id)])

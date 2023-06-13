@@ -1,54 +1,187 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% block content %}
 
-{% block content %}
-
-<div class"content-wrapper">
-
-    <div class="row">
-
-        <div class="col-md-3 mb-4 stretch-card transparent">
-          <div class="card card-tale">
-            <div class="card-body">
-              <p class="mb-4">Today’s Bookings</p>
-              <p class="fs-30 mb-2">4006</p>
-              <p>10.00% (30 days)</p>
+<div class="content-wrapper" style="background-color: #EBEBEC;">
+  <div class="card-group">
+    <div class="col-sm-3">
+      <div class="card card-red">
+        <div class="card-body">
+          <h5 class="card-title">Students</h5>
+          <div class="d-flex align-items-center">
+            <div
+              class="rounded-circle d-flex align-items-center justify-content-center mr-2"
+            >
+              <i style="font-size: 1.5rem" class="fas fa-user-check menu-icon"></i>
             </div>
+            <p class="fs-30 mb-2">{{students.count}}</p>
           </div>
         </div>
-
-        <div class="col-md-3 mb-4 stretch-card transparent">
-          <div class="card card-dark-blue">
-            <div class="card-body">
-              <p class="mb-4">Total Bookings</p>
-              <p class="fs-30 mb-2">61344</p>
-              <p>22.00% (30 days)</p>
-            </div>
-          </div>
-        </div>
-        
-        <div class="col-md-3 mb-4 stretch-card transparent">
-          <div class="card card-tale">
-            <div class="card-body">
-              <p class="mb-4">Today’s Bookings</p>
-              <p class="fs-30 mb-2">4006</p>
-              <p>10.00% (30 days)</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-3 mb-4 stretch-card transparent">
-          <div class="card card-dark-blue">
-            <div class="card-body">
-              <p class="mb-4">Total Bookings</p>
-              <p class="fs-30 mb-2">61344</p>
-              <p>22.00% (30 days)</p>
-            </div>
-          </div>
-        </div>
-
       </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="card card-grey">
+        <div class="card-body">
+          <h3 class="card-title">Tracks</h3>
+          <div class="d-flex align-items-center">
+            <div
+              class="rounded-circle d-flex align-items-center justify-content-center mr-2"
+            >
+              <i style="font-size: 1.5rem" class="mdi mdi-group menu-icon"></i>
+            </div>
+            <p class="fs-30 mb-2">{{tracks.count}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="card card-green">
+        <div class="card-body">
+          <h5 class="card-title">Tutors</h5>
+          <div class="d-flex align-items-center">
+            <div
+              class="rounded-circle d-flex align-items-center justify-content-center mr-2">
+              <i style="font-size: 1.5rem" class="fas fa-chalkboard-teacher menu-icon"></i>
+            </div>
+            <p class="fs-30 mb-2">{{tutors.count}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="card card-brown">
+        <div class="card-body">
+          <h5 class="card-title">Applicants</h5>
+          <div class="d-flex align-items-center">
+            <div
+              class="rounded-circle d-flex align-items-center justify-content-center mr-2">
+              <i style="font-size: 1.5rem" class="fas fa-user-clock menu-icon"></i>
+            </div>
+            <p class="fs-30 mb-2">{{applicants.count}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row mt-5">
+    <div class="col-lg-6">
+      <div class="card chart mt-5">
+        <div class="card-body" style="color: #00008b;">
+          <h5 class="card-title chart" style="color: #000080;">Student to Track chart</h5>
+          <div id="studentChart"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card mt-5">
+        <div class="card-body">
+          <h5 class="card-title" style="color: #000080;">Demography of Male to Female Applicants</h5>
+          <canvas id="doughnutChart" style="max-height: 400px;"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
 
-
+<!--Student track barchart -->
+<div class="row mt-5">
+  <div class="card mt-5" style="min-width: 100%;">
+    <div class="card-body ">
+      <p class="card-title mb-5" style="color: #00008b;"> Tutors</p>
+      <div class="table-responsive">
+        <table class="table table-striped-lms table-hover" style="width: 100%;">
+          <thead>
+            <tr>
+              <th>S/N</th>
+              <th>Full Name</th>
+              <th>Email</th>
+              <th>Track</th>
+              <th>Suspension Status</th>
+            </tr>  
+          </thead>
+          <tbody>
+            {% for tutor in tutors %}
+            <tr>
+              <th scope="row">{{forloop.counter}}</th>
+              <td> {{ tutor.user.first_name}} {{ tutor.user.last_name}} </td>
+              <td><span>{{ tutor.user.email }}</span> </td>
+              <td>{{ tutor.track.name }}</td>
+              <td class="font-weight-medium"><a href="{% url 'lms_admin:tutor_toggle_suspend' pk=tutor.pk%}" class="btn {%if not tutor.is_suspended %}
+                  btn-info"> Active</a></td>
+                  {% else %}
+                  btn-warning">Inactive</a></td>
+                  {%endif%}
+            </tr>
+          {% endfor %} 
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  </div>
 </div>
+{%endblock%}
+{%block script%}
 
+      <!-- Bar Chart -->
+    
+ <!-- Donut CHart -->     
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    
+    new Chart(document.querySelector('#doughnutChart'), {
+      type: 'doughnut',
+      data: {
+        labels: [
+          'Male',
+          'Female',
+          
+        ],
+        datasets: [{
+          label: 'Total',
+          data: [{{male_applicants}}, {{female_applicants}}],
+          backgroundColor: [
+            'rgb(0, 123, 255)',
+            'rgb(255, 182, 193)',
+            
+          ],
+          hoverOffset: 4
+        }]
+      }
+    });
+  });
+</script>
+<!-- End Doughnut CHart -->
+
+      <!-- Bar Chart -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    var studentCounts = [];
+    var trackNames = [];
+
+    {% for track in tracks %}
+      studentCounts.push({{ track.get_students_count }});
+      trackNames.push('{{ track.name }}');
+    {% endfor %}
+    new ApexCharts(document.getElementById("studentChart"), {
+      series: [{
+        data: studentCounts
+      }],
+      chart: {
+        type: 'bar',
+        height: 350
+      },
+      plotOptions: {
+        bar: {
+          borderRadius: 4,
+          horizontal: true,
+        }
+      },
+      dataLabels: {
+        enabled: false
+      },
+      xaxis: {
+        categories: trackNames,
+      }
+    }).render();
+  });
+</script>
+<!-- End Bar Chart -->
 {% endblock %}
