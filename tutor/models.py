@@ -65,12 +65,7 @@ class SubTopic(BaseContent):
     )
     object_id = models.PositiveIntegerField()
     item = GenericForeignKey('content_type', 'object_id')
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    objects = models.Manager()
-    active_objects = ActiveManager()
+ 
 
     def __str__(self):
         return f"{self.object_id}"
