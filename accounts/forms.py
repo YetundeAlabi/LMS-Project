@@ -61,6 +61,7 @@ class UserForm(forms.ModelForm):
             user=user,
             track=self.cleaned_data["track"])
         
+        tutor.save()
 
 
 class StudentCreationForm(forms.Form):
@@ -104,7 +105,7 @@ class StudentCreationForm(forms.Form):
                                         track=self.cleaned_data['track'],
                                         gender=self.cleaned_data['gender'],
                                         picture=self.cleaned_data['picture'])
-        
+        student.save()
         return student
 
 
