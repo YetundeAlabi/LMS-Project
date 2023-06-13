@@ -62,7 +62,6 @@
     </div>
   </div>
   <div class="row mt-5">
-    
     <div class="col-lg-6">
       <div class="card chart mt-5">
         <div class="card-body">
@@ -84,11 +83,11 @@
 
 <!--Student track barchart -->
 <div class="row mt-5">
-  <div class="card mt-5">
+  <div class="card mt-5" style="min-width: 100%;">
     <div class="card-body">
       <p class="card-title mb-5" style="color: #00008b;"> Tutors</p>
       <div class="table-responsive">
-        <table class="table table-striped-lms table-hover">
+        <table class="table table-striped-lms table-hover" style="width: 100%;">
           <thead>
             <tr>
               <th>S/N</th>
@@ -123,10 +122,8 @@
 {%block script%}
 
       <!-- Bar Chart -->
-      
-
-
- <!-- Doughnut CHart -->     
+    
+ <!-- Donut CHart -->     
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     
@@ -154,10 +151,9 @@
 </script>
 <!-- End Doughnut CHart -->
 
-
-      <script>
-        /*
-  document.addEventListener('DOMContentLoaded', function() {
+      <!-- Bar Chart -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
     var studentCounts = [];
     var trackNames = [];
 
@@ -165,116 +161,28 @@
       studentCounts.push({{ track.get_students_count }});
       trackNames.push('{{ track.name }}');
     {% endfor %}
-
-    var ctx = document.getElementById('studentChart').getContext('2d');
-    var chart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: trackNames,
-        datasets: [{
-          label: 'Students',
-          data: studentCounts,
-          backgroundColor: 'rgba(75, 192, 192, 0.2)',
-          borderColor: 'rgba(75, 192, 192, 1)',
-          borderWidth: 1
-        }]
+    new ApexCharts(document.getElementById("studenttChart"), {
+      series: [{
+        data: studentCounts
+      }],
+      chart: {
+        type: 'bar',
+        height: 350
       },
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            beginAtZero: true
-          }
+      plotOptions: {
+        bar: {
+          borderRadius: 4,
+          horizontal: true,
         }
+      },
+      dataLabels: {
+        enabled: false
+      },
+      xaxis: {
+        categories: trackNames,
       }
-    });
-  }); */
+    }).render();
+  });
 </script>
-<div class="col-lg-6">
-  <div class="card">
-    <div class="card-body">
-      <h5 class="card-title">Bar Chart</h5>
-
-      <!-- Bar Chart -->
-      
-
-      <script>
-        
-        document.addEventListener("DOMContentLoaded", () => {
-          var studentCounts = [];
-          var trackNames = [];
-
-          {% for track in tracks %}
-            studentCounts.push({{ track.get_students_count }});
-            trackNames.push('{{ track.name }}');
-          {% endfor %}
-          new ApexCharts(document.getElementById("studenttChart"), {
-            series: [{
-              data: studentCounts
-            }],
-            chart: {
-              type: 'bar',
-              height: 350
-            },
-            plotOptions: {
-              bar: {
-                borderRadius: 4,
-                horizontal: true,
-              }
-            },
-            dataLabels: {
-              enabled: false
-            },
-            xaxis: {
-              categories: trackNames,
-            }
-          }).render();
-        });
-      </script>
-      <!-- End Bar Chart -->
-
-      <script>
-        /*
-        document.addEventListener("DOMContentLoaded", () => {
-          var studentCounts = [];
-          var trackNames = [];
-
-        {% for track in tracks %}
-          studentCounts.push({{ track.get_students_count }});
-          trackNames.push('{{ track.name }}');
-        {% endfor %}
-          const chartData = {
-            labels: trackNames,
-            datasets: [{
-              label: "Students",
-              data: studentCounts,
-              backgroundColor: "rgba(75, 192, 192, 0.2)",
-              borderColor: "rgba(75, 192, 192, 1)",
-              borderWidth: 1
-            }]
-          };
-      
-          const chartOptions = {
-            responsive: true,
-            scales: {
-              x: {
-                beginAtZero: true
-              },
-              y: {
-                beginAtZero: true
-              }
-            }
-          };
-      
-          new Chart(document.getElementById("studentChart"), {
-            type: "horizontalBar",
-            data: chartData,
-            options: chartOptions
-          });
-        }); */
-      </script>
-      
-
-
-
+<!-- End Bar Chart -->
 {% endblock %}
