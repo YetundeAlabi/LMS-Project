@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.utils.text import slugify
 from accounts.models import Tutor, Student
 from lms_admin.models import Track
+from django.core.validators import FileExtensionValidator
 
 
 
@@ -76,7 +77,7 @@ class Text(BaseContent):
 
 
 class File(BaseContent):
-    file = models.FileField(upload_to='files')
+    file = models.FileField(upload_to='files', validators= [FileExtensionValidator(allowed_extensions=['pdf','jpg','png'])])
 
     def get_file_url(self):
         return self.file.url
