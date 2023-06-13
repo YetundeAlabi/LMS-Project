@@ -10,10 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
-
-from dotenv import load_dotenv
 from pathlib import Path
 
+from dotenv import load_dotenv
 
 load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -43,6 +42,7 @@ INSTALLED_APPS = [
     'lms_admin',
     'django_celery_results',
     'embed_video',
+    'base',
 
 ]
 
@@ -112,7 +112,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Lagos'
 
 USE_I18N = True
 
@@ -150,14 +150,18 @@ DEFAULT_FROM_EMAIL =os.environ.get('EMAIL_HOST_USER')
 
 # Celery Settings
 CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
-# CELERY_ACCEPT_CONTENT = ['application/json']
-accept_content = ['application/json']
-# CELERY_RESULT_SERIALIZER = 'json'
-result_serializer = 'json'
-# CELERY_TASK_SERIALIZER = 'json'
-task_serializer = 'json'
-# CELERY_TIMEZONE = 'Africa/Lagos'
-timezone = 'Africa/Lagos'
 
-# CELERY_RESULT_BACKEND = 'django-db'
-result_backend= 'django-db'
+CELERY_ACCEPT_CONTENT = ['application/json']
+# accept_content = ['application/json']
+
+CELERY_RESULT_SERIALIZER = 'json'
+# result_serializer = 'json'
+
+CELERY_TASK_SERIALIZER = 'json'
+# task_serializer = 'json'
+
+CELERY_TIMEZONE = 'Africa/Lagos'
+# timezone = 'Africa/Lagos'
+
+CELERY_RESULT_BACKEND = 'django-db'
+# result_backend= 'django-db'

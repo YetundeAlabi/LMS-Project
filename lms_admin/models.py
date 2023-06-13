@@ -1,41 +1,25 @@
+from base.models import DeletableBaseModel
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.text import slugify
 
-
 # Create your models here.
 
-class ActiveManager(models.Manager):
- def get_queryset(self):
-    return super(ActiveManager, self).get_queryset().filter(is_deleted=False)
 
-class DeleteManager(models.Manager):
- def get_queryset(self):
-    return super(ActiveManager, self).get_queryset().filter(is_deleted=True)
-     
-
-class Track(models.Model):
+class Track(DeletableBaseModel):
     name = models.CharField(max_length=200, unique=True)
     description = models.TextField()
     slug = models.SlugField(null=True, blank=True)
-    is_deleted = models.BooleanField(default=False)
-    created_date = models.DateTimeField(auto_now_add=True)
-    updated_date = models.DateTimeField(auto_now=True)
-
-    objects = models.Manager()
-    active_objects = ActiveManager()
-    deleted_objects = DeleteManager()
 
     class Meta:
         ordering = ['-created_date']
 
-
     def save(self, *args, **kwargs):
         if self.name:
             self.slug = slugify(self.name)
-        super().save(*args, **kwargs)    
+        return super().save(*args, **kwargs)    
 
     def __str__(self):
         return self.name
@@ -44,7 +28,7 @@ class Track(models.Model):
         return reverse('lms_admin:track_detail', kwargs={'slug': self.slug})
     
     def get_students_count(self):
-        return self.students.count()
+        return self.stud,ents.count()
 
 
 class Cohort(models.Model):

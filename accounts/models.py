@@ -1,13 +1,11 @@
-from PIL import Image
-
+from base import constants
+from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
+                                        PermissionsMixin)
 from django.db import models
-from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from django.db.models.query import QuerySet
 from django.urls import reverse
-
-
-from lms_admin.models import Track
-from lms_admin.models import Cohort
+from lms_admin.models import Cohort, Track
+from PIL import Image
 
 
 class MyUserManager(BaseUserManager):
@@ -56,12 +54,18 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def is_admin(self):
         return self.is_staff
+    
+
 
 
 class Student(models.Model):
+    FEMALE = constants.FEMALE
+    MALE = constants.MALE
+
+
     GENDER_CHOICES =(
-        ("FEMALE", "Female"),
-        ("MALE", "Male"),
+        ("FEMALE", FEMALE),
+        ("MALE", MALE),
     )
 
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
@@ -78,6 +82,7 @@ class Student(models.Model):
         return f'{self.user.first_name} {self.user.last_name}'
     
     def __str__(self):
+        # return self.user.email
         return self.gender
 
     def get_absolute_url(self):

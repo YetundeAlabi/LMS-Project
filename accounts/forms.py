@@ -1,12 +1,14 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UserChangeForm, SetPasswordForm
-from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model, password_validation
-
+from django.contrib.auth.forms import (AuthenticationForm, SetPasswordForm,
+                                       UserChangeForm, UserCreationForm)
+from django.core.exceptions import ValidationError
 from lms_admin.models import Cohort, Track
-from .models import Tutor, Student
+
+from .models import Student, Tutor
 
 User = get_user_model()
+
 
 class SignUpForm(UserCreationForm):
     
@@ -61,7 +63,8 @@ class UserForm(forms.ModelForm):
             user=user,
             track=self.cleaned_data["track"])
         
-        tutor.save()
+        # tutor.save()
+        return user
 
 
 class StudentCreationForm(forms.Form):
@@ -105,7 +108,7 @@ class StudentCreationForm(forms.Form):
                                         track=self.cleaned_data['track'],
                                         gender=self.cleaned_data['gender'],
                                         picture=self.cleaned_data['picture'])
-        student.save()
+        # student.save()
         return student
 
 
@@ -139,7 +142,7 @@ class TutorCreationForm(forms.Form):
         
         tutor = Tutor.objects.create(user=user, 
                                         track=self.cleaned_data['track'])
-        tutor.save()
+        # tutor.save()
         return tutor
 
      

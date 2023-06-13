@@ -9,11 +9,16 @@ from django.http.response import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
-from django.views.generic.base import TemplateResponseMixin, View
+from django.views.generic.base import TemplateResponseMixin, View, ContextMixin
 from accounts.models import Student, Tutor
 from accounts.forms import TutorUpdateForm
 from .forms import CourseForm, TopicForm, TopicFormSet
 from .models import Course, Topic, SubTopic
+
+class CohortQuerySetMixin(ContextMixin):
+    def get_queryset(self):
+     super().get_queryset()
+    
 
 
 class TutorUserRequiredMixin(UserPassesTestMixin):
