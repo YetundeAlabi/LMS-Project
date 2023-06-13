@@ -93,6 +93,20 @@
 </style>
 
 <div class="content-wrapper">
+  <div class="row">
+    <div class="col-md-12 grid-margin">
+        <div class="row">
+            <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                <h1>Cohorts</h1>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <div>
+    <a class="btn btn-primary mr-2" href="{% url 'lms_admin:cohort_create' %}"> Create New Cohort </a>
+  </div>
+
     <div class="cards-list">
     {% for cohort in cohorts %}
     <a href="{% url 'lms_admin:cohort_detail' pk=cohort.pk %}">
