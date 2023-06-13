@@ -19,13 +19,14 @@ from django.urls import path, include
 from .views import HomePage
 from django.conf.urls.static import static
 from django.conf import settings
+from lms_admin import views
 
 
 urlpatterns = [
     
     path('', HomePage.as_view(), name="home_page"),
     path('', include('accounts.urls', namespace="accounts")),
-    path('admin/', admin.site.urls), 
+    path('apply/', views.ApplicantCreateView.as_view(), name="apply"),
     path('tutor/', include('tutor.urls', namespace="course")),
     path('LMS/admin/', include('lms_admin.urls', namespace="lms_admin")),
     path('student/', include('student.urls',namespace='student')),

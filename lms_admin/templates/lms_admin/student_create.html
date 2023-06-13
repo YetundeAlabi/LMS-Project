@@ -7,14 +7,14 @@
 {% endblock %}
 
 {% block content %}
-<div class="content-wrapper">
+<div class="content-wrapper" style="background-color: #EBEBEC;">
 
     <div class="col-12 grid-margin stretch-card">
         <div class="card">
           <div class="card-body">
                 <h4 class="card-title">Student Creation Form</h4>
                 <p class="card-description">
-                    Enter details to create a new Student
+                    Enter details to create a new Student or <p><a href="{% url 'lms_admin:import_students' %}">Click here  to create students by importing a csv file</a></p>
                 </p>
                 <form method="POST" class="forms-sample">
   
