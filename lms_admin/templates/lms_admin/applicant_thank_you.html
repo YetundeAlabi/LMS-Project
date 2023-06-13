@@ -1,15 +1,13 @@
-{% extends 'base.html' %}
+{% extends 'home.html' %}
 
 {% block content %}
-    <div class="content-wrapper">
-        <div class="container">
+        <div class="container mt-5">
             <h1>Thank You for Applying!</h1>
-            <p style="font-family: Arial, sans-serif; font-size: 16px; color: #333;">Your application has been submitted successfully.</p>
-            <p style="font-family: Arial, sans-serif; font-size: 16px; color: #333;">Please check your email for any future notifications or updates.</p>
+            <p>Your application has been submitted successfully.</p>
+            <p>Please check your email for any future notifications or updates.</p>
 
-            <div class="mt-5">
+            <div class="mt-5 mb-5">
                 <a href="{% url 'home_page' %}" class="btn btn-primary">Go Back Home</a>
             </div>
         </div>
-    </div>
 {% endblock %}
