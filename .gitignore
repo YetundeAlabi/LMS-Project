@@ -10,8 +10,6 @@ venv/
 faith_env/
 .env
 __pycache__/*
-=======
-_pycache__/*
 *.pyc
 __pycache__/
 lms_admin/student.csv

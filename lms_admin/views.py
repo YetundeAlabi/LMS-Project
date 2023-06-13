@@ -32,11 +32,18 @@ from .tasks import send_verification_mail
 # Create your views here
 
 class DashboardView(LoginRequiredMixin, TemplateView): 
-    template_name = "lms_admin/dashboard2.html"
+    template_name = "lms_admin/dashboard3.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        current_year = timezone.now().year
         context['students'] = Student.objects.all()
+        context['tutors'] = Tutor.objects.all()
+        context['tracks'] = Track.objects.all()
+        context['cohort'] = Cohort.objects.filter(year=current_year)
+        context['applicants'] = Applicant.objects.all()
+        context['male_applicants'] = Applicant.objects.filter(gender="MALE", cohort__year=current_year).count()
+        context['female_applicants'] = Applicant.objects.filter(gender="FEMALE").count()
         return context
 
 

@@ -42,6 +42,9 @@ class Track(models.Model):
 
     def get_absolute_url(self):
         return reverse('lms_admin:track_detail', kwargs={'slug': self.slug})
+    
+    def get_students_count(self):
+        return self.students.count()
 
 
 class Cohort(models.Model):
@@ -52,6 +55,9 @@ class Cohort(models.Model):
     
     def __str__(self):
         return self.get_name()
+    
+    def get_students_count(self):
+        return self.students.count()
 
 
 class ApprovedApplicantManager(models.Manager):
