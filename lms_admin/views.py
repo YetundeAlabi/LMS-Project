@@ -21,7 +21,7 @@ from django.views.generic import (
     CreateView, DetailView, FormView, ListView, UpdateView, TemplateView, DeleteView
 )
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-
+from tutor.studentcadd import register_courses
 from accounts.forms import StudentCreationForm, TutorCreationForm, TutorUpdateForm, StudentUpdateForm
 from accounts.models import Student, Tutor, User
 from lms_admin.forms import TrackForm, CohortCreateForm, StudentImportForm,ApplicantChecklistForm, ApplicantForm
@@ -126,7 +126,8 @@ class StudentCreateView(LoginRequiredMixin, CreateView):
         student = form.save()
         user = student.user
         self.object = student
-        
+
+        register_courses(self.object)
         
         subject = 'Login Instructions' if student else  'Account Setup Instructions'
         context = {

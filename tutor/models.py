@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.utils.text import slugify
 from accounts.models import Tutor, Student
 from lms_admin.models import Track
-from django.db.models import Sum
+
 
 
 class ActiveManager(models.Manager):
@@ -65,12 +65,7 @@ class SubTopic(BaseContent):
     )
     object_id = models.PositiveIntegerField()
     item = GenericForeignKey('content_type', 'object_id')
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    objects = models.Manager()
-    active_objects = ActiveManager()
+ 
 
     def __str__(self):
         return f"{self.object_id}"
@@ -98,52 +93,4 @@ def course_slug(sender, instance, created, **kwargs):
         instance.slug = slug
         instance.save()
 
-
-class StudentCourse(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    track = models.ForeignKey(Track, on_delete=models.CASCADE, null=True, blank=True)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    progress_level = models.FloatField(default=0.0)
-
-    def update_progress_level(self):
-        topic_count = self.student_topics.filter(student_course=self).count()
-        topic_progress_sum = self.student_topics.filter(student_course=self).aggregate(Sum('progress_level')).get('progress_level__sum', 0.0)
-        if topic_count > 0:
-            average_progress = topic_progress_sum / topic_count
-            self.progress_level = average_progress
-            self.save()
-
-    def __str__(self):
-        return f' {self.course.title} for {self.student}'
-
-
-class StudentTopic(models.Model):
-    student_course = models.ForeignKey(StudentCourse, on_delete=models.CASCADE, related_name='student_topics')
-    topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
-    progress_level = models.FloatField(default=0.0)
-
-    def update_progress_level(self):
-        sub_topic_count = self.student_subtopics.filter(student_topic=self).count()
-        sub_topic_progress_sum = self.student_subtopics.filter(student_topic=self).aggregate(Sum('progress_level')).get('progress_level__sum', 0.0)
-        if sub_topic_count > 0:
-            average_progress = sub_topic_progress_sum / sub_topic_count
-            self.progress_level = average_progress
-            self.save()
-
-    def __str__(self):
-        return f'{self.student_course}, {self.topic.title}'
-
-
-class StudentSubTopic(models.Model):
-    student_topic = models.ForeignKey(StudentTopic, on_delete=models.CASCADE, related_name='student_subtopics')
-    sub_topic = models.ForeignKey(SubTopic, on_delete=models.CASCADE)
-    progress_level = models.FloatField(default=0.00)
-
-    def update_progress_level(self):
-        if self.progress_level < 100:
-            self.progress_level = 100
-            self.save()
-
-    def __str__(self):
-        return f"student subtopic {self.id} , under {self.student_topic}"
 
