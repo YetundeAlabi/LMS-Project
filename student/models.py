@@ -12,10 +12,10 @@ class StudentCourse(models.Model):
     progress_level = models.FloatField(default=0.0)
 
     def update_progress_level(self):
-        topic_count = self.student_topics.count()
-        topic_progress_sum = self.student_topics.aggregate(Sum('progress_level')).get('progress_level__sum', 0.0)
-        if topic_count > 0:
-            average_progress = topic_progress_sum / topic_count
+        related_topics_count = self.student_topics.count()
+        related_topics_progress_sum = self.student_topics.aggregate(Sum('progress_level')).get('progress_level__sum', 0.0)
+        if related_topics_count > 0:
+            average_progress = related_topics_progress_sum / related_topics_count
             self.progress_level = average_progress
             self.save()
 
@@ -29,10 +29,10 @@ class StudentTopic(models.Model):
     progress_level = models.FloatField(default=0.0)
 
     def update_progress_level(self):
-        sub_topic_count = self.student_subtopics.count()
-        sub_topic_progress_sum = self.student_subtopics.aggregate(Sum('progress_level')).get('progress_level__sum', 0.0)
-        if sub_topic_count > 0:
-            average_progress = sub_topic_progress_sum / sub_topic_count
+        related_sub_topics_count = self.student_subtopics.count()
+        related_sub_topics_progress_sum = self.student_subtopics.aggregate(Sum('progress_level')).get('progress_level__sum', 0.0)
+        if related_sub_topics_count > 0:
+            average_progress = related_sub_topics_progress_sum / related_sub_topics_count
             self.progress_level = average_progress
             self.save()
 
