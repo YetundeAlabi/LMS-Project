@@ -1,7 +1,7 @@
-from tutor.models import Student, Tutor, Course, Topic, SubTopic, File, Video, Text, StudentCourse, StudentTopic, StudentSubTopic, Track
+from tutor.models import Course, Topic, SubTopic
+from student.models import StudentCourse, StudentTopic, StudentSubTopic
 
 def register_courses(student):
-    
     student_track_courses = Course.objects.filter(track=student.track)
   
     for course in student_track_courses:

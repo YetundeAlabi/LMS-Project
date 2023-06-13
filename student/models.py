@@ -1,6 +1,6 @@
 from django.db import models
 from django.db.models import Sum
-from tutor.models import Student, Tutor, Course, Topic, SubTopic, File, Video, Text, StudentCourse, StudentTopic, StudentSubTopic, Track
+from tutor.models import Student, Course, Topic, SubTopic, Track
 
 
 # Create your models here.
