@@ -22,6 +22,9 @@ urlpatterns = [
     path('reset_password_complete/', 
         auth_views.PasswordResetCompleteView.as_view(template_name='accounts/password_reset_complete.html'), 
         name='password_reset_complete'),
+    path('set_password_complete/', 
+        auth_views.PasswordResetCompleteView.as_view(template_name='accounts/set_password_complete.html'), 
+        name='set_password_complete'),
 
     path('signup/', TutorSignUpView.as_view(), name='tutor_signup'),
     path('logout/', SignOutView.as_view(), name='logout'),
@@ -31,7 +34,7 @@ urlpatterns = [
     path('set_password/<str:uidb64>/<str:token>', 
          auth_views.PasswordResetConfirmView.as_view(template_name='accounts/set_password.html', 
                                                      form_class = CustomSetPasswordForm,
-                                                     success_url = reverse_lazy("accounts:password_reset_complete")
+                                                     success_url = reverse_lazy("accounts:set_password_complete")
                                                      ),
          name='set_password'),
 ]

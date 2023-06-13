@@ -1,0 +1,24 @@
+<nav class="sidebar sidebar-offcanvas" id="sidebar">
+    <ul class="nav">
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'course:tutor_dashboard_view' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">Dashboard</span>
+        </a>
+      </li>
+      
+      
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'lms_admin:student_list' %}">
+          <i class="fas fa-user-check menu-icon"></i>
+          <span class="menu-title">Students</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'course:course_list' %}">
+          <i class="fas fa-user-clock menu-icon"></i>
+          <span class="menu-title">Courses</span>
+        </a>
+      </li>
+    </ul>
+  </nav>

@@ -9,15 +9,16 @@ from django.db import models, IntegrityError
 from django.db.models.query import QuerySet
 from django.forms.models import BaseModelForm
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.template.loader import render_to_string, get_template
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
+from django.core.exceptions import ValidationError
 from django.views import View
 from django.views.generic import (
-    CreateView, DetailView, FormView, ListView, UpdateView, TemplateView
+    CreateView, DetailView, FormView, ListView, UpdateView, TemplateView, DeleteView
 )
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
@@ -54,12 +55,11 @@ class TrackCreateView(LoginRequiredMixin, CreateView):
     template_name = 'lms_admin/track_create.html'
     success_url = reverse_lazy('lms_admin:track_list')
 
-    def form_valid(self, form):
-        try:
-            return super().form_valid(form)
-        except IntegrityError:
-            form.add_error('A track with this name already exists.')
-            return self.form_invalid(form)
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            if Track.active_objects.filter(name=self.name).exists():
+                raise ValidationError('A track with the same name already exists.')
+        super().save(*args, **kwargs)
     
 
 class TrackListView(LoginRequiredMixin, ListView):
@@ -114,16 +114,6 @@ class TrackConfirmDeleteView(TemplateView):
         return context 
 
 
-class TrackDeleteView(LoginRequiredMixin, View):
-    """Track delete view to set is_deleted attribute to True"""
-
-    def get(self, request, slug):
-        track = Track.active_objects.get(slug=slug)
-        track.is_deleted = True
-        track.save()
-        return HttpResponseRedirect(reverse("lms_admin:track_list"))
-
-
 # Student Views
 class StudentCreateView(LoginRequiredMixin, CreateView):
     """Student Create Form View to create one student at a time"""
@@ -140,13 +130,12 @@ class StudentCreateView(LoginRequiredMixin, CreateView):
         
         subject = 'Login Instructions' if student else  'Account Setup Instructions'
         context = {
-                   'first_name': user.first_name,
-                   'set_password_url': self.get_login_url(student) if student else self.get_password_reset_url(user),
+                  'user': user,
+                  'set_password_url': self.get_login_url(student) if student else self.get_password_reset_url(user),
                }
-        message = render_to_string('email_template.html', context)
+        message = get_template('lms_admin/email_template.html').render(context)
         recipient = [user.email,]
-        send_verification_mail.delay(subject, recipient , message )
-        
+        send_verification_mail.delay(subject, recipient, message)
         return HttpResponseRedirect(reverse('lms_admin:student_list'))
 
     def get_password_reset_url(self, user):
@@ -213,14 +202,10 @@ class StudentUpdateView(LoginRequiredMixin, UpdateView):
         return HttpResponseRedirect(reverse('lms_admin:student_detail', kwargs={'pk': student.pk}))
     
 
-
-class StudentDeleteView(LoginRequiredMixin, View):
-    """Student Delete View to set is_deleted to True"""
-    def post (self, request, id):
-        student = Student.objects.get(id=id)
-        student.is_deleted = True
-        student.save()
-        return HttpResponseRedirect(reverse("lms_admin:student_list"))
+class StudentDeleteView( LoginRequiredMixin, DeleteView):
+    model = Student
+    template_name = 'lms_admin/student_delete_confirm.html'
+    success_url = reverse_lazy('lms_admin:student_list')
 
 
 class ToggleStudentSuspendView(LoginRequiredMixin, View):
@@ -229,7 +214,6 @@ class ToggleStudentSuspendView(LoginRequiredMixin, View):
         student.is_suspended = not student.is_suspended
         student.save()
         return HttpResponseRedirect(reverse('lms_admin:student_list'))
-
 
 
 
@@ -252,19 +236,18 @@ class StudentImportView(PasswordResetView, FormView):
             user, created = User.objects.get_or_create(email=email,
                                                         first_name=first_name,
                                                         last_name=last_name)
-            track_obj = Track.active_objects.get(name=track)
+            print(track)
+            track_obj = Track.active_objects.get(name=track.strip())
             student = Student.objects.create(user=user, cohort=cohort, gender=gender, track=track_obj)
             subject = 'Account Setup Instructions' if created else 'Login Instructions'
             context = {
                     'first_name': first_name,
                     'verification_url': self.get_password_reset_url(user) if created else self._get_login_url(student),
                }
-            message = render_to_string('lms_admin/email_template.html', context)
-            send_mail(subject, message, 'adeosunfaith0101@gmail.com', [email,])
-            recipient = [email,]
-            send_verification_mail.delay(subject, recipient, message)
-            
-        return super().form_valid(form)
+        message = get_template('lms_admin/email_template.html').render(context)
+        recipient = [user.email,]
+        send_verification_mail.delay(subject, recipient, message)
+        return HttpResponseRedirect(reverse('lms_admin:student_list'))  
     
 
     def get_password_reset_url(self, user):
@@ -396,7 +379,6 @@ class TutorDeleteView(LoginRequiredMixin, View):
 
 
 class ToggleTutorSuspendView(LoginRequiredMixin, View): #PermissionRequiredMixin,
-
     def get(self, request, *args, **kwargs):
         tutor = get_object_or_404(Tutor, pk=kwargs['pk'])
         tutor.is_suspended = not tutor.is_suspended
@@ -407,14 +389,14 @@ class ToggleTutorSuspendView(LoginRequiredMixin, View): #PermissionRequiredMixin
 # Applicant Views
 class ApplicantCreateView(CreateView):
     form_class = ApplicantForm
-    template_name = "lms_admin/application_form.html"
+    template_name = "lms_admin/application_form2.html"
     success_url = reverse_lazy('lms_admin:applicant_thank_you')
 
     def form_valid(self, form):
         applicant = form.save(commit=False)
         applicant.cohort = Cohort.objects.get(year=timezone.now().year)
         applicant.save()
-        messages.success(self.request, "Thank you for applying. Your application has been submitted successfully.")
+        # messages.success(self.request, "Thank you for applying. Your application has been submitted successfully.")
         return super().form_valid(form)
     
 
@@ -456,8 +438,7 @@ class ApplicantListView(ListView):
 
 
 class ExportApprovedApplicantsCSVView(View):
-
-    def get(self, request):
+     def get(self, request):
         # Filter approved applicants using ApprovedApplicantManager and filter for only current cohort
         approved_applicants = Applicant.approved.filter(cohort=Cohort.objects.get(year=timezone.now().year))
 

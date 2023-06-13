@@ -1,5 +1,6 @@
 from django.urls import path, include
 from . import views
+from django_pdfkit import PDFView
 
 app_name= "course"
 urlpatterns = [
@@ -22,9 +23,11 @@ urlpatterns = [
     path('courses/<slug:course_slug>/topics/<int:id>/delete', views.TopicDeleteView.as_view(), name='create_topic'),
     path('courses/<slug:course_slug>/topics/<uuid:topic_id>/subtopic/<str:model_name>/create', views.SubTopicCreateUpdateView.as_view(), name='create_subtopic'),
     path('courses/<slug:course_slug>/topics/<uuid:topic_id>/subtopic/<str:model_name>/<int:id>/update', views.SubTopicCreateUpdateView.as_view(), name='update_subtopic'),
+    path('courses/<slug:course_slug>/topics/<uuid:topic_id>/subtopic/<str:model_name>/<int:id>/detail', views.SubTopicDetailView.as_view(), name='subtopic_detail'),
     path('subtopic/<int:id>/delete', views.SubTopicDeleteView.as_view(), name='delete_subtopic'),
     path('track/students/', views.TrackStudentListView.as_view(), name='track_student_list'),
     path('track/students/<int:pk>/', views.TrackStudentDetailView.as_view(), name='track_student_detail'),
+    # path('lession/pdf/view', PDFView.as_view(template_name='tutor/subtopic_detail.html'), name='my_pdf')
     # path('track/tutor_detail/', views.TutorProfileView.as_view(), name='tutor_profile'),
 ]
 

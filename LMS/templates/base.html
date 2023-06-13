@@ -141,61 +141,22 @@
       </nav>
 
       <div class="container-fluid page-body-wrapper">
-        <nav class="sidebar sidebar-offcanvas" id="sidebar">
-            <ul class="nav">
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'lms_admin:dashboard' %}">
-                  <i class="icon-grid menu-icon"></i>
-                  <span class="menu-title">Dashboard</span>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'lms_admin:track_list' %}">
-                  <i class="mdi mdi-group menu-icon"></i>
-                  <span class="menu-title">Tracks</span>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'lms_admin:cohort_list' %}">
-                  <i class="fas fa-users menu-icon"></i>
-                  <span class="menu-title">Cohorts</span>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'lms_admin:tutor_list' %}">
-                  <i class="fas fa-chalkboard-teacher menu-icon"></i>
-                  <span class="menu-title">Tutors</span>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'lms_admin:student_list' %}">
-                  <i class="fas fa-user-check menu-icon"></i>
-                  <span class="menu-title">Students</span>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'lms_admin:applicants_approval' %}">
-                  <i class="fas fa-user-clock menu-icon"></i>
-                  <span class="menu-title">Applicants</span>
-                </a>
-              </li>
-            </ul>
-          </nav>
+        {% block navbar %}
+ 
+        {% endblock %}
           
         <div class="main-panel">
           {% if messages %}
-          <div class="messages">
               {% for message in messages %}
                   <div class="alert alert-
-                  {% if message.tags == "error" %}
-                  danger
-                  {% else%}
-                  {{ message.tags }}
-                  {% endif %}">
-                      {{ message }}
+                    {% if message.tags == "error" %}
+                      danger
+                    {% else%}
+                      {{ message.tags }}
+                    {% endif %}">
+                        {{ message }}
                   </div>
               {% endfor %}
-          </div>
           {% endif %}
 
         

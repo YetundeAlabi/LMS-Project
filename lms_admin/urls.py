@@ -26,7 +26,6 @@ urlpatterns = [
     path("track/<slug:slug>/", views.TrackDetailView.as_view(), name="track_detail"),
     path("track/<slug:slug>/update/", views.TrackUpdateView.as_view(), name="track_update"),
     path("track/<slug:slug>/confirm_delete/", views.TrackConfirmDeleteView.as_view(), name="track_confirm_delete"),
-    path("track/<slug:slug>/delete/", views.TrackDeleteView.as_view(), name="track_delete"),
     path("student/", views.StudentListView.as_view(), name="student_list"),
     path("student/create/", views.StudentCreateView.as_view(), name="student_create"),
     path("student/<int:pk>/", views.StudentDetailView.as_view(), name="student_detail"),
