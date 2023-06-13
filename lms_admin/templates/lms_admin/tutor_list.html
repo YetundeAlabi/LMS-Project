@@ -55,6 +55,8 @@
                       <td><a class="badge badge-primary" href="{% url 'lms_admin:tutor_detail' pk=tutor.pk%}">View</a></td>
 
                     </tr>
+                    {% empty %}
+                    <p>There are no tutors yet</p>
                   {% endfor %}
                 </tbody>
               </table>

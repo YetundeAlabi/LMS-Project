@@ -33,12 +33,14 @@
             
                 <p><a class="btn btn-primary mr-2" href="{% url 'lms_admin:student_detail' pk=student.pk %}">Detail</a></p>    
             </li>
+            {% empty %}
+            <li>No student found</li>
             <br>
             {% endfor %}
         
         </ul>
 
-        <a class="btn btn-success mr-2 mt-5" href="{% url 'lms_admin:student_create' %}"> Create New Student</a>
+        <a class="btn btn-success mr-2 mt-5" href="{% url 'lms_admin:student_create' %}">Create New Student</a>
     </div>    
 </div>
 {% endblock %}
