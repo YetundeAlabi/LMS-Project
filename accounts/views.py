@@ -28,7 +28,6 @@ class TutorSignUpView(CreateView):
     template_name = 'accounts/signup.html' 
     success_url = reverse_lazy('login')
 
-
 class SignOutView(LogoutView):
     next_page = reverse_lazy('accounts:login')
 

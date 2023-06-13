@@ -41,24 +41,12 @@
                     </tr>  
                   </thead>
                 
-                    <tbody>
-                      {% for topic in topics %}
-                        <tr>
-                          <td>{{ topic.order|add:1 }}</td> 
-                          <td>{{ topic.title }}</td>
-                          <td>{{ topic.created_at }}</td>
-                          <td class="font-weight-medium"><a href="{% url 'course:topic_detail' topic.course.slug topic.id %}" class="badge badge-info">details</a></td>
-                          <td><a class="badge badge-primary" href="{% url 'course:subtopic_list' topic.course.slug topic.id %}">View Subtopics</a></td>
-                          <td class="font-weight-medium"><a href="{% url 'course:update_topic' topic.course.slug topic.id %}" class="badge badge-info">Update</a></td>
-                          <td><a class="badge badge-danger" href="{% url 'course:delete_topic' topic.course.slug topic.id %}">Delete</a></td>
-                        </tr>
-                      {% endfor %}
                   <tbody>
                     {% for topic in topics %}
                     <a>
                       <tr>
                       
-                        <td>{{ forloop.counter }}</td> <!-- Add S/N column using forloop.counter -->
+                        <td>{{ topic.order|add:1 }}</td>
                         <td><a href="{% url 'course:topic_detail' topic.course.slug topic.id %}">{{ topic.title }}</a></td>
                         <td>{{ topic.created_at }}</td>
                        
@@ -87,12 +75,7 @@
       {% else %}
         <p>No topic under this course yet</p>
       {% endif %}
-<!-- {% for topic in topics %}
-    <h1>{{ topic.course.title }}</h1>
-    {{ topic }}
-    <a href="{% url 'course:update_topic' topic.course.slug topic.id %}">update</a>
-    <a href="{% url 'course:delete_topic' topic.course.slug topic.id %}">delete</a><br>
-{% endfor %} -->
+
 {% endblock %}
 
 

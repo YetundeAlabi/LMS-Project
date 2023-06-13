@@ -87,6 +87,7 @@ class CreateTopicView(TutorUserRequiredMixin, SuccessMessageMixin, CreateView):
     success_message = 'Topic created successfully'
     template_name = 'tutor/topic_form.html'
 
+
     def form_valid(self, form):
         course_slug = self.kwargs['course_slug']
         course = get_object_or_404(Course, slug=course_slug)

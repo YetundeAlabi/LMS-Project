@@ -33,15 +33,13 @@ class Course(BaseContent):
     course_tutor=models.ForeignKey(Tutor, on_delete=models.SET_NULL, null=True)
     track=models.ForeignKey(Track, on_delete=models.SET_NULL, null=True)
     slug= models.SlugField(unique=True, blank=True, null=True)
-    order = OrderField(blank=True, for_fields=['title'])
     
     class Meta:
-        ordering= ['order']
         indexes = [ models.Index(fields=['track','slug'])]
        
 
     def __str__(self):
-        return f"{self.order}_{self.title}"
+        return f"{self.title}"
     
     def get_absolute_url(self):
         return reverse('course_detail', args=[str(self.slug)])
@@ -57,22 +55,34 @@ class Topic(BaseContent):
         
     def __str__(self):
         return f"{self.order}_{self.title}"
-    
-  
+            
+    def save(self, *args, **kwargs):
+        if self.is_active:
+            if not self.pk:
+                max_order_active = Topic.objects.filter(course=self.course, is_active=True).aggregate(models.Max('order'))[
+                    'order__max']
+                max_order_inactive = Topic.objects.filter(course=self.course, is_active=False).aggregate(models.Max('order'))[
+                    'order__max']
 
-def save(self, *args, **kwargs):
-    if not self.is_active:
-        max_order = Topic.active_objects.aggregate(max_order=Max('order')).get('max_order', 0)
-        self.order = max_order
-        Topic.active_objects.filter(order__gt=0).update(order=F('order') - 1)
-        self.order = 0
-    else:
-        Topic.active_objects.update(order=F('order') + 1)  
-        max_order = Topic.active_objects.aggregate(max_order=Max('order')).get('max_order', 0)
-        self.order = max_order + 1
+                if max_order_active is not None:
+                    if max_order_inactive is not None and max_order_inactive > max_order_active:
+                        self.order = max_order_inactive + 1
+                    else:
+                        self.order = max_order_active + 1
+                else:
+                    self.order = 1
+        else:
+            if self.order is not None:
+                # Existing object marked as inactive, shift down the order for subsequent active topics
+                topics_to_reorder = Topic.objects.filter(course=self.course, is_active=True, order__gt=self.order)
 
-    super().save(*args, **kwargs)
+                for topic in topics_to_reorder:
+                    topic.order -= 1
+                    topic.save()
 
+                self.order = None
+
+        return super().save(*args, **kwargs)
 
 class SubTopic(BaseContent):
     topic = models.ForeignKey(Topic, on_delete=models.SET_NULL, blank=True, null=True, db_index=True)
@@ -112,3 +122,5 @@ def course_slug(sender, instance, created, **kwargs):
         slug = slugify(instance.title)
         instance.slug = slug
         instance.save()
+
+
