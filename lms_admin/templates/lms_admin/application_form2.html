@@ -1,7 +1,10 @@
 {% extends 'home.html' %}
 
 {% block content %}
-
+{% block navbar %}
+  
+{% endblock %}
+  
 <div class="untree_co-section">
     <div class="container">
 
@@ -72,10 +75,13 @@
                             {{ form.track }}
                         </div>
                     </div>
-
                     <div class="col-12">
                         <input type="submit" value="Apply" class="btn btn-primary">
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <a href="{% url 'home_page' %}" class="btn btn-primary"> Cancel</a>
                     </div>
+                    
+                    
 
                 </form>
             </div>
