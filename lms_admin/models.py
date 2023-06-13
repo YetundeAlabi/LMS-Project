@@ -33,7 +33,7 @@ class Track(models.Model):
 
 
     def save(self, *args, **kwargs):
-        if not self.slug:
+        if self.name:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)    
 
@@ -52,7 +52,6 @@ class Cohort(models.Model):
     
     def __str__(self):
         return self.get_name()
-
 
 
 class ApprovedApplicantManager(models.Manager):
@@ -87,9 +86,3 @@ class Applicant(models.Model):
         return f"{self.first_name} {self.last_name}"
 
 
-@receiver(post_save, sender=Track)
-def track_slug(sender, instance, created, **kwargs):
-    if created and not instance.slug:
-        slug = slugify(instance.name)
-        instance.slug = slug
-        instance.save()

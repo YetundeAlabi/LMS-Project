@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'tutor',
     'accounts',
     'lms_admin',
-    'django_celery_beat',
     'django_celery_results',
     'embed_video',
 

@@ -102,4 +102,5 @@ class Tutor(models.Model):
                 new_img =(100, 100)
                 img.thumbnail(new_img)
                 img.save(self.picture.path)
+                
         super().save(*args, **kwargs)
