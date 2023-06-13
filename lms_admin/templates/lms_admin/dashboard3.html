@@ -64,10 +64,9 @@
   <div class="row mt-5">
     <div class="col-lg-6">
       <div class="card chart mt-5">
-        <div class="card-body">
+        <div class="card-body" style="color: #00008b;">
           <h5 class="card-title chart" style="color: #000080;">Student to Track chart</h5>
-          <div id="studenttChart"></div>
-          <p>Bar Chart</p>
+          <div id="studentChart"></div>
         </div>
       </div>
     </div>
@@ -84,7 +83,7 @@
 <!--Student track barchart -->
 <div class="row mt-5">
   <div class="card mt-5" style="min-width: 100%;">
-    <div class="card-body">
+    <div class="card-body ">
       <p class="card-title mb-5" style="color: #00008b;"> Tutors</p>
       <div class="table-responsive">
         <table class="table table-striped-lms table-hover" style="width: 100%;">
@@ -161,7 +160,7 @@
       studentCounts.push({{ track.get_students_count }});
       trackNames.push('{{ track.name }}');
     {% endfor %}
-    new ApexCharts(document.getElementById("studenttChart"), {
+    new ApexCharts(document.getElementById("studentChart"), {
       series: [{
         data: studentCounts
       }],
