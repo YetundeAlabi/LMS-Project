@@ -72,7 +72,7 @@ class Student(models.Model):
     picture = models.ImageField(upload_to='accounts/media', blank=True, null=True)
     is_deleted = models.BooleanField(default=False)
     track = models.ForeignKey(Track, on_delete=models.SET_NULL, related_name="students", null=True)
-   
+
     
     def get_full_name(self) -> str:
         return f'{self.user.first_name} {self.user.last_name}'
