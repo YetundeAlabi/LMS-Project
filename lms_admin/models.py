@@ -28,7 +28,7 @@ class Track(DeletableBaseModel):
         return reverse('lms_admin:track_detail', kwargs={'slug': self.slug})
     
     def get_students_count(self):
-        return self.stud,ents.count()
+        return self.students.count()
 
 
 class Cohort(models.Model):

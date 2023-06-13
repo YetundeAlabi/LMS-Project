@@ -103,7 +103,7 @@
       <div class="col-md-12 grid-margin">
         <div class="row">
           <div class="col-12 col-xl-8 mb-4 mb-xl-0">
-            <h3 class="font-weight-bold">"{{request.user.tutor.track}}" Tutors Dashboard </h3>
+            <h3 class="font-weight-bold">{{request.user.tutor.track}} Tutors Dashboard </h3>
             <h4 class="font-weight-bold">Welcome {{request.user.first_name}} {{request.user.last_name}} </h4>
           </div>
         </div>
@@ -155,7 +155,15 @@
                           </a>
                         </td>
                         
-                        <td><a class="badge badge-primary" href="{% url 'course:track_student_detail' pk=student.id %}">View</a></td>
+                        <td style="padding: 0;">
+                          <div class="row" style="margin: 0;">
+                            <div class="col-md-2 mt-4" style="padding: 0;">
+                              <div class="d-flex justify-content-start">
+                                <a class="btn btn-info mb-4 mr-2" href="{% url 'course:track_student_detail' pk=student.id %}" style="font-size: 12px; padding: 12px 20px;">View</a>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
                       </tr>
                     {% endfor %}
                   </tbody>
