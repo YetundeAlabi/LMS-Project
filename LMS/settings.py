@@ -23,6 +23,7 @@ TEMPLATES_DIR = BASE_DIR / 'LMS' / 'templates'
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = os.environ.get('SECRET_KEY')
+# SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -162,3 +163,9 @@ timezone = 'Africa/Lagos'
 
 # CELERY_RESULT_BACKEND = 'django-db'
 result_backend= 'django-db'
+
+EMBED_VIDEO_BACKENDS = (
+    'embed_video.backends.YoutubeBackend',
+    'embed_video.backends.VimeoBackend',
+    'embed_video.backends.SoundCloudBackend',
+)
