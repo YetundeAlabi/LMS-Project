@@ -1,6 +1,5 @@
 from django.contrib import admin
-from .models import Course, Topic, SubTopic, File, Video, Text, StudentCourse, StudentTopic, StudentSubTopic
-
+from .models import Course, Topic, SubTopic, File, Video, Text
 # Register your models here.
 
 class TopicAdmin(admin.ModelAdmin):
@@ -12,6 +11,3 @@ admin.site.register(SubTopic)
 admin.site.register(File)
 admin.site.register(Video)
 admin.site.register(Text)
-admin.site.register(StudentCourse)
-admin.site.register(StudentTopic)
-admin.site.register(StudentSubTopic)
