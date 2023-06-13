@@ -61,7 +61,7 @@ class UserForm(forms.ModelForm):
             user=user,
             track=self.cleaned_data["track"])
         
-        tutor.save()
+        return tutor
 
 
 class StudentCreationForm(forms.Form):
@@ -73,9 +73,10 @@ class StudentCreationForm(forms.Form):
         label="Track",
         queryset=Track.active_objects.all(),
         widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Track'}))
-    gender = forms.CharField(
+    gender = forms.ChoiceField(
         label='Gender',
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Gender'}))
+        choices=Student.GENDER_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Gender'}))
     email = forms.EmailField(
         label='Email',
         widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}))
@@ -107,7 +108,6 @@ class StudentCreationForm(forms.Form):
                                         picture=self.cleaned_data['picture'])
         student.save()
         return student
-
 
 
 """ Tutor creation form """
@@ -182,6 +182,7 @@ class TutorUpdateForm(forms.ModelForm):
     # def __init__(self, *args, **kwargs):
     #     kwargs.pop("instance")
     #     super().__init__(*args, **kwargs)
+
     model = User
     fields = ["email", "first_name", "last_name", "track"]
 
@@ -190,6 +191,7 @@ class StudentUpdateForm(forms.ModelForm):
     class Meta:
         model = Student
         exclude = ("is_verified", "is_suspended")
+
 
 class ProfilePictureForm(forms.ModelForm):
     picture = forms.CharField(
