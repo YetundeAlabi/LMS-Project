@@ -1,5 +1,8 @@
 {% extends 'base.html' %}
 
+{% block navbar %}
+        {% include 'tutor/tutor_nav_bar.html' %}
+{% endblock %} 
 {% block content %}
   <div class="content-wrapper">
     <div class="col-12 grid-margin stretch-card">
@@ -45,7 +48,7 @@
                 </div>
               {% endfor %}
               <div class="form-group">
-                <input class="btn btn-primary mr-2" value="Submit" type="submit">
+                <input id="submit-course" class="btn btn-primary mr-2" value="Submit" type="submit">
                 <a href="{% url 'course:course_list' %}" class="btn btn-danger">Cancel</a>
               </div>
             </div>
@@ -64,5 +67,21 @@
         $(this).hide();
       });
     });
+
+    const SubmitBtn = document.getElementById('submit-course');
+    SubmitBtn.addEventListener('click',function(e){
+      e.preventDefault()
+      $.ajax({
+        url: '/courses/create_course',
+        type:'POST',
+        dataType:'json',
+        data:{},
+        success: function(response){
+          alert('course created successfully')
+        }
+      })
+    })
+    
   </script>
+
 {% endblock %}

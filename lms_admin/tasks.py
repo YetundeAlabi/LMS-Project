@@ -12,5 +12,4 @@ def send_verification_mail(subject, recipient, message):
     )
     msg.content_subtype = 'html'
     msg.send()
-    print("Email sent")
     return "Done"

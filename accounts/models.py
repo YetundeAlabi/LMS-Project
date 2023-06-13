@@ -72,13 +72,13 @@ class Student(models.Model):
     picture = models.ImageField(upload_to='accounts/media', blank=True, null=True)
     is_deleted = models.BooleanField(default=False)
     track = models.ForeignKey(Track, on_delete=models.SET_NULL, related_name="students", null=True)
-   
+
     
     def get_full_name(self) -> str:
         return f'{self.user.first_name} {self.user.last_name}'
     
     def __str__(self):
-        return self.user.email
+        return self.gender
 
     def get_absolute_url(self):
         return reverse('student_detail', args=[str(self.id)])
@@ -102,4 +102,5 @@ class Tutor(models.Model):
                 new_img =(100, 100)
                 img.thumbnail(new_img)
                 img.save(self.picture.path)
+                
         super().save(*args, **kwargs)

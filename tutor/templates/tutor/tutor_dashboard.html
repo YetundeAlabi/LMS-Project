@@ -1,5 +1,12 @@
 {% extends 'base.html' %}
 
+
+
+{% block navbar %}
+        {% include 'tutor/tutor_nav_bar.html' %}
+{% endblock %} 
+
+
 {% block content %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
 
@@ -14,11 +21,10 @@
     }
 
     .cardi:hover {
-        transform: scale(0.9, 0.9);
-        box-shadow: 5px 5px 30px 15px rgba(0,0,0,0.25), 
-          -5px -5px 30px 15px rgba(0,0,0,0.22);
-      }
-
+  transform: scale(0.98, 0.98);
+  box-shadow: 1px 1px 1px 1px rgba(0,0,0,0.25),
+              -2px -2px 5px 8px rgba(0,0,0,0.22);
+  }
     
     .card .card-title {
         color: #010101;
@@ -89,13 +95,15 @@
     }
 </style> 
 
+
+
 <div class="content-wrapper content-wrapper-lms" style="background-color: #FCE9E8;">
 
     <div class="row">
       <div class="col-md-12 grid-margin">
         <div class="row">
           <div class="col-12 col-xl-8 mb-4 mb-xl-0">
-            <h3 class="font-weight-bold">"{{request.user.tutor.track}}" Tutors Dashboard </h3>
+            <h3 class="font-weight-bold">{{request.user.tutor.track}} Tutors Dashboard </h3>
             <h4 class="font-weight-bold">Welcome {{request.user.first_name}} {{request.user.last_name}} </h4>
           </div>
         </div>
@@ -111,9 +119,6 @@
               </div>
             </div>
         </div>
-
-
-      
         
     </div>
 

@@ -1,23 +1,21 @@
 from typing import Any, Dict
-from django.shortcuts import render
-from django.contrib.auth import views
-from django.urls import reverse 
-from django.contrib.auth import get_user_model
+
+from django.contrib import messages
+from django.contrib.auth import (authenticate, get_user_model, login, logout,
+                                 views)
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
-from django.views.generic import CreateView
-from .models import User, Student, Tutor
-from django.contrib.auth.views import PasswordChangeView
-from django.views.generic.edit import UpdateView
-from django.contrib.auth.views import LogoutView
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.views import LogoutView, PasswordChangeView
 from django.http import HttpResponseRedirect
-from .forms import LoginForm,SignUpForm 
-from django.shortcuts import get_object_or_404
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse, reverse_lazy
 from django.views import View, generic
-from .models import Tutor, Student
-from .forms import TutorUpdateForm, StudentUpdateForm, UserForm
+from django.views.generic import CreateView
+from django.views.generic.edit import UpdateView
+
+from .forms import (LoginForm, SignUpForm, StudentUpdateForm, TutorUpdateForm,
+                    UserForm)
+from .models import Student, Tutor, User
+
 # Create your views here.
 
 User = get_user_model()
@@ -43,6 +41,7 @@ class LoginView(generic.FormView):
         if user is not None:
             login(self.request, user)
             return super().form_valid(form)
+        messages.error(self.request, "Invalid email or password")
         return super().form_invalid(form)
 
     def get_success_url(self) -> str:
@@ -54,8 +53,7 @@ class LoginView(generic.FormView):
                 return reverse('course:tutor_dashboard_view')
             else:
                 return reverse('home_page')
-        else:
-            return reverse('login')
+        return reverse('login')
         
             
 class ChangePasswordView(PasswordChangeView):

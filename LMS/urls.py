@@ -23,10 +23,11 @@ from django.conf import settings
 
 urlpatterns = [
     
-    path('home/', HomePage.as_view(), name="home_page"),
+    path('', HomePage.as_view(), name="home_page"),
     path('', include('accounts.urls', namespace="accounts")),
     path('admin/', admin.site.urls), 
     path('tutor/', include('tutor.urls', namespace="course")),
     path('LMS/admin/', include('lms_admin.urls', namespace="lms_admin")),
 ]
+
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

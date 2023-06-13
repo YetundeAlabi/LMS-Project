@@ -340,6 +340,8 @@ class SubTopicDetailView(TutorUserRequiredMixin, DetailView):
     context_object_name='subtopic'
     template_name = 'tutor/subtopic_detail.html'
     pk_url_kwarg ='id'
+
+
     
 
         
