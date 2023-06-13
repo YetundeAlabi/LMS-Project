@@ -23,6 +23,39 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
   <!-- endinject -->
   <link rel="shortcut icon" href="{% static 'assets/images/X.png' %}" />
+
+  <style>
+    .card-grey {
+      background: #54565b;
+    }
+
+    .card .card-title {
+      color: #fff;
+    }
+
+    .card .card-body {
+      color: #fff;
+    }
+
+    .card-red {
+      background: #e1261c;
+    }
+
+    .card-brown {
+      background: #8b4513;
+    }
+
+    .card-green {
+      background: #009639;
+    }
+
+    .chart {
+      color: black;
+    }
+
+
+
+  </style>
 </head>
 <body>
     <style>
@@ -114,18 +147,16 @@
           
         <div class="main-panel">
           {% if messages %}
-          <div class="messages">
               {% for message in messages %}
                   <div class="alert alert-
-                  {% if message.tags == "error" %}
-                  danger
-                  {% else%}
-                  {{ message.tags }}
-                  {% endif %}">
-                      {{ message }}
+                    {% if message.tags == "error" %}
+                      danger
+                    {% else%}
+                      {{ message.tags }}
+                    {% endif %}">
+                        {{ message }}
                   </div>
               {% endfor %}
-          </div>
           {% endif %}
 
         
@@ -175,6 +206,13 @@
     <!-- Custom js for this page-->
     <script src="{% static 'assets/js/cohort_list.js' %}"></script>
     <!-- End custom js for this page-->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Import Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.28.3/dist/apexcharts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+    {% block script %} {% endblock %}
 </body>
 
 </html>

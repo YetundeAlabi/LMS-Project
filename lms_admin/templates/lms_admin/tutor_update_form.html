@@ -1,5 +1,12 @@
 {% extends 'base.html'%}
-{%block content%}
+
+{% block navbar %}
+    
+    {% include 'nav_bar.html' %}
+
+{% endblock %}
+
+{% block content %}
 
 <div class="content-wrapper">
 
@@ -13,6 +20,11 @@
                 <form method="POST" class="form-control">
   
                     {% csrf_token %}
+                    
+                    {% for errors in forms.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+
                     {% if form.errors %}
                       <div class="alert alert-danger">
                         <strong>Oops! There was an error:</strong>
