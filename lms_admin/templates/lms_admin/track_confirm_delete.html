@@ -11,7 +11,7 @@
                     <h3>Confirm Delete</h3>
                     <p>Are you sure you want to permanently delete {{ track.name }}?</p>
 
-                    <a class="btn btn-danger mt-4 mb-4" href="{% url 'lms_admin:track_delete' slug=track.slug %}">Confirm Delete</a>
+                    <a class="btn btn-danger mt-4 mb-4" href="{% url 'lms_admin:track_confirm_delete' slug=track.slug %}">Confirm Delete</a>
                     <a class="btn btn-primary mt-4 mb-4" href="{% url 'lms_admin:track_detail' slug=track.slug %}">Cancel</a>
                     
                 </div>
