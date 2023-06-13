@@ -48,6 +48,7 @@ class CourseDetail(TutorUserRequiredMixin, DetailView):
     slug_url_kwarg= 'course_slug'
     template_name = 'tutor/course_detail.html'
    
+   
 class CourseAndTopicCreateView(TutorUserRequiredMixin, CreateView):
     model = Course
     form_class = CourseForm

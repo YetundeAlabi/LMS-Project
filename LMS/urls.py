@@ -28,6 +28,7 @@ urlpatterns = [
     path('admin/', admin.site.urls), 
     path('tutor/', include('tutor.urls', namespace="course")),
     path('LMS/admin/', include('lms_admin.urls', namespace="lms_admin")),
+    path('student/', include('student.urls',namespace='student')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
