@@ -13,7 +13,7 @@ from django.views.generic import CreateView
 from django.views.generic.edit import UpdateView
 
 from .forms import (LoginForm, SignUpForm, StudentUpdateForm, TutorUpdateForm,
-                    UserForm)
+                    UserForm, CustomPasswordChangeForm)
 from .models import Student, Tutor, User
 
 # Create your views here.
@@ -57,8 +57,9 @@ class LoginView(generic.FormView):
         return reverse('login')
         
             
-class ChangePasswordView(PasswordChangeView):
-    template_name = 'accounts/change_password.html'  
+class CustomPasswordChangeView(PasswordChangeView):
+    template_name = 'accounts/change_password.html' 
+    form_class = CustomPasswordChangeForm 
     success_url = reverse_lazy('login')
 
 

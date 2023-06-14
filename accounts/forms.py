@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UserChangeForm, SetPasswordForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UserChangeForm, SetPasswordForm, PasswordChangeForm
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model, password_validation
 
@@ -89,7 +89,7 @@ class StudentCreationForm(forms.Form):
     picture = forms.ImageField(
         label='Profile Image',
         required=False,
-        widget=forms.ClearableFileInput(attrs={'class': 'form-control-file', 'placeholder': 'Picture' }))
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control file-upload-info', 'placeholder': 'Picture' }))
 
     def __init__(self, *args, **kwargs):
         kwargs.pop("instance")
@@ -162,6 +162,36 @@ class CustomSetPasswordForm(SetPasswordForm):
         strip=False,
         widget=forms.PasswordInput(attrs={"autocomplete": "new-password", "class": "form-control"}),
     )
+
+
+class CustomPasswordChangeForm(PasswordChangeForm):
+
+    error_messages = {
+        "password_incorrect": "Your old password was entered incorrectly. Please enter it again.",
+        "password_mismatch": "The two password fields didn’t match.",
+    }
+    
+    old_password = forms.CharField(
+        label="Old password",
+        strip=False,
+        widget=forms.PasswordInput(
+            attrs={"class": " form-control", "placeholder": "Enter your old password"}
+        ),
+    )
+    new_password1 = forms.CharField(
+        label="New password",
+        widget=forms.PasswordInput(
+            attrs={"class": " form-control", "placeholder": "Enter your new password"}),
+        strip=False,
+    )
+    new_password2 = forms.CharField(
+        label="New password confirmation",
+        strip=False,
+        widget=forms.PasswordInput(
+            attrs={"class": " form-control", "placeholder": "Confirm your new password"}),
+    )
+
+    field_order = ["old_password", "new_password1", "new_password2"]
 
 
 class TutorUpdateForm(forms.ModelForm):
