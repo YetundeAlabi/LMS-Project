@@ -11,7 +11,7 @@
     {% if student_courses %}
         <ul>
             {% for course in student_courses %}
-                <li>{{ course.course.title }}---------<a href="">View topics</a></li>
+                <li>{{ course.course.title }}---------<a href="{% url 'student:topic_list' course.slug %}">View topics</a></li>
             {% endfor %}
         </ul>
     {% else %}

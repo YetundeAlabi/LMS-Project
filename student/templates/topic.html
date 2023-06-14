@@ -10,8 +10,8 @@
 
     {% if student_topics %}
         <ul>
-            {% for student_topic in student_topics %}
-                <li>{{ student_topic.student_topic.title }}</li>
+            {% for topic in student_topics %}
+                <li>{{ topic.slug }}---------<a href="{% url 'student:student_subtopic_list' student_course_slug=student_course_slug student_topic_slug=topic.slug %}">View Subtopics</a></li>
             {% endfor %}
         </ul>
     {% else %}
