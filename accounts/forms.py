@@ -1,8 +1,7 @@
 from django import forms
+from django.contrib.auth.forms import UserCreationForm, SetPasswordForm, PasswordChangeForm
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model, password_validation
-from django.contrib.auth.forms import (SetPasswordForm,
-                                       UserCreationForm)
 from django.core.exceptions import ValidationError
 from lms_admin.models import Cohort, Track
 
