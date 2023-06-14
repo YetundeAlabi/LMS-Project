@@ -20,6 +20,7 @@ from .models import Student, Tutor, User
 
 User = get_user_model()
 
+
 class TutorSignUpView(CreateView):
     model = Tutor
     form_class = UserForm
@@ -28,6 +29,7 @@ class TutorSignUpView(CreateView):
 
 class SignOutView(LogoutView):
     next_page = reverse_lazy('home_page')
+
 
 class LoginView(generic.FormView):
     form_class = LoginForm
