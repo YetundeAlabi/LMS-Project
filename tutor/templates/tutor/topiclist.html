@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
 
-
 {% block navbar %}
-        {% include 'tutor/tutor_nav_bar.html' %}
+  {% include 'tutor/tutor_nav_bar.html' %}
 {% endblock %} 
 
 {% block content %}
@@ -28,83 +27,82 @@
 </div>
 </div>
 
-    {% if topics %}
-    <div class="row">
-        <div class="col-md grid-margin stretch-card">
-          <div class="card">
-            <div class="card-body">
-              <p class="card-title mb-0">Topics List in {{course.title}} course</p> 
-    
-              <div class="table-responsive">
-                <table class="table table-striped-lms table-hover">
-                  <thead>
-                    <tr>
-                      <th>S/N</th>
-                      <th>Title</th>
-                      <th>Date Created</th>
-                      <th></th>           
-                    </tr>  
-                  </thead>
-                
-                  <tbody>
-                    {% for topic in topics %}
-                    <a>
-                      <tr>
-                      
-                        <td>{{ topic.order|add:1 }}</td>
-                        <td><a href="{% url 'course:topic_detail' topic.course.slug topic.id %}">{{ topic.title }}</a></td>
-                        <td>{{ topic.created_at }}</td>
-                       
-                  
-                        <td style="padding: 0;">
-                          <div class="row" style="margin: 0;">
-                            <div class="col-md-2 mt-4" style="padding: 0;">
-                              <div class="d-flex justify-content-start">
-                                <a class="btn btn-info mb-4 mr-2" href="{% url 'course:subtopic_list' topic.course.slug topic.id %}" style="font-size: 12px; padding: 12px 20px;">Lessons</a>
-                              </div>
-                            </div>
+{% if topics %}
+<div class="row">
+    <div class="col-md grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <p class="card-title mb-0">Topics List in {{ course.title }} course</p> 
+
+          <div class="table-responsive">
+            <table class="table table-striped-lms table-hover">
+              <thead>
+                <tr>
+                  <th>S/N</th>
+                  <th>Title</th>
+                  <th>Date Created</th>
+                  <th></th>           
+                </tr>  
+              </thead>
+            
+              <tbody id="topic">
+                {% for topic in topics %}
+                  <tr data-id="{{ topic.id }}">
+                    <td class="order">{{ topic.order|add:1 }}</td>
+                    <td><a href="{% url 'course:topic_detail' topic.course.slug topic.id %}">{{ topic.title }}</a></td>
+                    <td>{{ topic.created_at }}</td>
+                    <td style="padding: 0;">
+                      <div class="row" style="margin: 0;">
+                        <div class="col-md-2 mt-4" style="padding: 0;">
+                          <div class="d-flex justify-content-start">
+                            <a class="btn btn-info mb-4 mr-2" href="{% url 'course:subtopic_list' topic.course.slug topic.id %}" style="font-size: 12px; padding: 12px 20px;">Lessons</a>
                           </div>
-                        </td>
-                  
-                      </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
-      </div>
+    </div>
+  </div>
+</div>
 
-      {% else %}
-        <p>No topic under this course yet</p>
-      {% endif %}
+{% else %}
+  <p>No topics under this course yet</p>
+{% endif %}
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html5sortable/0.13.3/html5sortable.min.js"></script>
+<script>
+  var options = {
+    method: 'POST',
+    mode: 'same-origin'
+  };
+  const topicOrderUrl = '{% url "course:topic_order" %}';
+  var sortableElement = sortable('#topic', {
+    forcePlaceholderSize: true,
+    placeholderClass: 'placeholder',
+  })[0];
+
+  sortableElement.addEventListener('sortupdate', function(e) {
+    var topicsOrder = {};
+    var topics = document.querySelectorAll('#topic tr');
+    topics.forEach(function(topic, index) {
+      topicsOrder[topic.dataset.id] = index;
+      topic.querySelector('.order').innerHTML = index + 1;
+    });
+    options['body'] = JSON.stringify(topicsOrder);
+    fetch(topicOrderUrl, options)
+      .then(function(response) {
+        // alert('saved successfully');
+      })
+      .catch(function(error) {
+        // alert('error occurred');
+      });
+  });
+</script>
 {% endblock %}
 
-
-
-<tbody>
-  {% for topic in topics %}
-  <a>
-    <tr>
-    
-      <td>{{ forloop.counter }}</td> <!-- Add S/N column using forloop.counter -->
-      <td><a href="{% url 'course:topic_detail' topic.course.slug topic.id %}">{{ topic.title }}</a></td>
-      <td>{{ topic.created_at }}</td>
-     
-
-      <td style="padding: 0;">
-        <div class="row" style="margin: 0;">
-          <div class="col-md-2 mt-4" style="padding: 0;">
-            <div class="d-flex justify-content-start">
-              <a class="btn btn-info mb-4 mr-2" href="{% url 'course:subtopic_list' topic.course.slug topic.id %}" style="font-size: 12px; padding: 12px 20px;">Sub topics</a>
-            </div>
-          </div>
-        </div>
-      </td>
-
-    </tr>
-  {% endfor %}
-</tbody>

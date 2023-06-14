@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'lms_admin',
     'django_celery_results',
     'embed_video',
+    'student'
 
 ]
 

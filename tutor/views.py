@@ -15,6 +15,9 @@ from accounts.forms import TutorUpdateForm
 from .forms import CourseForm, TopicForm, TopicFormSet
 from .models import Course, Topic, SubTopic
 
+from braces.views import CsrfExemptMixin, JsonRequestResponseMixin
+from django.views import View
+
 
 class TutorUserRequiredMixin(UserPassesTestMixin):
     def test_func(self):
@@ -47,7 +50,7 @@ class CourseDetail(TutorUserRequiredMixin, DetailView):
     slug_field= 'slug'
     slug_url_kwarg= 'course_slug'
     template_name = 'tutor/course_detail.html'
-
+   
    
 class CourseAndTopicCreateView(TutorUserRequiredMixin, CreateView):
     model = Course
@@ -342,6 +345,21 @@ class SubTopicDetailView(TutorUserRequiredMixin, DetailView):
     pk_url_kwarg ='id'
 
 
-    
+class TopicOrderView(CsrfExemptMixin, JsonRequestResponseMixin, View):
+    def post(self, request):
+        for id, order in self.request_json.items():
+            Topic.active_objects.filter(id=id, course__course_tutor=request.user.tutor).update(order=order)
+        return self.render_json_response({'saved': 'OK'})
+
+class SubTopicOrderView(CsrfExemptMixin, JsonRequestResponseMixin, View):
+    def post(self, request):
+        for id, order in self.request_json.items():
+            print(self.request_json.items())
+            print('id', id)
+            print('order', order)
+            SubTopic.active_objects.filter(id=id, topic__course__course_tutor=request.user.tutor) \
+                                                                    .update(order=order)
+        return self.render_json_response({'saved': 'OK'})
+  
 
         
