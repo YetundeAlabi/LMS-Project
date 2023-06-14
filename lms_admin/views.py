@@ -132,7 +132,7 @@ class StudentCreateView(LoginRequiredMixin, CreateView):
         subject = 'Login Instructions' if not created else  'Account Setup Instructions'
         context = {
                   'user': user,
-                  'set_password_url': self.get_login_url(student) if not created else self.get_password_reset_url(user),
+                  'set_password_url': self.get_login_url() if not created else self.get_password_reset_url(user),
                }
         message = get_template('lms_admin/email_template.html').render(context)
         recipient = [user.email,]
@@ -143,12 +143,11 @@ class StudentCreateView(LoginRequiredMixin, CreateView):
         # Generate the password reset URL for the user
         token = default_token_generator.make_token(user) #generate token to ensure one time use of URL
         uid = urlsafe_base64_encode(force_bytes(user.pk)) #encode user pk for security
-        url = reverse('password_reset_confirm', args=[uid, token])
+        url = reverse('accounts:set_password', args=[uid, token])
         return self.request.build_absolute_uri(url)
 
-    def get_login_url(self, student):
-        if student.is_verified:
-            return self.request.build_absolute_uri(reverse('login')) 
+    def get_login_url(self):
+        return self.request.build_absolute_uri(reverse('accounts:login')) 
 
 
 class StudentListView(LoginRequiredMixin, ListView):
@@ -243,7 +242,7 @@ class StudentImportView(PasswordResetView, FormView):
             subject = 'Account Setup Instructions' if created else 'Login Instructions'
             context = {
                     'first_name': first_name,
-                    'verification_url': self.get_password_reset_url(user) if created else self._get_login_url(student),
+                    'verification_url': self.get_password_reset_url(user) if created else self._get_login_url(),
                }
         message = get_template('lms_admin/email_template.html').render(context)
         recipient = [user.email,]
@@ -255,12 +254,11 @@ class StudentImportView(PasswordResetView, FormView):
         # Generate the password reset URL for the user
         token = default_token_generator.make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
-        url = reverse('password_reset_confirm', args=[uid, token])
+        url = reverse('accounts:set_password', args=[uid, token])
         return self.request.build_absolute_uri(url)
 
-    def _get_login_url(self, student):
-        if student.is_verified:
-            return self.request.build_absolute_uri(reverse('login'))
+    def _get_login_url(self):
+        return self.request.build_absolute_uri(reverse('accounts:login'))
 
 
 # Cohort Views
