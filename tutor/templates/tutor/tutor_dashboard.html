@@ -103,8 +103,8 @@
       <div class="col-md-12 grid-margin">
         <div class="row">
           <div class="col-12 col-xl-8 mb-4 mb-xl-0">
-            <h3 class="font-weight-bold">{{request.user.tutor.track}} Tutors Dashboard </h3>
-            <h4 class="font-weight-bold">Welcome {{request.user.first_name}} {{request.user.last_name}} </h4>
+            <h3 class="font-weight-bold mb-3">{{request.user.tutor.track}} </h3>
+            <h4 class="font-weight-bold">Welcome to your Dashboard, {{request.user.first_name}} </h4>
           </div>
         </div>
       </div>
@@ -124,9 +124,8 @@
       <div class="col-md grid-margin">
         <div class="card">
           <div class="card-body">
-            <p class="card-title mb-0"></p>
+            <p class="card-title mb-0">All Students</p>
             <div class="table-responsive">
-              {% if students %}
                 <table class="table table-striped-lms table-hover">
                   <thead>
                     <tr>
@@ -148,8 +147,8 @@
                         <td><span>{{ student.user.email }}</span></td>
                         <td>{{ student.track.name }}</td>
                         <td class="font-weight-medium">
-                          <a href="#" class="badge {% if student.is_suspended %}badge-danger{% else %}badge-primary{% endif %}">
-                            {% if student.is_suspended %} Suspended  {% else %} not suspended {% endif %}
+                          <a href="#" class="btn btn-sm btn-rounded {% if student.is_suspended %}btn-warning{% else %}btn-success{% endif %}">
+                            {% if student.is_suspended %} Suspended  {% else %} Active {% endif %}
                           </a>
                         </td>
                         
@@ -157,18 +156,19 @@
                           <div class="row" style="margin: 0;">
                             <div class="col-md-2 mt-4" style="padding: 0;">
                               <div class="d-flex justify-content-start">
-                                <a class="btn btn-info mb-4 mr-2" href="{% url 'course:track_student_detail' pk=student.id %}" style="font-size: 12px; padding: 12px 20px;">View</a>
+                                <a class="btn btn-sm btn-rounded btn-info mb-4 mr-2" href="{% url 'course:track_student_detail' pk=student.id %}" style="font-size: 12px; padding: 12px 20px;">View</a>
                               </div>
                             </div>
                           </div>
                         </td>
                       </tr>
+                      {% empty %}
+                        <tr>
+                            <td colspan="6">No students registered under this track yet.</td>
+                        </tr>
                     {% endfor %}
                   </tbody>
                 </table>
-              {% else %}
-                <p>No students registered under this track yet.</p>
-              {% endif %}
             </div>
           </div>
         </div>

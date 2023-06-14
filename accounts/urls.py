@@ -1,7 +1,7 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path, reverse_lazy
 from . import views
-from .forms import CustomSetPasswordForm, CustomPasswordChangeForm
+from .forms import CustomSetPasswordForm
 from .views import TutorUpdateView, StudentUpdateView, TutorSignUpView, SignOutView
 
 app_name = 'accounts'
