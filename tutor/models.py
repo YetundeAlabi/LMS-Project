@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from django.db.models import F, Max
 from django.urls import reverse
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -9,6 +10,7 @@ from django.contrib.auth.models import User
 from django.utils.text import slugify
 from accounts.models import Tutor
 from lms_admin.models import Track
+from django.core.validators import FileExtensionValidator
 
 
 class ActiveManager(models.Manager):
@@ -40,7 +42,7 @@ class Course(BaseContent):
         ]
 
     def __str__(self):
-        return self.slug
+        return f"{self.title}"
     
     def get_absolute_url(self):
         return reverse('course_detail', args=[str(self.slug)])
@@ -63,14 +65,9 @@ class SubTopic(BaseContent):
     )
     object_id = models.PositiveIntegerField()
     item = GenericForeignKey('content_type', 'object_id')
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+ 
 
-    objects = models.Manager()
-    active_objects=ActiveManager()
-
-
+        
     def __str__(self):
          return f"{self.object_id}"
     
@@ -80,7 +77,7 @@ class Text(BaseContent):
 
 
 class File(BaseContent):
-    file=models.FileField(upload_to='files')
+    file = models.FileField(upload_to='files', validators= [FileExtensionValidator(allowed_extensions=['pdf','jpg','png'])])
 
     def get_file_url(self):
         return self.file.url

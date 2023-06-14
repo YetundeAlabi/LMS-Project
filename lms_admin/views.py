@@ -22,10 +22,14 @@ from django.utils import timezone
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.views import View
-from django.views.generic import (CreateView, DeleteView, DetailView, FormView,
-                                  ListView, TemplateView, UpdateView)
-from lms_admin.forms import (ApplicantChecklistForm, ApplicantForm,
-                             CohortCreateForm, StudentImportForm, TrackForm)
+from django.views.generic import (
+    CreateView, DetailView, FormView, ListView, UpdateView, TemplateView, DeleteView
+)
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from tutor.studentcadd import register_courses
+from accounts.forms import StudentCreationForm, TutorCreationForm, TutorUpdateForm, StudentUpdateForm
+from accounts.models import Student, Tutor, User
+from lms_admin.forms import TrackForm, CohortCreateForm, StudentImportForm,ApplicantChecklistForm, ApplicantForm
 from lms_admin.models import Track
 
 from .models import Applicant, Cohort
@@ -127,7 +131,8 @@ class StudentCreateView(LoginRequiredMixin, CreateView):
         student = form.save()
         user = student.user
         self.object = student
-        
+
+        register_courses(self.object)
         
         subject = 'Login Instructions' if student else  'Account Setup Instructions'
         context = {
