@@ -7,30 +7,8 @@ from django.urls import reverse
 from lms_admin.models import Cohort, Track
 from PIL import Image
 
-
-class MyUserManager(BaseUserManager):
-
-    def create_user(self, email, password=None, **extra_fields):
-        """
-        Creates and saves a  new user 
-        """
-        email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
-    
-    def create_superuser(self, email, password=None, **extra_fields):
-        """ create superuser """
-        extra_fields.setdefault("is_staff", True)
-        extra_fields.setdefault("is_superuser", True)
-
-        return self.create_user(email, password, **extra_fields)
-
-
-class ActiveUserManager(models.Manager):
-   def get_queryset(self) -> QuerySet:
-       return super().get_queryset().filter(is_active=True)
+from base.managers import MyUserManager, ActiveUserManager
+from base.models import DeletableBaseModel
     
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -56,9 +34,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.is_staff
     
 
-
-
-class Student(models.Model):
+class Student(DeletableBaseModel):
     FEMALE = constants.FEMALE
     MALE = constants.MALE
 
@@ -74,7 +50,6 @@ class Student(models.Model):
     is_verified = models.BooleanField(default=False)
     is_suspended = models.BooleanField(default=False)
     picture = models.ImageField(upload_to='accounts/media', blank=True, null=True)
-    is_deleted = models.BooleanField(default=False)
     track = models.ForeignKey(Track, on_delete=models.SET_NULL, related_name="students", null=True)
 
     
@@ -89,13 +64,12 @@ class Student(models.Model):
         return reverse('student_detail', args=[str(self.id)])
 
 
-class Tutor(models.Model):
+class Tutor(DeletableBaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name="tutor")
     is_verified = models.BooleanField(default=False)
     is_suspended = models.BooleanField(default=False)
     picture = models.ImageField(upload_to='accounts/media', blank=True)
     track = models.ForeignKey(Track, on_delete=models.SET_NULL, related_name="tutors", null=True)
-    is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return self.user.email

@@ -114,7 +114,7 @@ class StudentCreationForm(forms.Form):
 
 
 """ Tutor creation form """
-class TutorCreationForm(forms.Form):
+class TutorForm(forms.ModelForm):
 
     track = forms.ModelChoiceField(
         label="Track",
@@ -130,20 +130,20 @@ class TutorCreationForm(forms.Form):
         label='Last Name',
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}))
     
-    def __init__(self, *args, **kwargs):
-        kwargs.pop("instance")
-        super().__init__(*args, **kwargs)
+    class Meta:
+        model = User
+        fields = ["email", "first_name", "last_name", "track"]
 
-    def save(self, commit=True):
-        user = User.objects.create_user(
-            email=self.cleaned_data['email'], 
-            first_name=self.cleaned_data['first_name'],
-            last_name=self.cleaned_data['last_name'])
+
+    # def save(self, commit=True):
+    #     user = User.objects.create_user(
+    #         email=self.cleaned_data['email'], 
+    #         first_name=self.cleaned_data['first_name'],
+    #         last_name=self.cleaned_data['last_name'])
         
-        tutor = Tutor.objects.create(user=user, 
-                                        track=self.cleaned_data['track'])
-        # tutor.save()
-        return tutor
+    #     tutor = Tutor.objects.create(user=user, 
+    #                                     track=self.cleaned_data['track'])
+    #     return tutor
 
      
 class LoginForm(forms.Form):

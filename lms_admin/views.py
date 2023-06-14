@@ -2,7 +2,7 @@ import csv
 from typing import Any, Dict, Optional, Type
 
 from accounts.forms import (StudentCreationForm, StudentUpdateForm,
-                            TutorCreationForm, TutorUpdateForm)
+                            TutorForm, TutorUpdateForm)
 from accounts.models import Student, Tutor, User
 from django.contrib import messages
 from django.contrib.auth.mixins import (LoginRequiredMixin,
@@ -297,22 +297,29 @@ class CohortDetailView(LoginRequiredMixin, DetailView):
     
 #Tutor Views 
 class TutorCreateFormView(LoginRequiredMixin, CreateView): #PermissionRequiredMixin,
-    form_class = TutorCreationForm
+    form_class = TutorForm
     template_name = "lms_admin/tutor_create_form.html"
     success_url = reverse_lazy('lms_admin:tutor_list')
 
     def form_valid(self, form):
-        tutor = form.save()
-        user = tutor.user
+        track = form.cleaned_data.get("track")
+        email = form.cleaned_data.get('email')
+        first_name = form.cleaned_data.get('first_name')
+        last_name= form.cleaned_data.get('last_name')
+        user = User.objects.create_user(email=email, 
+                                        first_name=first_name, 
+                                        last_name=last_name)
+        tutor = Tutor.objects.create(user=user, track=track)
+        print(tutor)
         self.object = tutor
-        subject = 'Account Setup Instructions'
-        context = {
-                    'user': user,
-                    'set_password_url': self.get_password_reset_url(user),
-                }
-        message = get_template('lms_admin/email_template.html').render(context)
-        recipient = [user.email,]
-        send_verification_mail.delay(subject, recipient, message)
+        # subject = 'Account Setup Instructions'
+        # context = {
+        #             'user': user,
+        #             'set_password_url': self.get_password_reset_url(user),
+        #         }
+        # message = get_template('lms_admin/email_template.html').render(context)
+        # recipient = [user.email,]
+        # send_verification_mail.delay(subject, recipient, message)
         return HttpResponseRedirect(reverse('lms_admin:tutor_list'))
 
     def get_password_reset_url(self, user):
@@ -334,24 +341,12 @@ class TutorListView(LoginRequiredMixin,  ListView): #PermissionRequiredMixin,
 
 
 class TutorUpdateView(LoginRequiredMixin, UpdateView): #PermissionRequiredMixin,
-    model = Tutor
-    form_class = TutorUpdateForm
+    form_class = TutorForm
     template_name = "lms_admin/tutor_update_form.html"
     
     def get_object(self, queryset=None):
         return Tutor.objects.get(pk= self.kwargs["pk"])
-        
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        form = self.get_form()
-        form.initial = self.get_initial()
-        form.fields['first_name'].initial = self.object.user.first_name
-        form.fields['last_name'].initial = self.object.user.last_name
-        form.fields['email'].initial = self.object.user.email
-        form.fields['track'].initial = self.object.track
-
-        return self.render_to_response(self.get_context_data(form=form))
-        
+     
     def form_valid(self, form):
         tutor = self.get_object()
         tutor.track = form.cleaned_data['track']
