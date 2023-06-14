@@ -101,7 +101,7 @@ class StudentCreationForm(forms.Form):
             first_name=self.cleaned_data['first_name'],
             last_name=self.cleaned_data['last_name'])
         
-        if created:
+        if not created:
             student = user.student.get()
             student.is_active = False
             student.save()
@@ -167,6 +167,15 @@ class CustomSetPasswordForm(SetPasswordForm):
         strip=False,
         widget=forms.PasswordInput(attrs={"autocomplete": "new-password", "class": "form-control"}),
     )
+
+    def save(self, commit=True):
+        password = self.cleaned_data["new_password1"]
+        self.user.set_password(password)
+        self.user.student.is_verified = True 
+        if commit:
+            self.user.save()
+            self.user.student.save()
+        return self.user
 
 
 class CustomPasswordChangeForm(PasswordChangeForm):

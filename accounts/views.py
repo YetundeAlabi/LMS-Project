@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth import (authenticate, get_user_model, login, logout,
                                  views)
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import LogoutView, PasswordChangeView
+from django.contrib.auth.views import LogoutView, PasswordChangeView, PasswordResetConfirmView
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
