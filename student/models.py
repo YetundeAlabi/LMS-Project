@@ -3,7 +3,8 @@ from django.db.models import Sum
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.text import slugify
-from tutor.models import Student, Course, Topic, SubTopic, Track
+from tutor.models import Course, Topic, SubTopic, Track
+from accounts.models import Student
 
 
 # Create your models here.

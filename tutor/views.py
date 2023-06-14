@@ -15,10 +15,15 @@ from accounts.forms import TutorUpdateForm
 from .forms import CourseForm, TopicForm, TopicFormSet
 from .models import Course, Topic, SubTopic
 
+<<<<<<< HEAD
 class CohortQuerySetMixin(ContextMixin):
     def get_queryset(self):
      super().get_queryset()
     
+=======
+from braces.views import CsrfExemptMixin, JsonRequestResponseMixin
+from django.views import View
+>>>>>>> bc38bb901d17b2df15b8e27b5c3c03ed311a8aa1
 
 
 class TutorUserRequiredMixin(UserPassesTestMixin):
@@ -91,6 +96,7 @@ class CreateTopicView(TutorUserRequiredMixin, SuccessMessageMixin, CreateView):
     form_class = TopicForm
     success_message = 'Topic created successfully'
     template_name = 'tutor/topic_form.html'
+
 
     def form_valid(self, form):
         course_slug = self.kwargs['course_slug']
@@ -346,6 +352,21 @@ class SubTopicDetailView(TutorUserRequiredMixin, DetailView):
     pk_url_kwarg ='id'
 
 
-    
+class TopicOrderView(CsrfExemptMixin, JsonRequestResponseMixin, View):
+    def post(self, request):
+        for id, order in self.request_json.items():
+            Topic.active_objects.filter(id=id, course__course_tutor=request.user.tutor).update(order=order)
+        return self.render_json_response({'saved': 'OK'})
+
+class SubTopicOrderView(CsrfExemptMixin, JsonRequestResponseMixin, View):
+    def post(self, request):
+        for id, order in self.request_json.items():
+            print(self.request_json.items())
+            print('id', id)
+            print('order', order)
+            SubTopic.active_objects.filter(id=id, topic__course__course_tutor=request.user.tutor) \
+                                                                    .update(order=order)
+        return self.render_json_response({'saved': 'OK'})
+  
 
         
