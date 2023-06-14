@@ -26,6 +26,7 @@ urlpatterns = [
     path('admin/', admin.site.urls), 
     path('', HomePage.as_view(), name="home_page"),
     path('', include('accounts.urls', namespace="accounts")),
+    path('admin/', admin.site.urls),
     path('apply/', views.ApplicantCreateView.as_view(), name="apply"),
     path('tutor/', include('tutor.urls', namespace="course")),
     path('LMS/admin/', include('lms_admin.urls', namespace="lms_admin")),
