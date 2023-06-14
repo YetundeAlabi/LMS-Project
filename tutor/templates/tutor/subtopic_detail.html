@@ -40,7 +40,7 @@
     <hr>
  
     <a class="btn btn-success mt-4 mb-4" href="{% url 'course:update_subtopic' subtopic.topic.course.slug subtopic.topic.id subtopic.content_type.model subtopic.item.id %}">Update</a>
-    <a class="btn btn-danger mt-4 mb-4" href="{% url 'course:delete_subtopic' subtopic.id %}">Delete</a>
+    <a class="btn btn-danger mt-4 mb-4" href="{% url 'course:delete_subtopic' subtopic.item.id %}">Delete</a>
     <a class="btn btn-primary mt-4 mb-4" href="{% url 'course:subtopic_list' subtopic.topic.course.slug subtopic.topic.id %}">Back</a>
   </div>
 </div>
