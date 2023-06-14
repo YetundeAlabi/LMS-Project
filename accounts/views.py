@@ -45,7 +45,7 @@ class LoginView(generic.FormView):
         return super().form_invalid(form)
 
     def get_success_url(self) -> str:
-        user = self.request.user
+        user = self.request.user.student.filter(is_active=True).get()
         if user.is_authenticated:
             if user.is_staff:
                 return reverse('lms_admin:dashboard')

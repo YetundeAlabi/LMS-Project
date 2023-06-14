@@ -96,18 +96,23 @@ class StudentCreationForm(forms.Form):
         super().__init__(*args, **kwargs)
 
     def save(self, commit=True):
-        user = User.objects.create_user(
+        user, created = User.objects.get_or_create(
             email=self.cleaned_data['email'], 
             first_name=self.cleaned_data['first_name'],
             last_name=self.cleaned_data['last_name'])
         
+        if created:
+            student = user.student.get()
+            student.is_active = False
+            student.save()
+
         student = Student.objects.create(user=user, 
                                         cohort=self.cleaned_data['cohort'],
                                         track=self.cleaned_data['track'],
                                         gender=self.cleaned_data['gender'],
                                         picture=self.cleaned_data['picture'])
         #student.save()
-        return student
+        return student, created
 
 
 """ Tutor creation form """
