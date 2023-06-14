@@ -6,16 +6,16 @@
 
 {% block content %}
 
-<div class="content-wrapper">
+<div class="content-wrapper" style="background-color: #EBEBEC">
 
     <div class="row">
         <div class="col-md-12 grid-margin">
             <div class="row">
                 <div class="col-12 col-xl-8 mb-4 mb-xl-0">
                     <h2>{{ course.title }}</h2>
-                    <p class="text-muted">Topic Description: {{ course.description }} </small></p>
-                    <p class="text-muted">Created at: {{ course.created_at }} </small></p>
-                    <p class="text-muted">Availability status: {{ course.is_active }} </small></p>
+                    <p>Topic Description: {{ course.description }} </small></p>
+                    <p>Created at: {{ course.created_at }} </small></p>
+                    <p>Availability status: {{ course.is_active }} </small></p>
 
                 </div>
             </div>
