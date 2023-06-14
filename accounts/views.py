@@ -27,7 +27,7 @@ class TutorSignUpView(CreateView):
     success_url = reverse_lazy('login')
 
 class SignOutView(LogoutView):
-    next_page = reverse_lazy('accounts:login')
+    next_page = reverse_lazy('home_page')
 
 class LoginView(generic.FormView):
     form_class = LoginForm
