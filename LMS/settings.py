@@ -22,8 +22,8 @@ TEMPLATES_DIR = BASE_DIR /'LMS'/'templates'
 
 # SECRET_KEY = os.environ.get('SECRET_KEY')
 
-
-DEBUG = False
+SECRET_KEY= 'django-insecure-$$z=kt(08)a)%q11q@@=#gt5^q+v4^p2!c@x@x@r42h6$wb^'
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 

@@ -1,3 +1,5 @@
+<!-- subtopic.html -->
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,17 +11,14 @@
         <h2>Subtopic List</h2>
         <ul>
             {% for subtopic in student_subtopics %}
-            <li><a href="{% url 'course:subtopic_detail' student_topic.id subtopic.id %}">{{ subtopic.title }}</a></li>
+                <li><a href="{% url 'student:student_subtopic_detail' student_course_slug=student_course.slug student_topic_slug=student_topic.slug %}">{{ subtopic.slug }}</a></li>
             {% endfor %}
         </ul>
     </div>
 
     <!-- Main Content -->
     <div class="content">
-        <h2>Subtopic Detail</h2>
-        <h3>{{ student_subtopic.title }}</h3>
-        <p>{{ student_subtopic.description }}</p>
-        <!-- Display any additional details of the student_subtopic object here -->
+        <!-- Content goes here -->
     </div>
 </body>
 </html>
