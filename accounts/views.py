@@ -13,7 +13,7 @@ from django.views.generic import CreateView
 from django.views.generic.edit import UpdateView
 
 from .forms import (LoginForm, SignUpForm, StudentUpdateForm, TutorUpdateForm,
-                    UserForm)
+                    UserForm, CustomPasswordChangeForm)
 from .models import Student, Tutor, User
 
 # Create your views here.
@@ -45,7 +45,7 @@ class LoginView(generic.FormView):
         return super().form_invalid(form)
 
     def get_success_url(self) -> str:
-        user = self.request.user
+        user = self.request.user.student.filter(is_active=True).get()
         if user.is_authenticated:
             if user.is_staff:
                 return reverse('lms_admin:dashboard')
@@ -56,8 +56,9 @@ class LoginView(generic.FormView):
         return reverse('login')
         
             
-class ChangePasswordView(PasswordChangeView):
-    template_name = 'accounts/change_password.html'  
+class CustomPasswordChangeView(PasswordChangeView):
+    template_name = 'accounts/change_password.html' 
+    form_class = CustomPasswordChangeForm 
     success_url = reverse_lazy('login')
 
 
