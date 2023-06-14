@@ -21,6 +21,7 @@
   <link rel="stylesheet" href="{% static 'assets/css/vertical-layout-light/style.css' %}">
   <link rel="stylesheet" href="{% static 'assets/css/vertical-layout-light/lms.css' %}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+  
   <!-- endinject -->
   <link rel="shortcut icon" href="{% static 'assets/images/X.png' %}" />
 
@@ -99,14 +100,6 @@
           <ul class="navbar-nav navbar-nav-right">
             <li class="nav-item">
               {% if user.is_authenticated %}
-                <p class="mb-0 font-weight-normal float-left">
-                  <a class="nav-link" href="{% url 'accounts:change_password' %}">
-                    <i class="mdi mdi-logout"></i>
-                    Change password
-                  </a>
-                </p>
-
-                    
                 <p class="mb-0 font-weight-normal float-left" style="margin-left: 10px;">
                   <a class="nav-link" href="{% url 'accounts:logout' %}">
                     <i class="mdi mdi-logout"></i>
