@@ -18,12 +18,11 @@ from pathlib import Path
 load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-TEMPLATES_DIR = BASE_DIR / 'LMS' / 'templates'
-#SECRET_KEY= 'django-insecure-$$z=kt(08)a)%q11q@@=#gt5^q+v4^p2!c@x@x@r42h6$wb^'
+TEMPLATES_DIR = BASE_DIR / 'LMS'/ 'templates'
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY')
-# SECURITY WARNING: don't run with debug turned on in production!
+
+
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
@@ -43,7 +42,7 @@ INSTALLED_APPS = [
     'lms_admin',
     'django_celery_results',
     'embed_video',
-    'student',
+    'student'
 
 ]
 
@@ -147,7 +146,7 @@ EMAIL_PORT = os.environ.get('EMAIL_PORT')
 EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL =os.environ.get('EMAIL_HOST_USER')
+DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER')
 
 # Celery Settings
 CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
@@ -162,3 +161,9 @@ timezone = 'Africa/Lagos'
 
 # CELERY_RESULT_BACKEND = 'django-db'
 result_backend= 'django-db'
+
+EMBED_VIDEO_BACKENDS = (
+    'embed_video.backends.YoutubeBackend',
+    'embed_video.backends.VimeoBackend',
+    'embed_video.backends.SoundCloudBackend',
+)

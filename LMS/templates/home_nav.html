@@ -4,16 +4,34 @@
         <div class="row align-items-center">
 
           <div class="col-6 col-lg-9">
-            <a href="#" class="small mr-3"><span class="icon-question-circle-o mr-2"></span> <span class="d-none d-lg-inline-block">Have a questions?</span></a> 
-            <a href="#" class="small mr-3"><span class="icon-phone mr-2"></span> <span class="d-none d-lg-inline-block">10 20 123 456</span></a> 
-            <a href="#" class="small mr-3"><span class="icon-envelope mr-2"></span> <span class="d-none d-lg-inline-block">info@mydomain.com</span></a> 
+            <a href="#" class="small mr-3"><span class="icon-question-circle-o mr-2"></span> <span class="d-none d-lg-inline-block"></span></a> 
+            <a href="#" class="small mr-3"><span class="icon-phone mr-2"></span> <span class="d-none d-lg-inline-block"></span></a> 
+            <a href="#" class="small mr-3"><span class="icon-envelope mr-2"></span> <span class="d-none d-lg-inline-block"></span></a> 
           </div>
 
           <div class="col-6 col-lg-3 text-right">
+            {% if user.is_authenticated %}
+            {% if user.tutor %}
+            <a href="{% url 'course:tutor_dashboard_view' %}" class="small mr-3">
+              <span class="fas fa-th-large"></span>
+              Dashboard
+            </a>
+            {% else %}
+            <a href="{% url 'lms_admin:dashboard' %}" class="small mr-3">
+              <span class="fas fa-th-large"></span>
+              Dashboard
+            </a>
+            {% endif %}
+            <a href="{% url 'accounts:logout' %}" class="small mr-3">
+              <span class="fas fa-sign-out-alt"></span>
+              Log Out
+            </a>
+            {% else %}
             <a href="{% url 'accounts:login' %}" class="small mr-3">
               <span class="icon-lock"></span>
               Log In
             </a>
+            {% endif %}
           </div>
 
         </div>

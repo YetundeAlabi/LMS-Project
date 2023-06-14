@@ -123,16 +123,16 @@ class StudentCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('student_list')
 
     def form_valid(self, form):
-        student = form.save()
+        student, created = form.save()
         user = student.user
         self.object = student
 
         register_courses(self.object)
         
-        subject = 'Login Instructions' if student else  'Account Setup Instructions'
+        subject = 'Login Instructions' if not created else  'Account Setup Instructions'
         context = {
                   'user': user,
-                  'set_password_url': self.get_login_url(student) if student else self.get_password_reset_url(user),
+                  'set_password_url': self.get_login_url(student) if not created else self.get_password_reset_url(user),
                }
         message = get_template('lms_admin/email_template.html').render(context)
         recipient = [user.email,]

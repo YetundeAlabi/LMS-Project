@@ -1,0 +1,21 @@
+<!-- topic.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Topics</title>
+</head>
+<body>
+    <h1>Student Topics</h1>
+
+    {% if student_topics %}
+        <ul>
+            {% for student_topic in student_topics %}
+                <li>{{ student_topic.student_topic.title }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No topics found for this student course.</p>
+    {% endif %}
+</body>
+</html>

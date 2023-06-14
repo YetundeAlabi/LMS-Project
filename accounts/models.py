@@ -69,6 +69,7 @@ class Student(models.Model):
     gender = models.CharField(max_length=20, choices=GENDER_CHOICES)
     is_verified = models.BooleanField(default=False)
     is_suspended = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False)
     picture = models.ImageField(upload_to='accounts/media', blank=True, null=True)
     is_deleted = models.BooleanField(default=False)
     track = models.ForeignKey(Track, on_delete=models.SET_NULL, related_name="students", null=True)

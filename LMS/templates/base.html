@@ -21,6 +21,7 @@
   <link rel="stylesheet" href="{% static 'assets/css/vertical-layout-light/style.css' %}">
   <link rel="stylesheet" href="{% static 'assets/css/vertical-layout-light/lms.css' %}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+  
   <!-- endinject -->
   <link rel="shortcut icon" href="{% static 'assets/images/X.png' %}" />
 
@@ -99,14 +100,6 @@
           <ul class="navbar-nav navbar-nav-right">
             <li class="nav-item">
               {% if user.is_authenticated %}
-                <p class="mb-0 font-weight-normal float-left">
-                  <a class="nav-link" href="{% url 'accounts:change_password' %}">
-                    <i class="mdi mdi-logout"></i>
-                    Change password
-                  </a>
-                </p>
-
-                    
                 <p class="mb-0 font-weight-normal float-left" style="margin-left: 10px;">
                   <a class="nav-link" href="{% url 'accounts:logout' %}">
                     <i class="mdi mdi-logout"></i>
@@ -162,17 +155,11 @@
                   </div>
               {% endfor %}
           {% endif %}
-
-        
-
                 {% block content %}
 
                 {% endblock %}
-
-          
-              
-          
-
+        
+                
             <footer class="footer">
                 <div class="d-sm-flex justify-content-center justify-content-sm-between">
                   <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2021.  Premium <a href="https://www.bootstrapdash.com/" target="_blank">Bootstrap admin template</a> from BootstrapDash. All rights reserved.</span>
@@ -216,7 +203,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
-    {% block script %} {% endblock %}
+    {% block script %} 
+    {% endblock %}
 </body>
 
 </html>
