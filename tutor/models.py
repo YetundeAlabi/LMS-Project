@@ -52,7 +52,7 @@ class Course(BaseContent):
 class Topic(BaseContent):
     course=models.ForeignKey(Course, on_delete=models.SET_NULL, blank=True, null=True, db_index=True)
     id=models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
-    order = OrderField(blank=True, for_fields=['course'])
+    order = OrderField(blank=True, for_fields=['course'], null=True)
     
     class Meta:
         ordering= ['order']

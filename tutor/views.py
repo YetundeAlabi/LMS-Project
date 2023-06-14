@@ -15,15 +15,8 @@ from accounts.forms import TutorUpdateForm
 from .forms import CourseForm, TopicForm, TopicFormSet
 from .models import Course, Topic, SubTopic
 
-<<<<<<< HEAD
-class CohortQuerySetMixin(ContextMixin):
-    def get_queryset(self):
-     super().get_queryset()
-    
-=======
 from braces.views import CsrfExemptMixin, JsonRequestResponseMixin
 from django.views import View
->>>>>>> bc38bb901d17b2df15b8e27b5c3c03ed311a8aa1
 
 
 class TutorUserRequiredMixin(UserPassesTestMixin):

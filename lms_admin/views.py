@@ -1,9 +1,6 @@
 import csv
 from typing import Any, Dict, Optional, Type
 
-from accounts.forms import (StudentCreationForm, StudentUpdateForm,
-                            TutorForm, TutorUpdateForm)
-from accounts.models import Student, Tutor, User
 from django.contrib import messages
 from django.contrib.auth.mixins import (LoginRequiredMixin,
                                         PermissionRequiredMixin)
@@ -26,14 +23,16 @@ from django.views.generic import (
     CreateView, DetailView, FormView, ListView, UpdateView, TemplateView, DeleteView
 )
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from tutor.studentcadd import register_courses
-from accounts.forms import StudentCreationForm, TutorCreationForm, TutorUpdateForm, StudentUpdateForm
-from accounts.models import Student, Tutor, User
-from lms_admin.forms import TrackForm, CohortCreateForm, StudentImportForm,ApplicantChecklistForm, ApplicantForm
-from lms_admin.models import Track
 
+from tutor.studentcadd import register_courses
+from accounts.forms import StudentCreationForm, TutorForm, TutorUpdateForm, StudentUpdateForm
+from accounts.models import Student, Tutor, User
+from lms_admin.forms import (
+                            TrackForm, CohortCreateForm, StudentImportForm,ApplicantChecklistForm, ApplicantForm)
+from lms_admin.models import Track
 from .models import Applicant, Cohort
 from .tasks import send_verification_mail
+from base.constants import FEMALE, MALE
 
 # Create your views here
 
@@ -46,10 +45,11 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         context['students'] = Student.objects.all()
         context['tutors'] = Tutor.objects.all()
         context['tracks'] = Track.objects.all()
-        context['cohort'] = Cohort.objects.filter(year=current_year)
+        context['cohort'] = Cohort.objects.latest('year')
         context['applicants'] = Applicant.objects.all()
-        context['male_applicants'] = Applicant.objects.filter(gender="MALE", cohort__year=current_year).count()
-        context['female_applicants'] = Applicant.objects.filter(gender="FEMALE").count()
+        context['male_applicants'] = Applicant.objects.filter(
+            gender='M', cohort__year=current_year).count()
+        context['female_applicants'] =  Applicant.objects.filter(gender='F').count()
         return context
 
 
@@ -315,7 +315,6 @@ class TutorCreateFormView(LoginRequiredMixin, CreateView): #PermissionRequiredMi
                                         first_name=first_name, 
                                         last_name=last_name)
         tutor = Tutor.objects.create(user=user, track=track)
-        print(tutor)
         self.object = tutor
         # subject = 'Account Setup Instructions'
         # context = {
@@ -359,7 +358,7 @@ class TutorUpdateView(LoginRequiredMixin, UpdateView): #PermissionRequiredMixin,
         tutor.user.last_name = form.cleaned_data['last_name']
         tutor.user.email = form.cleaned_data['email']
         tutor.user.save()
-        tutor.save()
+        tutor.save()  
         return HttpResponseRedirect(reverse('lms_admin:tutor_list'))
         
     

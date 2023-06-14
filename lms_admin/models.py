@@ -48,8 +48,8 @@ class Applicant(models.Model):
     MALE = constants.MALE
 
     GENDER_CHOICES =(
-        ("FEMALE", FEMALE),
-        ("MALE", MALE),
+        ('F', FEMALE),
+        ('M', MALE),
     )
 
     first_name = models.CharField(max_length=150)

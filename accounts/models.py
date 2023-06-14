@@ -40,8 +40,8 @@ class Student(DeletableBaseModel):
 
 
     GENDER_CHOICES =(
-        ("FEMALE", FEMALE),
-        ("MALE", MALE),
+        ('F', FEMALE),
+        ('M', MALE),
     )
 
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
