@@ -47,12 +47,12 @@
                       <td> {{ tutor.user.last_name}}</td>
                       <td><span>{{ tutor.user.email }}</span> </td>
                       <td>{{ tutor.track.name }}</td>
-                      <td class="font-weight-medium"><a href="{% url 'lms_admin:tutor_toggle_suspend' pk=tutor.pk%}" class="badge {%if not tutor.is_suspended %}
-                          badge-info"> not suspended</a></td>
+                      <td class="font-weight-medium"><a href="{% url 'lms_admin:tutor_toggle_suspend' pk=tutor.pk%}" class="btn btn-sm btn-rounded {%if not tutor.is_suspended %}
+                          btn-info"> Active</a></td>
                           {% else %}
-                          badge-warning"> suspended</a></td>
+                          btn-warning">Suspended</a></td>
                           {%endif%}
-                      <td><a class="badge badge-primary" href="{% url 'lms_admin:tutor_detail' pk=tutor.pk%}">View</a></td>
+                      <td><a class="btn btn-sm btn-info btn-rounded" href="{% url 'lms_admin:tutor_detail' pk=tutor.pk%}">View</a></td>
 
                     </tr>
                     {% empty %}

@@ -128,16 +128,16 @@ class StudentCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('student_list')
 
     def form_valid(self, form):
-        student = form.save()
+        student, created = form.save()
         user = student.user
         self.object = student
 
         register_courses(self.object)
         
-        subject = 'Login Instructions' if student else  'Account Setup Instructions'
+        subject = 'Login Instructions' if not created else  'Account Setup Instructions'
         context = {
                   'user': user,
-                  'set_password_url': self.get_login_url(student) if student else self.get_password_reset_url(user),
+                  'set_password_url': self.get_login_url() if not created else self.get_password_reset_url(user),
                }
         message = get_template('lms_admin/email_template.html').render(context)
         recipient = [user.email,]
@@ -148,12 +148,11 @@ class StudentCreateView(LoginRequiredMixin, CreateView):
         # Generate the password reset URL for the user
         token = default_token_generator.make_token(user) #generate token to ensure one time use of URL
         uid = urlsafe_base64_encode(force_bytes(user.pk)) #encode user pk for security
-        url = reverse('password_reset_confirm', args=[uid, token])
+        url = reverse('accounts:set_password', args=[uid, token])
         return self.request.build_absolute_uri(url)
 
-    def get_login_url(self, student):
-        if student.is_verified:
-            return self.request.build_absolute_uri(reverse('login')) 
+    def get_login_url(self):
+        return self.request.build_absolute_uri(reverse('accounts:login')) 
 
 
 class StudentListView(LoginRequiredMixin, ListView):
@@ -247,7 +246,7 @@ class StudentImportView(PasswordResetView, FormView):
             subject = 'Account Setup Instructions' if created else 'Login Instructions'
             context = {
                     'first_name': first_name,
-                    'verification_url': self.get_password_reset_url(user) if created else self._get_login_url(student),
+                    'verification_url': self.get_password_reset_url(user) if created else self._get_login_url(),
                }
         message = get_template('lms_admin/email_template.html').render(context)
         recipient = [user.email,]
@@ -258,12 +257,11 @@ class StudentImportView(PasswordResetView, FormView):
         # Generate the password reset URL for the user
         token = default_token_generator.make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
-        url = reverse('password_reset_confirm', args=[uid, token])
+        url = reverse('accounts:set_password', args=[uid, token])
         return self.request.build_absolute_uri(url)
 
-    def _get_login_url(self, student):
-        if student.is_verified:
-            return self.request.build_absolute_uri(reverse('login'))
+    def _get_login_url(self):
+        return self.request.build_absolute_uri(reverse('accounts:login'))
 
 
 # Cohort Views
@@ -419,20 +417,33 @@ class ApplicantApprovalFormView(LoginRequiredMixin, View):
             for applicant in selected_applicants:
                 applicant.is_approved = True
                 applicant.save()
-            messages.success(request, "Applicants have been approved successfully.")
-            return HttpResponseRedirect(reverse("lms_admin:applicant_list"))
+            messages.success(request, "Applicants has been approved successfully.")
+            return HttpResponseRedirect(reverse("lms_admin:all_applicant"))
         return render(request, self.template_name, {'form': form})
+    
+    
+class AllApplicantListView(ListView):
+    model = Applicant
+    template_name = 'lms_admin/all_applicants.html'
+    context_object_name = 'applicants'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        unapproved_count = self.object_list.filter(is_approved=False).count()
+        context['unapproved_count'] = unapproved_count
+        return context
 
 
 class ApplicantListView(ListView):
     model = Applicant
-    template_name = 'applicant_list.html'
+    template_name = 'lms_admin/applicant_list.html'
     context_object_name = 'applicants'
 
     def get_queryset(self):
         queryset = super().get_queryset()
         queryset = queryset.filter(is_approved=False)
         return queryset
+
 
 
 class ExportApprovedApplicantsCSVView(View):

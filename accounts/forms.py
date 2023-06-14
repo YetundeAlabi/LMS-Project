@@ -1,4 +1,9 @@
 from django import forms
+<<<<<<< HEAD
+=======
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UserChangeForm, SetPasswordForm, PasswordChangeForm
+from django.core.exceptions import ValidationError
+>>>>>>> b6d24226ed7d65c43a55a5dcf8207d64ac2b6dac
 from django.contrib.auth import get_user_model, password_validation
 from django.contrib.auth.forms import (AuthenticationForm, SetPasswordForm,
                                        UserChangeForm, UserCreationForm)
@@ -91,25 +96,35 @@ class StudentCreationForm(forms.Form):
     picture = forms.ImageField(
         label='Profile Image',
         required=False,
-        widget=forms.ClearableFileInput(attrs={'class': 'form-control-file', 'placeholder': 'Picture' }))
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control file-upload-info', 'placeholder': 'Picture' }))
 
     def __init__(self, *args, **kwargs):
         kwargs.pop("instance")
         super().__init__(*args, **kwargs)
 
     def save(self, commit=True):
-        user = User.objects.create_user(
+        user, created = User.objects.get_or_create(
             email=self.cleaned_data['email'], 
             first_name=self.cleaned_data['first_name'],
             last_name=self.cleaned_data['last_name'])
         
+        if not created:
+            student = user.student.get()
+            student.is_active = False
+            student.save()
+
         student = Student.objects.create(user=user, 
                                         cohort=self.cleaned_data['cohort'],
                                         track=self.cleaned_data['track'],
                                         gender=self.cleaned_data['gender'],
                                         picture=self.cleaned_data['picture'])
+<<<<<<< HEAD
         # student.save()
         return student
+=======
+        #student.save()
+        return student, created
+>>>>>>> b6d24226ed7d65c43a55a5dcf8207d64ac2b6dac
 
 
 """ Tutor creation form """
@@ -164,6 +179,45 @@ class CustomSetPasswordForm(SetPasswordForm):
         strip=False,
         widget=forms.PasswordInput(attrs={"autocomplete": "new-password", "class": "form-control"}),
     )
+
+    def save(self, commit=True):
+        password = self.cleaned_data["new_password1"]
+        self.user.set_password(password)
+        self.user.student.is_verified = True 
+        if commit:
+            self.user.save()
+            self.user.student.save()
+        return self.user
+
+
+class CustomPasswordChangeForm(PasswordChangeForm):
+
+    error_messages = {
+        "password_incorrect": "Your old password was entered incorrectly. Please enter it again.",
+        "password_mismatch": "The two password fields didn’t match.",
+    }
+    
+    old_password = forms.CharField(
+        label="Old password",
+        strip=False,
+        widget=forms.PasswordInput(
+            attrs={"class": " form-control", "placeholder": "Enter your old password"}
+        ),
+    )
+    new_password1 = forms.CharField(
+        label="New password",
+        widget=forms.PasswordInput(
+            attrs={"class": " form-control", "placeholder": "Enter your new password"}),
+        strip=False,
+    )
+    new_password2 = forms.CharField(
+        label="New password confirmation",
+        strip=False,
+        widget=forms.PasswordInput(
+            attrs={"class": " form-control", "placeholder": "Confirm your new password"}),
+    )
+
+    field_order = ["old_password", "new_password1", "new_password2"]
 
 
 class TutorUpdateForm(forms.ModelForm):

@@ -59,11 +59,12 @@ class Applicant(models.Model):
     gender = models.CharField(max_length=20, choices=GENDER_CHOICES)
     track = models.ForeignKey("Track", on_delete=models.SET_NULL, related_name="applicants", null=True)
     is_approved = models.BooleanField(default=False)
+    applied_date = models.DateTimeField(auto_now_add=True, null=True)
+    
     objects = models.Manager()
     approved = ApprovedManager()
     not_approved= UnApprovedManager()
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
-
 
