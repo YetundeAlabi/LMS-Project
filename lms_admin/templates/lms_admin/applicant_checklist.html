@@ -1,4 +1,4 @@
-{% extends 'base.html' %} 
+{% extends 'base.html'%}
 
 {% block navbar %}
     
@@ -6,59 +6,85 @@
 
 {% endblock %}
 
-
 {% block content %}
-    <div class="content-wrapper" style="background-color: #EBEBEC;" >
-        <div class="container">
-            <h3 class="page-title">Applicant Approval</h3>
+<div class="content-wrapper" style="background-color: #EBEBEC;">
+  <div class="row">
+    <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+      <h2>Applicant Approval</h2>
+    </div>
+  </div>
+  
+  <div>
+    <p class="card-title mb-5"></p>
+  </div>
+
+  <div class="row">
+      <div class="col-md grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <p class="card-title mb-5"></p>
+            <div class="table-responsive">
             <form method="post">
                 {% csrf_token %}
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>
-                                <input type="checkbox" id="select-all" />
-                                <label for="select-all"></label>
-                            </th>
-                            <th>First Name</th>
-                            <th>Last Name</th>
-                            <th>Email</th>
-                            <th>Gender</th>
-                            <th>Track</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for applicant in form.applicants.field.queryset %}
-                        <tr>
-                            <td>
-                                <input type="checkbox" id="applicant_{{ applicant.id }}" name="applicants" value="{{ applicant.id }}">
-                                <label for="applicant_{{ applicant.id }}"></label>
-                            </td>
-                            <td>{{ applicant.first_name }}</td>
-                            <td>{{ applicant.last_name }}</td>
-                            <td>{{ applicant.email }}</td>
-                            <td>{{ applicant.gender }}</td>
-                            <td>{{ applicant.track }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                <div class="mt-5">
-                    <button type="submit" class="btn btn-primary">Approve</button>
-                </div>
-            </form>
+              <table class="table table-striped-lms table-hover">
+                <thead>
+                  <tr>
+                    <th>
+                        <input type="checkbox" id="select-all" />
+                        <label for="select-all"></label>
+                    </th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Gender</th>
+                    <th>Track</th>
+                    <th>Applied Date</th>
+
+                  </tr>  
+                </thead>
+              
+
+                <tbody>
+                  {% for applicant in form.applicants.field.queryset %}
+                    <tr>
+                        <td>
+                            <input type="checkbox" id="applicant_{{ applicant.id }}" name="applicants" value="{{ applicant.id }}">
+                            <label for="applicant_{{ applicant.id }}"></label>
+                        </td>
+                        <td>{{ applicant.first_name }}</td>
+                        <td>{{ applicant.last_name }}</td>
+                        <td>{{ applicant.email }}</td>
+                        <td>{{ applicant.gender }}</td>
+                        <td>{{ applicant.track }}</td>
+                        <td>{{ applicant.applied_date }}</td>
+
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7">No applicants available for approval.</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              <div class="mt-5">
+                <button type="submit" class="btn btn-success">Approve</button>
+              </div>
+            </form>  
+            </div>
+          </div>
         </div>
-    </div>
+      </div>
+  </div>
+</div>
+<script>
+    // JavaScript code for select all checkbox functionality
+    const selectAllCheckbox = document.getElementById('select-all');
+    const checkboxes = document.querySelectorAll('input[name="applicants"]');
 
-    <script>
-        // JavaScript code for select all checkbox functionality
-        const selectAllCheckbox = document.getElementById('select-all');
-        const checkboxes = document.querySelectorAll('input[name="applicants"]');
-
-        selectAllCheckbox.addEventListener('change', function() {
-            checkboxes.forEach(function(checkbox) {
-                checkbox.checked = selectAllCheckbox.checked;
-            });
+    selectAllCheckbox.addEventListener('change', function() {
+        checkboxes.forEach(function(checkbox) {
+            checkbox.checked = selectAllCheckbox.checked;
         });
-    </script>
-{% endblock %}
+    });
+</script>
+{%endblock%}
