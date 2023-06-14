@@ -420,20 +420,33 @@ class ApplicantApprovalFormView(LoginRequiredMixin, View):
             for applicant in selected_applicants:
                 applicant.is_approved = True
                 applicant.save()
-            messages.success(request, "Applicants have been approved successfully.")
-            return HttpResponseRedirect(reverse("lms_admin:applicant_list"))
+            messages.success(request, "Applicants has been approved successfully.")
+            return HttpResponseRedirect(reverse("lms_admin:all_applicant"))
         return render(request, self.template_name, {'form': form})
+    
+    
+class AllApplicantListView(ListView):
+    model = Applicant
+    template_name = 'lms_admin/all_applicants.html'
+    context_object_name = 'applicants'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        unapproved_count = self.object_list.filter(is_approved=False).count()
+        context['unapproved_count'] = unapproved_count
+        return context
 
 
 class ApplicantListView(ListView):
     model = Applicant
-    template_name = 'applicant_list.html'
+    template_name = 'lms_admin/applicant_list.html'
     context_object_name = 'applicants'
 
     def get_queryset(self):
         queryset = super().get_queryset()
         queryset = queryset.filter(is_approved=False)
         return queryset
+
 
 
 class ExportApprovedApplicantsCSVView(View):
