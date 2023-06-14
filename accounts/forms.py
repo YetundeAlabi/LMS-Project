@@ -1,12 +1,8 @@
 from django import forms
-<<<<<<< HEAD
-=======
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UserChangeForm, SetPasswordForm, PasswordChangeForm
 from django.core.exceptions import ValidationError
->>>>>>> b6d24226ed7d65c43a55a5dcf8207d64ac2b6dac
 from django.contrib.auth import get_user_model, password_validation
-from django.contrib.auth.forms import (AuthenticationForm, SetPasswordForm,
-                                       UserChangeForm, UserCreationForm)
+from django.contrib.auth.forms import (SetPasswordForm,
+                                       UserCreationForm)
 from django.core.exceptions import ValidationError
 from lms_admin.models import Cohort, Track
 
@@ -118,13 +114,8 @@ class StudentCreationForm(forms.Form):
                                         track=self.cleaned_data['track'],
                                         gender=self.cleaned_data['gender'],
                                         picture=self.cleaned_data['picture'])
-<<<<<<< HEAD
-        # student.save()
-        return student
-=======
         #student.save()
         return student, created
->>>>>>> b6d24226ed7d65c43a55a5dcf8207d64ac2b6dac
 
 
 """ Tutor creation form """
