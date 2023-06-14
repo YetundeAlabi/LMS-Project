@@ -50,8 +50,8 @@ class StudentSubtopicDetailView(View):
     def get(self, request, *args, **kwargs):
         student_topic_slug = self.kwargs['student_topic_slug']
         student_topic = get_object_or_404(StudentTopic, slug=student_topic_slug)
-        student_subtopic_slug = self.kwargs['student_subtopic_slug']
-        student_subtopic = get_object_or_404(StudentSubTopic, slug=student_subtopic_slug, student_topic=student_topic)
+        student_subtopic_id = self.kwargs['student_subtopic_id']
+        student_subtopic = get_object_or_404(StudentSubTopic, id=student_subtopic_id, student_topic=student_topic)
         student_subtopic.update_progress_level()
         student_subtopic.student_topic.update_progress_level()
         student_subtopic.student_topic.student_course.update_progress_level()
@@ -60,4 +60,4 @@ class StudentSubtopicDetailView(View):
             'student_topic': student_topic,
             'student_subtopic': student_subtopic
         }
-        return render(self.request, 'subtopic.html', context=context)
+        return render(self.request, 'subtopic_detail.html', context=context)
