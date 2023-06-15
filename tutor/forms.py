@@ -3,6 +3,8 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm, inlineformset_factory
 from .models import Course, Topic, SubTopic
+from accounts.models import User
+from django.contrib.auth.forms import UserChangeForm
 
 
 class CourseForm(forms.ModelForm):
@@ -40,3 +42,11 @@ TopicFormSet = inlineformset_factory(Course, Topic, fields=['title', 'descriptio
     'title': forms.TextInput(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Topic Title'}),
     'description': forms.Textarea(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Topic Description'})
 })
+
+
+class TutorUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['email', 'first_name', 'last_name']
+
+   

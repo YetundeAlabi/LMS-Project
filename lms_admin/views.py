@@ -217,7 +217,6 @@ class ToggleStudentSuspendView(LoginRequiredMixin, View):
         return HttpResponseRedirect(reverse('lms_admin:student_list'))
 
 
-
 class StudentImportView(PasswordResetView, FormView):
     """Student Import View to create many students from a CSV file and send login/set password URLs in email"""
     template_name = 'lms_admin/import_students.html'

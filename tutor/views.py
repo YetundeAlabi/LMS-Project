@@ -1,3 +1,5 @@
+from typing import Any
+from django import http
 from django.apps import apps
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -5,15 +7,18 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.forms.models import modelform_factory
 from django.forms.widgets import TextInput, Textarea
 from django.http import Http404
-from django.http.response import HttpResponseRedirect
+from django.http.response import HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView
 from django.views.generic.base import TemplateResponseMixin, View
 from accounts.models import Student, Tutor
-from accounts.forms import TutorUpdateForm
+from .forms import TutorUpdateForm
 from .forms import CourseForm, TopicForm, TopicFormSet
 from .models import Course, Topic, SubTopic
+from accounts.models import User
+from django.views.generic.base import TemplateResponseMixin
+
 
 from braces.views import CsrfExemptMixin, JsonRequestResponseMixin
 from django.views import View
@@ -362,4 +367,44 @@ class SubTopicOrderView(CsrfExemptMixin, JsonRequestResponseMixin, View):
         return self.render_json_response({'saved': 'OK'})
   
 
+class TutorProfileView(TemplateView):
+    template_name = 'tutor/tutor_profile.html'
+
+class TutorUpdateDetailsView(View):
+    template_name = 'tutor/tutor_update.html'
+    form_class = TutorUpdateForm
+
+    def dispatch(self, request, *args, **kwargs):
+        if isinstance(self.request.user, User) and hasattr(self.request.user, 'tutor'):
+            pass
+        else:
+            messages.error(self.request, "You are not a tutor")
+            return redirect('home_page')
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, pk):
+        if request.user.id != pk:
+            return HttpResponseForbidden()
         
+        user = User.active_objects.get(id=pk)
+        form = self.form_class(instance=user)
+        context = {
+            "form": form,
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, pk):
+        if request.user.id != pk:
+            return HttpResponseForbidden()
+
+        user = User.active_objects.get(id=pk)
+        form = self.form_class(request.POST, request.FILES, instance=user)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated successfully!")
+            # return redirect('garbage:home', user.id)
+
+        messages.error(request, 'Invalid detail entered')
+        return redirect(request.META.get("HTTP_REFERER"))
