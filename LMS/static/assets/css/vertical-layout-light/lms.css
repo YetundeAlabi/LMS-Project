@@ -21,3 +21,8 @@
 .table-striped-lms tbody tr:nth-child() {
   background-color: #FCE9E8 !important;
 }
+
+.messages.vanish {
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
+}

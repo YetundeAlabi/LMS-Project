@@ -21,7 +21,6 @@
         <div class="col-md grid-margin stretch-card">
             <div class="card">
                 <div class="card-body">
-                    <p class="card-title mb-5"></p>
                     <div class="table-responsive">
                         <table class="table table-striped-lms table-hover">
                             <thead>
@@ -56,15 +55,13 @@
                                 </tr>
                                 {% empty %}
                                 <tr>
-                                    <td colspan="7">No applicants found.</td>
+                                    <td colspan="8">No applicants found.</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
                         {% if unapproved_count == 0 %}
-                        <div class="mt-5">
-                            
-                        </div>
+                        
                         {% else %}
                         <div class="mt-5">
                             <a href="{% url 'lms_admin:applicants_approval' %}" class="btn btn-success">Approve Applicants</a>

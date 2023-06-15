@@ -10,8 +10,8 @@ from django.http import Http404
 from django.http.response import HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView
-from django.views.generic.base import TemplateResponseMixin, View
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic.base import TemplateResponseMixin, View, ContextMixin
 from accounts.models import Student, Tutor
 from .forms import TutorUpdateForm
 from .forms import CourseForm, TopicForm, TopicFormSet
@@ -32,9 +32,11 @@ class TutorDashboardView(TutorUserRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         tutor= self.request.user.tutor
         students= Student.objects.filter(track=tutor.track)
+        courses = Course.objects.filter(track=tutor.track)
         context = {
             'tutor':tutor,
-            'students':students
+            'students':students,
+            'courses': courses,
         }
         return render (self.request, 'tutor/tutor_dashboard.html', context=context)
 

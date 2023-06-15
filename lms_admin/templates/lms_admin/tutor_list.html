@@ -15,14 +15,13 @@
   </div>
   
   <div>
-    <a class="btn btn-primary mt-2 mb-4" href="{% url 'lms_admin:tutor_create'%}">Create Tutor</a>
+    <a class="btn btn-success mt-2 mb-4" href="{% url 'lms_admin:tutor_create'%}">Create Tutor</a>
   </div>
 
   <div class="row">
       <div class="col-md grid-margin stretch-card">
         <div class="card">
           <div class="card-body">
-            <p class="card-title mb-5"></p>
             <div class="table-responsive">
               <table class="table table-striped-lms table-hover">
                 <thead>
@@ -56,7 +55,9 @@
 
                     </tr>
                     {% empty %}
-                    <p>There are no tutors yet</p>
+                    <tr>
+                      <td colspan="7">There are no tutors yet</td>
+                    </tr>
                   {% endfor %}
                 </tbody>
               </table>
