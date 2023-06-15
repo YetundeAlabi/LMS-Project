@@ -67,6 +67,10 @@ class TrackCreateView(LoginRequiredMixin, CreateView):
             if Track.active_objects.filter(name=self.name).exists():
                 raise ValidationError('A track with the same name already exists.')
         super().save(*args, **kwargs)
+
+    def form_valid(self, form):
+        messages.success(self.request, "Track created successfully")
+        return super().form_valid(form)
     
 
 class TrackListView(LoginRequiredMixin, ListView):
@@ -89,7 +93,7 @@ class TrackDetailView(LoginRequiredMixin, DetailView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['track_students'] = Student.objects.filter(track=self.obj)
+        context['track_students'] = Student.objects.filter(track=self.get_object())
         return context
 
 
@@ -103,6 +107,10 @@ class TrackUpdateView(LoginRequiredMixin, UpdateView):
     
     def get_object(self, queryset=None):
         return Track.objects.get(slug=self.kwargs['slug'])
+    
+    def form_valid(self, form):
+        messages.success(self.request, "Track information has been updated successfully")
+        return super().form_valid(form)
 
     def get_success_url(self):
         return self.object.get_absolute_url()
@@ -142,6 +150,7 @@ class StudentCreateView(LoginRequiredMixin, CreateView):
         message = get_template('lms_admin/email_template.html').render(context)
         recipient = [user.email,]
         send_verification_mail.delay(subject, recipient, message)
+        messages.success(self.request, "Student has been created successfully")
         return HttpResponseRedirect(reverse('lms_admin:student_list'))
 
     def get_password_reset_url(self, user):
@@ -204,6 +213,7 @@ class StudentUpdateView(LoginRequiredMixin, UpdateView):
         student.user.email = form.cleaned_data['email']
         student.user.save()
         student.save()
+        messages.success(self.request, "Student information updated successfully")
         return HttpResponseRedirect(reverse('lms_admin:student_detail', kwargs={'pk': student.pk}))
     
 
@@ -251,6 +261,7 @@ class StudentImportView(PasswordResetView, FormView):
         message = get_template('lms_admin/email_template.html').render(context)
         recipient = [user.email,]
         send_verification_mail.delay(subject, recipient, message)
+        messages.success(self.request, "Multiple students created successfully")
         return HttpResponseRedirect(reverse('lms_admin:student_list'))  
     
     def get_password_reset_url(self, user):
@@ -314,14 +325,15 @@ class TutorCreateFormView(LoginRequiredMixin, CreateView): #PermissionRequiredMi
                                         last_name=last_name)
         tutor = Tutor.objects.create(user=user, track=track)
         self.object = tutor
-        # subject = 'Account Setup Instructions'
-        # context = {
-        #             'user': user,
-        #             'set_password_url': self.get_password_reset_url(user),
-        #         }
-        # message = get_template('lms_admin/email_template.html').render(context)
-        # recipient = [user.email,]
-        # send_verification_mail.delay(subject, recipient, message)
+        subject = 'Account Setup Instructions'
+        context = {
+                    'user': user,
+                    'set_password_url': self.get_password_reset_url(user),
+                }
+        message = get_template('lms_admin/email_template.html').render(context)
+        recipient = [user.email,]
+        send_verification_mail.delay(subject, recipient, message)
+        messages.success(self.request, "Tutor created successfully")
         return HttpResponseRedirect(reverse('lms_admin:tutor_list'))
 
     def get_password_reset_url(self, user):
@@ -356,7 +368,8 @@ class TutorUpdateView(LoginRequiredMixin, UpdateView): #PermissionRequiredMixin,
         tutor.user.last_name = form.cleaned_data['last_name']
         tutor.user.email = form.cleaned_data['email']
         tutor.user.save()
-        tutor.save()  
+        tutor.save()
+        messages.success(self.request, "Tutor information updated successfully")
         return HttpResponseRedirect(reverse('lms_admin:tutor_list'))
         
     
@@ -379,6 +392,9 @@ class ToggleTutorSuspendView(LoginRequiredMixin, View): #PermissionRequiredMixin
         tutor = get_object_or_404(Tutor, pk=kwargs['pk'])
         tutor.is_suspended = not tutor.is_suspended
         tutor.save()
+        if tutor.is_suspended:
+            messages.success(self.request, f"{tutor.user.first_name} has been suspended successfully")
+        messages.success(self.request, f"Suspension has been lifted for {tutor.user.first_name}")
         return HttpResponseRedirect(reverse('lms_admin:tutor_list'))
 
 
@@ -417,7 +433,7 @@ class ApplicantApprovalFormView(LoginRequiredMixin, View):
             for applicant in selected_applicants:
                 applicant.is_approved = True
                 applicant.save()
-            messages.success(request, "Applicants has been approved successfully.")
+            messages.success(request, "Applicants have been approved successfully.")
             return HttpResponseRedirect(reverse("lms_admin:all_applicant"))
         return render(request, self.template_name, {'form': form})
     
