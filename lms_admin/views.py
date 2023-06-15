@@ -45,7 +45,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         context['students'] = Student.objects.all()
         context['tutors'] = Tutor.objects.all()
         context['tracks'] = Track.objects.all()
-        context['cohort'] = Cohort.objects.latest('year')
+        context['cohort'] = Cohort.objects.last()
         context['applicants'] = Applicant.objects.all()
         context['male_applicants'] = Applicant.objects.filter(
             gender='M', cohort__year=current_year).count()
