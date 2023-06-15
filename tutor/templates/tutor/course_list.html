@@ -17,7 +17,6 @@
     <a class="btn btn-success mt-2 mb-4" href="{% url 'course:create_course' %}">Create New Course</a>
   </div>
 
-  {% if courses %}
   <div class="row">
     <div class="col-md-10 grid-margin stretch-card">
       <div class="card">
@@ -42,6 +41,11 @@
                     <td> {{ course.created_at}}</td>
                     <td><a class="btn btn-sm btn-rounded btn-info" href="{% url 'course:course_detail' course.slug %}">View</a></td>
                   </tr>
+
+                {% empty %}
+                <tr>
+                  <td colspan="4">No course on track yet.</td>
+                </tr>
                 {% endfor %}
               </tbody>
             </table>
@@ -50,9 +54,6 @@
       </div>
     </div>
   </div>
-  {% else %}
-  <p> No course on track yet</p>
-  {% endif %}
 </div>
 
 {% endblock %}

@@ -27,9 +27,11 @@ class TutorDashboardView(TutorUserRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         tutor= self.request.user.tutor
         students= Student.objects.filter(track=tutor.track)
+        courses = Course.objects.filter(track=tutor.track)
         context = {
             'tutor':tutor,
-            'students':students
+            'students':students,
+            'courses': courses,
         }
         return render (self.request, 'tutor/tutor_dashboard.html', context=context)
 
