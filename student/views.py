@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 
 class StudentCourseListView(View):
     def get(self, request, *args, **kwargs):
-        student = self.request.user.student_set.first()
+        student = self.request.user.students.first()
         student_courses = StudentCourse.objects.filter(student=student)
         context = {
             'student_courses':student_courses
@@ -55,7 +55,7 @@ class StudentSubtopicDetailView(View):
 
         # Get subtopic queryset to render sidebar
         student_subtopics = StudentSubTopic.objects.filter(
-            student_topic__student_course__student=self.request.user.student_set.first(),
+            student_topic__student_course__student=self.request.user.students.first(),
             student_topic=student_topic
         )
 
