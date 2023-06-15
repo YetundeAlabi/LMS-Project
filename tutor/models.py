@@ -8,7 +8,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.utils.text import slugify
-from accounts.models import Tutor, Student
+from accounts.models import Tutor
 from lms_admin.models import Track
 from django.core.validators import FileExtensionValidator
 
@@ -21,14 +21,14 @@ class ActiveManager(models.Manager):
         return super().get_queryset().filter(is_active=True)
 
 class BaseContent(models.Model):
-    title = models.CharField(max_length=225, blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    title=models.CharField(max_length=225, blank=True, null=True)
+    description=models.TextField(blank=True, null=True)
+    is_active=models.BooleanField(default=True)
+    created_at= models.DateTimeField(auto_now_add=True)
+    updated_at=models.DateTimeField(auto_now=True)
 
     objects = models.Manager()
-    active_objects = ActiveManager()
+    active_objects=ActiveManager()
 
     class Meta:
         abstract = True
@@ -52,7 +52,7 @@ class Course(BaseContent):
 class Topic(BaseContent):
     course=models.ForeignKey(Course, on_delete=models.SET_NULL, blank=True, null=True, db_index=True)
     id=models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
-    order = OrderField(blank=True, for_fields=['course'])
+    order = OrderField(blank=True, for_fields=['course'], null=True)
     
     class Meta:
         ordering= ['order']
@@ -108,7 +108,7 @@ class SubTopic(BaseContent):
   
     
 class Text(BaseContent):
-    text = models.TextField(blank=True, null=True)
+    text =models.TextField(blank=True, null=True)
 
 
 class File(BaseContent):
@@ -116,7 +116,6 @@ class File(BaseContent):
 
     def get_file_url(self):
         return self.file.url
-
 
 class Video(BaseContent):
     url = models.URLField()
@@ -128,5 +127,3 @@ def course_slug(sender, instance, created, **kwargs):
         slug = slugify(instance.title)
         instance.slug = slug
         instance.save()
-
-
