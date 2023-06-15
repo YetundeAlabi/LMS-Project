@@ -54,7 +54,7 @@ class LoginView(generic.FormView):
             elif hasattr(user, "tutor"):
                 return reverse('course:tutor_dashboard_view')
             else:
-                return reverse('home_page')
+                return reverse('student:course_list')
         return reverse('login')
         
             
