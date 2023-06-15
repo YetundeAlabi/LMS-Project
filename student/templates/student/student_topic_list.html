@@ -23,7 +23,16 @@
         <div class="topic-cards" >
             <div class="card">
                 <div class="card-header">
-                <h3>ATS</h3>
+                  {% if student_topics %}
+                  <ul>
+                      {% for topic in student_topics %}
+                      <li>{{ topic.slug }}---------<a href="{% url 'student:student_subtopic_detail' student_course_slug=student_course_slug student_topic_slug=topic.slug  student_subtopic_id=topic.student_subtopics.first.id %}">View Subtopics</a></li>
+          
+                      {% endfor %}
+                  </ul>
+                       {% else %}
+                  <p>No topics found for this student course.</p>
+                  {% endif %}
                 </div>
             </div>
         </div>

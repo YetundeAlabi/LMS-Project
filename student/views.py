@@ -28,23 +28,23 @@ class StudentTopicListView(View):
             'student_course_slug': student_course_slug,
             'student_topics': student_topics,
         }
-        return render(self.request, 'student/topic.html', context=context)
+        return render(self.request, 'student/student_topic_list.html', context=context)
 
 
-# class StudentSubtopicListView(View):
-#     def get(self, request, *args, **kwargs):
-#         student_topic_slug = self.kwargs['student_topic_slug']
-#         student_topic = get_object_or_404(StudentTopic, slug=student_topic_slug)
-#         student_subtopics = StudentSubTopic.objects.filter(
-#             student_topic__student_course__student=self.request.user.student_set.first(),
-#             student_topic=student_topic
-#         )
-#         context = {
-#             'student_course':student_topic.student_course,
-#             'student_topic': student_topic,
-#             'student_subtopics': student_subtopics
-#         }
-#         return render(self.request, 'student/subtopic.html', context=context)
+class StudentSubtopicListView(View):
+    def get(self, request, *args, **kwargs):
+        student_topic_slug = self.kwargs['student_topic_slug']
+        student_topic = get_object_or_404(StudentTopic, slug=student_topic_slug)
+        student_subtopics = StudentSubTopic.objects.filter(
+            student_topic__student_course__student=self.request.user.student_set.first(),
+            student_topic=student_topic
+        )
+        context = {
+            'student_course':student_topic.student_course,
+            'student_topic': student_topic,
+            'student_subtopics': student_subtopics
+        }
+        return render(self.request, 'student/subtopic.html', context=context)
     
 
 class StudentSubtopicDetailView(View):
