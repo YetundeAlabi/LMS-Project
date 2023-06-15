@@ -70,13 +70,14 @@ class NotApprovedApplicantManager(models.Manager):
 
     def get_queryset(self):
         return super().get_queryset().filter(is_approved=False)
-    
+
 
 class Applicant(models.Model):
-    GENDER_CHOICES =(
+    GENDER_CHOICES = (
         ("FEMALE", "Female"),
         ("MALE", "Male"),
     )
+    
     first_name = models.CharField(max_length=150)
     cohort = models.ForeignKey('Cohort', on_delete=models.SET_NULL, related_name='applicants', null=True)
     last_name = models.CharField(max_length=150)
@@ -84,11 +85,12 @@ class Applicant(models.Model):
     gender = models.CharField(max_length=20, choices=GENDER_CHOICES)
     track = models.ForeignKey("Track", on_delete=models.SET_NULL, related_name="applicants", null=True)
     is_approved = models.BooleanField(default=False)
+    applied_date = models.DateTimeField(auto_now_add=True, null=True)
+    
     objects = models.Manager()
     approved = ApprovedApplicantManager()
-    not_approved= NotApprovedApplicantManager()
+    not_approved = NotApprovedApplicantManager()
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
-
 

@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth import (authenticate, get_user_model, login, logout,
                                  views)
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import LogoutView, PasswordChangeView
+from django.contrib.auth.views import LogoutView, PasswordChangeView, PasswordResetConfirmView
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
@@ -13,7 +13,7 @@ from django.views.generic import CreateView
 from django.views.generic.edit import UpdateView
 
 from .forms import (LoginForm, SignUpForm, StudentUpdateForm, TutorUpdateForm,
-                    UserForm)
+                    UserForm, CustomPasswordChangeForm)
 from .models import Student, Tutor, User
 
 # Create your views here.
@@ -56,8 +56,9 @@ class LoginView(generic.FormView):
         return reverse('login')
         
             
-class ChangePasswordView(PasswordChangeView):
-    template_name = 'accounts/change_password.html'  
+class CustomPasswordChangeView(PasswordChangeView):
+    template_name = 'accounts/change_password.html' 
+    form_class = CustomPasswordChangeForm 
     success_url = reverse_lazy('login')
 
 
