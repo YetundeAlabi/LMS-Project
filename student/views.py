@@ -8,7 +8,6 @@ from django.shortcuts import redirect
 
 # Create your views here.
 
-
 class StudentCourseListView(TemplateView):
     template_name = "student/course.html"
 
@@ -50,6 +49,7 @@ class StudentSubtopicListView(View):
             'student_subtopics': student_subtopics
         }
         return render(self.request, 'student/subtopic.html', context=context)
+
 
 class StudentSubtopicRedirectView(View):
     def get(self, *args, **kwargs):
