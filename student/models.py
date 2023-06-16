@@ -1,10 +1,10 @@
+from accounts.models import Student
 from django.db import models
 from django.db.models import Sum
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.text import slugify
-from tutor.models import Course, Topic, SubTopic, Track
-from accounts.models import Student
+from tutor.models import Course, SubTopic, Topic, Track
 
 # Create your models here.
 
@@ -34,14 +34,15 @@ class StudentTopic(models.Model):
     slug = models.SlugField(unique=True)
     progress_level = models.FloatField(default=0.0)
 
-    def update_progress_level(self):
+    def update_progress_level(self, subtopic_progress_level):
         if self.progress_level < 100:
             related_sub_topics_count = self.student_subtopics.count()
-            related_sub_topics_progress_sum = self.student_subtopics.aggregate(Sum('progress_level')).get('progress_level__sum', 0.0)
+            # related_sub_topics_progress_sum = self.student_subtopics.aggregate(progress_avg=Avg('progress_level'))['progress_avg'] or 0
             if related_sub_topics_count > 0:
-                average_progress = related_sub_topics_progress_sum / related_sub_topics_count
-                self.progress_level = average_progress
-                self.save()
+                self.progress_level = (self.progress_level + subtopic_progress_level) / related_sub_topics_count
+                # average_progress = related_sub_topics_progress_sum / related_sub_topics_count
+                # self.progress_level = average_progress
+                self.save(update_fields=['progress_level'])
 
     def __str__(self):
         return f'{self.student_course}, {self.topic.title}'

@@ -173,10 +173,13 @@ class CustomSetPasswordForm(SetPasswordForm):
     def save(self, commit=True):
         password = self.cleaned_data["new_password1"]
         self.user.set_password(password)
-        self.user.student.is_verified = True 
+        if not hasattr(self.user, "tutor"):
+            self.user.student.is_verified = True 
+            if commit:
+                self.user.save()
+                self.user.student.save()
         if commit:
             self.user.save()
-            self.user.student.save()
         return self.user
 
 

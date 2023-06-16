@@ -54,42 +54,39 @@
       color: black;
     }
 
+    .vanish {
+      opacity: 0;
+      transition: opacity 0.5s ease-out;
+    }
 
+    .sidebar .nav:not(.sub-menu) > .nav-item:hover > .nav-link, .sidebar .nav:not(.sub-menu) > .nav-item:hover[aria-expanded="true"] {
+      background: #e1261c;
+      color: #fff;
+    }
+    
+    .sidebar .nav:not(.sub-menu) > .nav-item > .nav-link {
+      margin: 0;
+    }
+    
+    .sidebar .nav:not(.sub-menu) > .nav-item > .nav-link[aria-expanded="true"] {
+      border-radius: 8px 8px 0 0;
+      background: #e1261c;
+      color: #fff;
+    }
 
+    .content-wrapper {
+      background-color: #EBEBEC;
+    }
   </style>
+  <script src="{% static 'js/messages.js' %}"></script>
 </head>
 <body>
-    <style>
-      .messages.vanish {
-        opacity: 0;
-        transition: opacity 0.5s ease-out;
-      }
-
-      .sidebar .nav:not(.sub-menu) > .nav-item:hover > .nav-link, .sidebar .nav:not(.sub-menu) > .nav-item:hover[aria-expanded="true"] {
-        background: #e1261c;
-        color: #fff;
-      }
-      
-      .sidebar .nav:not(.sub-menu) > .nav-item > .nav-link {
-        margin: 0;
-      }
-      
-      .sidebar .nav:not(.sub-menu) > .nav-item > .nav-link[aria-expanded="true"] {
-        border-radius: 8px 8px 0 0;
-        background: #e1261c;
-        color: #fff;
-
-      .content-wrapper {
-        background-color: #EBEBEC;
-      }
-      }
-    </style>
     <div class="container-scroller">
       <!-- partial:partials/_navbar.html -->
       <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row" style="background: #e1261c;">
         <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
-          <a class="navbar-brand brand-logo mr-5" href="{% url 'lms_admin:dashboard' %}"><img src="{% static 'assets/images/lms_logo.svg' %}" class="mr-2" alt="logo"/></a>
-          <a class="navbar-brand brand-logo-mini" href="{% url 'lms_admin:dashboard' %}"><img src="{% static 'assets/images/X_lms_logo.svg' %}" alt="logo"/></a>
+          <a class="navbar-brand brand-logo mr-5" href="{% url 'home_page' %}"><img src="{% static 'assets/images/lms_logo.svg' %}" class="mr-2" alt="logo"/></a>
+          <a class="navbar-brand brand-logo-mini" href="{% url 'home_page' %}"><img src="{% static 'assets/images/X_lms_logo.svg' %}" alt="logo"/></a>
         </div>
 
         <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
@@ -144,20 +141,18 @@
           
         <div class="main-panel">
           {% if messages %}
+          <div class = "messages">
               {% for message in messages %}
-                  <div class="alert alert-
-                    {% if message.tags == "error" %}
-                      danger
-                    {% else%}
-                      {{ message.tags }}
-                    {% endif %}">
-                        {{ message }}
+                  <div class="alert alert-{% if message.tags == "error" %}danger{% else%}{{ message.tags }}{% endif %}">{{ message }}
+                    <button class="alert__close">x</button>
                   </div>
               {% endfor %}
+          </div>
           {% endif %}
-                {% block content %}
+          
+          {% block content %}
 
-                {% endblock %}
+          {% endblock %}
         
                 
             <footer class="footer">
@@ -173,16 +168,16 @@
     <!-- page-body-wrapper ends -->
     </div>
     <!-- container-scroller -->
-    <script>
-      const messages = document.querySelectorAll('.messages');
+    {% comment %} <script>
+      const messages = document.querySelector('.messages');
 
-      // Remove each message after 5 seconds
+      // Remove each message after 3 seconds
       messages.forEach(message => {
         setTimeout(() => {
             message.classList.add('vanish');
-          }, 5000);
+          }, 3000);
           });
-    </script>
+    </script> {% endcomment %}
       
     <!-- plugins:js -->
     <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>

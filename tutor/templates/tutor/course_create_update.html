@@ -5,11 +5,11 @@
 {% endblock %} 
 
 {% block content %}
-  <div class="content-wrapper">
+  <div class="content-wrapper" style="background-color: #EBEBEC">
     <div class="col-12 grid-margin stretch-card">
       <div class="card">
         <div class="card-body">
-          <h4 class="card-title">Course Creation Form</h4>
+          <h4 class="card-title">Create a New Course</h4>
           <p class="card-description">Enter details to create a new Course</p>
           <form method="POST" class="forms-sample">
             {% csrf_token %}
@@ -49,7 +49,7 @@
                 </div>
               {% endfor %}
               <div class="form-group">
-                <input class="btn btn-primary mr-2" value="Submit" type="submit">
+                <input class="btn btn-success mr-2" value="Submit" type="submit">
                 <a href="{% url 'course:course_list' %}" class="btn btn-danger">Cancel</a>
               </div>
             </div>

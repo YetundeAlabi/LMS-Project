@@ -15,7 +15,7 @@
         <strong> {{cohort}} </strong>
       </div>
     </div>
-</div>
+  </div>
 
   <div class="card-group">
     
@@ -127,6 +127,12 @@
                   {% else %}
                   btn-warning">Inactive</a></td>
                   {%endif%}
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="5">
+                No tutors available yet.
+              </td>
             </tr>
           {% endfor %} 
           </tbody>

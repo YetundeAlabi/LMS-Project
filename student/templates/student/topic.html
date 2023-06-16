@@ -11,7 +11,8 @@
     {% if student_topics %}
         <ul>
             {% for topic in student_topics %}
-                <li>{{ topic.slug }}---------<a href="{% url 'student:student_subtopic_list' student_course_slug=student_course_slug student_topic_slug=topic.slug %}">View Subtopics</a></li>
+                    <li>{{ topic.slug }} <a href="{% url 'student:student_subtopic_detail' student_course_slug=student_course_slug student_topic_slug=topic.slug student_subtopic_id=topic.student_subtopics.first.id %}">View lesson</a></li><br>
+
             {% endfor %}
         </ul>
     {% else %}
@@ -19,3 +20,5 @@
     {% endif %}
 </body>
 </html>
+
+

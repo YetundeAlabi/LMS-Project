@@ -3,34 +3,24 @@
 {% block navbar %}
         {% include 'tutor/tutor_nav_bar.html' %}
 {% endblock %} 
+
 {% block content %}
-<div class="content-wrapper">
-  <div class="row">
-    <div class="col-md-3 grid-margin stretch-card" style="height: 50px;">
-        <div class="card card-tale" style="background-color: #e11c1c;">
-          <div class="card-body d-flex justify-content-center align-items-center">
-            <h1 class="display1">
-              <a style="color: inherit; font-size: medium;" href="{% url 'course:create_course' %}">Create New Course</a>
-            </h1>
-          </div>
-        </div>
+
+<div class="content-wrapper" style="background-color: #EBEBEC">
+  <div class="row mb-3">
+    <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+      <h3>All Courses in {{request.user.tutor.track}}</h3>
     </div>
-</div>
-
-<div class="row">
-  <div class="col-md-6">
-      <div class="d-flex justify-content-start">
-          <a class="btn btn-primary mb-4 mr-2" href="{% url 'course:tutor_dashboard_view' %}">Back</a>
-      </div>
   </div>
-</div>
 
-{% if courses %}
-<div class="row">
-    <div class="col-md grid-margin stretch-card">
+  <div>
+    <a class="btn btn-success mt-2 mb-4" href="{% url 'course:create_course' %}">Create New Course</a>
+  </div>
+
+  <div class="row">
+    <div class="col-md-10 grid-margin stretch-card">
       <div class="card">
         <div class="card-body">
-          <p class="card-title mb-0">Courses in {{request.user.tutor.track}}</p>
           <div class="table-responsive">
             <table class="table table-striped-lms table-hover">
               <thead>
@@ -39,11 +29,9 @@
                   <th>Title</th>
                   <th>Date Created</th>
                   <th></th>
-                  <th></th>
-                  
                 </tr>  
               </thead>
-             
+              
 
               <tbody>
                 {% for course in courses %}
@@ -51,27 +39,13 @@
                     <td>{{forloop.counter}}</td>
                     <td> {{ course.title}} </td>
                     <td> {{ course.created_at}}</td>
-
-                    <td style="padding: 0;">
-                      <div class="row" style="margin: 0;">
-                        <div class="col-md-2 mt-4" style="padding: 0;">
-                          <div class="d-flex justify-content-start">
-                            <a class="btn btn-info mb-4 mr-2" href="{% url 'course:course_detail' course.slug %}" style="font-size: 12px; padding: 12px 20px;">View</a>
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-
-                    <td style="padding: 0;">
-                      <div class="row" style="margin: 0;">
-                        <div class="col-md-2 mt-4" style="padding: 0;">
-                          <div class="d-flex justify-content-start">
-                            <a class="btn btn-info mb-4 mr-2" href="{% url 'course:topic_list' course.slug %}" style="font-size: 12px; padding: 12px 20px;">Topics</a>
-                          </div>
-                        </div>
-                      </div>
-                    </td>
+                    <td><a class="btn btn-sm btn-rounded btn-info" href="{% url 'course:course_detail' course.slug %}">View</a></td>
                   </tr>
+
+                {% empty %}
+                <tr>
+                  <td colspan="4">No course on track yet.</td>
+                </tr>
                 {% endfor %}
               </tbody>
             </table>
@@ -81,8 +55,5 @@
     </div>
   </div>
 </div>
-{% else %}
-  <p> No course on track yet</p>
-{% endif %}
 
 {% endblock %}
