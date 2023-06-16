@@ -1,18 +1,24 @@
 <nav class="sidebar sidebar-offcanvas" id="sidebar">
     <ul class="nav">
       <li class="nav-item">
+        <a class="nav-link" href="{% url 'course:tutor_profile' %}">
+          <i class="fas fa-user menu-icon"></i>
+          <span class="menu-title">My Profile</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
         <a class="nav-link" href="{% url 'course:tutor_dashboard_view' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">Dashboard</span>
         </a>
       </li>
       
-      
       <li class="nav-item">
         <a class="nav-link" href="{% url 'course:course_list' %}">
           <i class="fas fa-graduation-cap menu-icon"></i>
           <span class="menu-title">Courses</span>
         </a>
-      </li>
+      </li>     
     </ul>
-  </nav>
+</nav>

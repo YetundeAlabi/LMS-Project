@@ -84,11 +84,8 @@
       contentOrder = {};
       var contents = document.querySelectorAll('#subtopic div');
       contents.forEach(function(content, index) {
-        // Update content index
         contentOrder[content.dataset.id] = index;
       });
-
-      // Add new order to the HTTP request options
       options['body'] = JSON.stringify(contentOrder);
       // Send HTTP request
       fetch(contentOrderUrl, options)
