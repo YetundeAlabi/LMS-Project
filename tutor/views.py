@@ -117,7 +117,7 @@ class CreateTopicView(TutorUserRequiredMixin, SuccessMessageMixin, CreateView):
 
     def get_success_url(self):
         course_slug = self.kwargs['course_slug']
-        return reverse('course:topic_list', kwargs={'course_slug': course_slug})
+        return reverse('course:course_detail', kwargs={'course_slug': course_slug})
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

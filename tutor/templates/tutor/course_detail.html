@@ -67,7 +67,37 @@
         </div>
     </div>
 </div>
-  
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html5sortable/0.13.3/html5sortable.min.js"></script>
+<script>
+  var options = {
+    method: 'POST',
+    mode: 'same-origin'
+  };
+  const topicOrderUrl = '{% url "course:topic_order" %}';
+  var sortableElement = sortable('#topic', {
+    forcePlaceholderSize: true,
+    placeholderClass: 'placeholder',
+  })[0];
+
+  sortableElement.addEventListener('sortupdate', function(e) {
+    var topicsOrder = {};
+    var topics = document.querySelectorAll('#topic tr');
+    topics.forEach(function(topic, index) {
+      topicsOrder[topic.dataset.id] = index;
+      topic.querySelector('.order').innerHTML = index + 1;
+    });
+    options['body'] = JSON.stringify(topicsOrder);
+    fetch(topicOrderUrl, options)
+      .then(function(response) {
+        // alert('saved successfully');
+      })
+      .catch(function(error) {
+        // alert('error occurred');
+      });
+  });
+</script>
 
 {% endblock %}
 
