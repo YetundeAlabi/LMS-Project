@@ -21,6 +21,7 @@ TEMPLATES_DIR = BASE_DIR / 'LMS'/ 'templates'
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
+SECRET_KEY= 'django-insecure-$$z=kt(08)a)%q11q@@=#gt5^q+v4^p2!c@x@x@r42h6$wb^'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
@@ -148,20 +149,20 @@ DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER')
 # Celery Settings
 CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
 
-# CELERY_ACCEPT_CONTENT = ['application/json']
-accept_content = ['application/json']
+CELERY_ACCEPT_CONTENT = ['application/json']
+# accept_content = ['application/json']
 
-# CELERY_RESULT_SERIALIZER = 'json'
-result_serializer = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+# result_serializer = 'json'
 
-# CELERY_TASK_SERIALIZER = 'json'
-task_serializer = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+# task_serializer = 'json'
 
-# CELERY_TIMEZONE = 'Africa/Lagos'
-timezone = 'Africa/Lagos'
+CELERY_TIMEZONE = 'Africa/Lagos'
+# timezone = 'Africa/Lagos'
 
-# CELERY_RESULT_BACKEND = 'django-db'
-result_backend= 'django-db'
+CELERY_RESULT_BACKEND = 'django-db'
+# result_backend= 'django-db'
 
 EMBED_VIDEO_BACKENDS = (
     'embed_video.backends.YoutubeBackend',
