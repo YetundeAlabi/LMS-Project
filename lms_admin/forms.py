@@ -46,7 +46,7 @@ class ApplicantForm(forms.ModelForm):
     )
     track = forms.ModelChoiceField(
         label='Track',
-        queryset=Track.objects.all(),
+        queryset=Track.active_objects.all(),
         widget=forms.Select(attrs={'class': 'form-control'})
     )
 
@@ -60,7 +60,7 @@ class ApplicantChecklistForm(forms.Form):
 
 class StudentImportForm(forms.Form):
     csv_file = forms.FileField(label='csv_file')
-    cohort = forms.ModelChoiceField(queryset=Cohort.objects.all(), label="Cohort")
+    cohort = forms.ModelChoiceField(queryset=Cohort.objects.all(), label="cohort")
     
     def process_csv(self):
         csv_file = self.cleaned_data['csv_file']

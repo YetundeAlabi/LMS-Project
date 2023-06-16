@@ -39,7 +39,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         current_year = timezone.now().year
         context['students'] = Student.objects.all()
         context['tutors'] = Tutor.objects.all()
-        context['tracks'] = Track.objects.all()
+        context['tracks'] = Track.active_objects.all()
         context['cohort'] = Cohort.objects.filter(year=current_year)
         context['applicants'] = Applicant.objects.all()
         context['male_applicants'] = Applicant.objects.filter(gender="MALE", cohort__year=current_year).count()
@@ -123,15 +123,16 @@ class StudentCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('student_list')
 
     def form_valid(self, form):
-        student = form.save()
+        print(form)
+        student, created = form.save()
         user = student.user
         self.object = student
         
         
-        subject = 'Login Instructions' if student else  'Account Setup Instructions'
+        subject = 'Login Instructions' if  not created else  'Account Setup Instructions'
         context = {
                   'user': user,
-                  'set_password_url': self.get_login_url(student) if student else self.get_password_reset_url(user),
+                  'set_password_url': self.get_login_url(user) if not created else self.get_password_reset_url(user),
                }
         message = get_template('lms_admin/email_template.html').render(context)
         recipient = [user.email,]
@@ -142,12 +143,11 @@ class StudentCreateView(LoginRequiredMixin, CreateView):
         # Generate the password reset URL for the user
         token = default_token_generator.make_token(user) #generate token to ensure one time use of URL
         uid = urlsafe_base64_encode(force_bytes(user.pk)) #encode user pk for security
-        url = reverse('password_reset_confirm', args=[uid, token])
+        url = reverse('accounts:set_password', args=[uid, token])
         return self.request.build_absolute_uri(url)
 
-    def get_login_url(self, student):
-        if student.is_verified:
-            return self.request.build_absolute_uri(reverse('login')) 
+    def get_login_url(self, user):
+            return self.request.build_absolute_uri(reverse('accounts:login')) 
 
 
 class StudentListView(LoginRequiredMixin, ListView):
@@ -242,11 +242,12 @@ class StudentImportView(PasswordResetView, FormView):
             subject = 'Account Setup Instructions' if created else 'Login Instructions'
             context = {
                     'first_name': first_name,
-                    'verification_url': self.get_password_reset_url(user) if created else self._get_login_url(student),
+                    'verification_url': self.get_password_reset_url(user) if created else self._get_login_url(user),
                }
-        message = get_template('lms_admin/email_template.html').render(context)
-        recipient = [user.email,]
-        send_verification_mail.delay(subject, recipient, message)
+            message = get_template('lms_admin/email_template.html').render(context)
+            recipient = [user.email,]
+            send_verification_mail.delay(subject, recipient, message)
+            
         return HttpResponseRedirect(reverse('lms_admin:student_list'))  
     
 
@@ -254,12 +255,11 @@ class StudentImportView(PasswordResetView, FormView):
         # Generate the password reset URL for the user
         token = default_token_generator.make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
-        url = reverse('password_reset_confirm', args=[uid, token])
+        url = reverse('accounts:set_password', args=[uid, token])
         return self.request.build_absolute_uri(url)
 
-    def _get_login_url(self, student):
-        if student.is_verified:
-            return self.request.build_absolute_uri(reverse('login'))
+    def _get_login_url(self, user):
+        return self.request.build_absolute_uri(reverse('accounts:login'))
 
 
 # Cohort Views
