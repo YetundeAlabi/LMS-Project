@@ -44,7 +44,7 @@ class Student(DeletableBaseModel):
         ('M', MALE),
     )
 
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='students')
     cohort = models.ForeignKey(Cohort, on_delete=models.SET_NULL, related_name='students', null=True)
     gender = models.CharField(max_length=20, choices=GENDER_CHOICES)
     is_verified = models.BooleanField(default=False)
