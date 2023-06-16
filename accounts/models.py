@@ -75,12 +75,13 @@ class Tutor(DeletableBaseModel):
     def __str__(self):
         return self.user.email
 
-    def save(self, *args, **kwargs):
-        if self.picture:
-            img = Image.open(self.picture.path)
-            if img.height > 100 or img.width > 100:
-                new_img =(100, 100)
-                img.thumbnail(new_img)
-                img.save(self.picture.path)
-                
-        super().save(*args, **kwargs)
+
+    @property
+    def picture_url(self):
+        try:
+            url= self.picture.url
+        except:
+            url= ''
+        return url
+   
+        

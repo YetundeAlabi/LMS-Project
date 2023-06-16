@@ -1,9 +1,12 @@
-from typing import Any
+from typing import Any, Dict, Mapping, Optional, Type, Union
 from django import forms
 from django.core.exceptions import ValidationError
+from django.core.files.base import File
+from django.db.models.base import Model
 from django.forms import ModelForm, inlineformset_factory
+from django.forms.utils import ErrorList
 from .models import Course, Topic, SubTopic
-from accounts.models import User
+from accounts.models import User, Tutor
 from django.contrib.auth.forms import UserChangeForm
 
 
@@ -45,8 +48,17 @@ TopicFormSet = inlineformset_factory(Course, Topic, fields=['title', 'descriptio
 
 
 class TutorUpdateForm(forms.ModelForm):
-    class Meta:
-        model = User
-        fields = ['email', 'first_name', 'last_name']
+    first_name = forms.CharField(max_length=100)
+    last_name = forms.CharField(max_length=100)
 
-   
+    class Meta:
+        model = Tutor
+        fields = ['first_name', 'last_name', 'picture']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance.user:
+            self.fields['first_name'].initial = self.instance.user.first_name
+            self.fields['last_name'].initial = self.instance.user.last_name
+
+

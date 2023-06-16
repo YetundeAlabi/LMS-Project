@@ -30,7 +30,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex flex-column align-items-center text-center">
-                            <img src="https://bootdey.com/img/Content/avatar/avatar6.png" alt="Admin" class="rounded-circle p-1 bg-primary" width="110">
+                            <img src="{{ request.user.tutor.picture_url }}" alt="Admin" class="rounded-circle p-1 bg-primary" width="110">
                             <div class="mt-3">
                                 <h4>{{ request.user.first_name|title }} {{ request.user.last_name|title }}</h4>
                                 <p class="text-secondary mb-1">{{ request.user.tutor.track }} Developer</p>

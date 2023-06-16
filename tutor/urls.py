@@ -30,7 +30,8 @@ urlpatterns = [
     path('topic/order/',  views.TopicOrderView.as_view(), name='topic_order'),
     path('subtopic/order/', views.SubTopicOrderView.as_view(), name='subtopic_order'),
     path('tutor/profile', views.TutorProfileView.as_view(), name='tutor_profile'),
-    path('tutor/update/<int:pk>', views.TutorUpdateDetailsView.as_view(), name='tutor_update'),
+    path('tutor/update/<int:pk>', views.TutorUpdateView.as_view(), name='tutor_update'),
+
     
 ]
     

@@ -11,15 +11,14 @@ from django.http.response import HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
-from django.views.generic.base import TemplateResponseMixin, View, ContextMixin
+from django.views.generic.base import TemplateResponseMixin, View, ContextMixin, TemplateView
 from accounts.models import Student, Tutor
 from .forms import TutorUpdateForm
 from .forms import CourseForm, TopicForm, TopicFormSet
 from .models import Course, Topic, SubTopic
 from accounts.models import User
 from django.views.generic.base import TemplateResponseMixin
-
-
+from .forms import TutorUpdateForm
 from braces.views import CsrfExemptMixin, JsonRequestResponseMixin
 from django.views import View
 
@@ -196,7 +195,7 @@ class TopicUpdateView(TutorUserRequiredMixin, SuccessMessageMixin, UpdateView):
 
 
 class TopicDeleteView(TutorUserRequiredMixin, View):
-    
+
     def get_object(self):
         pk = self.kwargs['pk']
         return get_object_or_404(Topic, id=pk)
@@ -372,41 +371,18 @@ class SubTopicOrderView(CsrfExemptMixin, JsonRequestResponseMixin, View):
 class TutorProfileView(TemplateView):
     template_name = 'tutor/tutor_profile.html'
 
-class TutorUpdateDetailsView(View):
-    template_name = 'tutor/tutor_update.html'
+
+class TutorUpdateView(UpdateView):
+    model = Tutor
     form_class = TutorUpdateForm
+    template_name = 'tutor/tutor_update.html'
+    success_url = reverse_lazy('course:tutor_profile')
 
-    def dispatch(self, request, *args, **kwargs):
-        if isinstance(self.request.user, User) and hasattr(self.request.user, 'tutor'):
-            pass
-        else:
-            messages.error(self.request, "You are not a tutor")
-            return redirect('home_page')
-
-        return super().dispatch(request, *args, **kwargs)
-
-    def get(self, request, pk):
-        if request.user.id != pk:
-            return HttpResponseForbidden()
-        
-        user = User.active_objects.get(id=pk)
-        form = self.form_class(instance=user)
-        context = {
-            "form": form,
-        }
-        return render(request, self.template_name, context)
-
-    def post(self, request, pk):
-        if request.user.id != pk:
-            return HttpResponseForbidden()
-
-        user = User.active_objects.get(id=pk)
-        form = self.form_class(request.POST, request.FILES, instance=user)
-
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Profile updated successfully!")
-            # return redirect('garbage:home', user.id)
-
-        messages.error(request, 'Invalid detail entered')
-        return redirect(request.META.get("HTTP_REFERER"))
+    def form_valid(self, form):
+        tutor = form.instance
+        tutor.user.first_name = form.cleaned_data['first_name']
+        tutor.user.last_name = form.cleaned_data['last_name']
+        tutor.user.email = form.cleaned_data['email']
+        tutor.picture = form.cleaned_data['picture']
+        tutor.user.save()
+        return super().form_valid(form)
