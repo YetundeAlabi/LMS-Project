@@ -95,37 +95,51 @@
 
 
 <div class="content-wrapper" style="background-color: #EBEBEC;">
-
     <div class="row">
-      <div class="col-md-12 grid-margin">
+
+      <div class="col-7">
         <div class="row">
-          <div class="col-12 col-xl-8 mb-4 mb-xl-0">
-            <h3 class="font-weight-bold mb-3">{{request.user.tutor.track}} </h3>
-            <h4 class="font-weight-bold">Welcome to your Dashboard, {{request.user.first_name}} </h4>
+          <div class="col-md-12 grid-margin">
+            <div class="row">
+              <div class="col-12 col-xl-8 mt-4 d-flex align-items-center">
+                <h3 class="font-weight-bold d-flex">Welcome to your Dashboard, {{request.user.first_name}} </h3>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="row">
-      <div class="col-3">
-        <h3>Courses</h3>
+      <div class="col-5">
+        <div class="row justify-content-end">
+          <div class="col-sm-4 card d-flex ">
+            <div class="card-body" style="color: #000;">
+              <strong > Track: </strong>{{user.tutor.track}}
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="col-3">
-        <h3>Topics</h3>
-      </div>
-
     </div>
+    
+    
 
+    
 
+   
     <div class="row mb-5">
       <div class="col-6">
         <ol class="list-group">
+          <li class="list-group-item d-flex justify-content-between align-items-start">
+            <div class="ms-2 me-auto">
+              <div class="font-weight-bold">Courses</div>
+              
+            </div>
+            <div class="font-weight-bold">Topics</div>
+          </li>
           {% for course in courses %}
           <li class="list-group-item d-flex justify-content-between align-items-start">
             <div class="ms-2 me-auto">
-              <div class="font-weight-bold">{{ course.title }}</div>
+              <div class="">{{ course.title }}</div>
             
             </div>
             <span class="badge bg-info rounded-pill" style="color: white;">{{ course.topic_set.count }}</span>
@@ -164,13 +178,13 @@
                         <td><span>{{ student.user.email }}</span></td>
                         <td>{{ student.track.name }}</td>
                         <td class="font-weight-medium">
-                          <a href="#" class="btn btn-sm btn-rounded {% if student.is_suspended %}btn-warning{% else %}btn-success{% endif %}">
+                          <div href="#" class="badge {% if student.is_suspended %}badge-warning{% else %}badge-success{% endif %}">
                             {% if student.is_suspended %} Suspended  {% else %} Active {% endif %}
-                          </a>
+                          </div>
                         </td>
                         
                         <td> 
-                          <a class="btn btn-sm btn-rounded btn-info mb-4 mr-2" href="{% url 'course:track_student_detail' pk=student.id %}" style="font-size: 12px; padding: 12px 20px;">View</a>
+                          <a class="btn btn-sm btn-rounded btn-info" href="{% url 'course:track_student_detail' pk=student.id %}">View</a>
                         </td>
                       </tr>
                       {% empty %}
@@ -186,4 +200,32 @@
       </div>
     </div>
   </div>
+{% endblock %}
+
+{% block script %}
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    
+    new Chart(document.querySelector('#doughnutChart'), {
+      type: 'doughnut',
+      data: {
+        labels: [
+          'Male',
+          'Female',
+          
+        ],
+        datasets: [{
+          label: 'Total',
+          data: [{{male_applicants}}, {{female_applicants}}],
+          backgroundColor: [
+            'rgb(0, 123, 255)',
+            'rgb(255, 182, 193)', 
+          ],
+          hoverOffset: 4
+        }]
+      }
+    });
+  });
+</script>
 {% endblock %}

@@ -2,33 +2,36 @@ from django.shortcuts import render
 from .models import StudentCourse, StudentTopic, StudentSubTopic
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView
+from django.views.generic import TemplateView
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 
+# Create your views here.
 
-class StudentCourseListView(View):
-    def get(self, request, *args, **kwargs):
-        student = self.request.user.student_set.first()
-        student_courses = StudentCourse.objects.filter(student=student)
-        context = {
-            'student_courses':student_courses
-        }
-        return render(self.request, 'student/course.html', context=context)
+class StudentCourseListView(TemplateView):
+    template_name = "student/course.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        student = self.request.user.students.first()
+        context['student_track'] = student.track
+        context["student_courses"] = StudentCourse.objects.filter(student=student)
+        return context
+    
 
 class StudentTopicListView(View):
     def get(self, request, *args, **kwargs):
         student_course_slug = self.kwargs['student_course_slug']
         print(student_course_slug)
         student_course = get_object_or_404(StudentCourse, slug=student_course_slug)
-        student = self.request.user.student_set.first()
+        student = self.request.user.students.first()
         student_topics = StudentTopic.objects.filter(student_course__student=student, student_course=student_course)
         print(student_course_slug)
 
-        context = {
-            'student_course_slug': student_course_slug,
-            'student_topics': student_topics,
+        context ={
+            'student_course_slug':student_course_slug,
+            'student_topics':student_topics
         }
         return render(self.request, 'student/student_topic_list.html', context=context)
 
@@ -38,7 +41,7 @@ class StudentSubtopicListView(View):
         student_topic_slug = self.kwargs['student_topic_slug']
         student_topic = get_object_or_404(StudentTopic, slug=student_topic_slug)
         student_subtopics = StudentSubTopic.objects.filter(
-            student_topic__student_course__student=self.request.user.student_set.first(),
+            student_topic__student_course__student=self.request.user.students.first(),
             student_topic=student_topic
         )
         context = {
@@ -70,7 +73,7 @@ class StudentSubtopicDetailView(View):
 
         # Get subtopic queryset to render sidebar
         student_subtopics = StudentSubTopic.objects.filter(
-            student_topic__student_course__student=self.request.user.student_set.first(),
+            student_topic__student_course__student=self.request.user.students.first(),
             student_topic=student_topic
         )
 
