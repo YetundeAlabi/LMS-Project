@@ -1,3 +1,4 @@
+from typing import Any, Dict
 from django.apps import apps
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -28,10 +29,15 @@ class TutorDashboardView(TutorUserRequiredMixin, View):
         tutor= self.request.user.tutor
         students= Student.objects.filter(track=tutor.track)
         courses = Course.objects.filter(track=tutor.track)
+        courses_list = [course.title for course in courses]
+        courses_topic_count = [course.topic_set.count() for course in courses]
+        
         context = {
             'tutor':tutor,
             'students':students,
             'courses': courses,
+            'courses_list': courses_list,
+            'courses_topic_count': courses_topic_count,
         }
         return render (self.request, 'tutor/tutor_dashboard.html', context=context)
 
@@ -52,6 +58,11 @@ class CourseDetail(TutorUserRequiredMixin, DetailView):
     slug_field= 'slug'
     slug_url_kwarg= 'course_slug'
     template_name = 'tutor/course_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['topics'] = Topic.objects.filter(course=self.get_object())
+        return context
    
    
 class CourseAndTopicCreateView(TutorUserRequiredMixin, CreateView):
