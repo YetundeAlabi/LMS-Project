@@ -1,10 +1,10 @@
+from accounts.models import Student
 from django.db import models
-from django.db.models import Sum
+from django.db.models import Sum, Avg
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.text import slugify
-from tutor.models import Course, Topic, SubTopic, Track
-from accounts.models import Student
+from tutor.models import Course, SubTopic, Topic, Track
 
 # Create your models here.
 
@@ -17,12 +17,9 @@ class StudentCourse(models.Model):
 
     def update_progress_level(self):
         if self.progress_level < 100:
-            related_topics_count = self.student_topics.count()
-            related_topics_progress_sum = self.student_topics.aggregate(Sum('progress_level')).get('progress_level__sum', 0.0)
-            if related_topics_count > 0:
-                average_progress = related_topics_progress_sum / related_topics_count
-                self.progress_level = average_progress
-                self.save()
+            average_progress= self.student_topics.aggregate(progress_avg=Avg('progress_level'))['progress_avg'] or 0
+            self.progress_level = average_progress
+            self.save(update_fields=['progress_level'])
 
     def __str__(self):
         return f' {self.course.title} for {self.student.user.first_name}'
@@ -36,12 +33,9 @@ class StudentTopic(models.Model):
 
     def update_progress_level(self):
         if self.progress_level < 100:
-            related_sub_topics_count = self.student_subtopics.count()
-            related_sub_topics_progress_sum = self.student_subtopics.aggregate(Sum('progress_level')).get('progress_level__sum', 0.0)
-            if related_sub_topics_count > 0:
-                average_progress = related_sub_topics_progress_sum / related_sub_topics_count
-                self.progress_level = average_progress
-                self.save()
+            related_sub_topics_progress_avg = self.student_subtopics.aggregate(progress_avg=Avg('progress_level'))['progress_avg'] or 0
+            self.progress_level = related_sub_topics_progress_avg
+            self.save(update_fields=['progress_level'])
 
     def __str__(self):
         return f'{self.student_course}, {self.topic.title}'
@@ -56,7 +50,7 @@ class StudentSubTopic(models.Model):
     def update_progress_level(self):
         if self.progress_level < 100:
             self.progress_level = 100
-            self.save()
+            self.save(update_fields=['progress_level'])
 
     def __str__(self):
         return f"student subtopic {self.id} , under {self.student_topic}"
