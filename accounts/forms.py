@@ -1,12 +1,14 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UserChangeForm, SetPasswordForm
+from django.contrib.auth.forms import UserCreationForm, SetPasswordForm, PasswordChangeForm
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model, password_validation
-
+from django.core.exceptions import ValidationError
 from lms_admin.models import Cohort, Track
-from .models import Tutor, Student
+
+from .models import Student, Tutor
 
 User = get_user_model()
+
 
 class SignUpForm(UserCreationForm):
     
@@ -61,7 +63,7 @@ class UserForm(forms.ModelForm):
             user=user,
             track=self.cleaned_data["track"])
         
-        tutor.save()
+        return tutor
 
 
 class StudentCreationForm(forms.Form):
@@ -73,9 +75,10 @@ class StudentCreationForm(forms.Form):
         label="Track",
         queryset=Track.active_objects.all(),
         widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Track'}))
-    gender = forms.CharField(
+    gender = forms.ChoiceField(
         label='Gender',
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Gender'}))
+        choices=Student.GENDER_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Gender'}))
     email = forms.EmailField(
         label='Email',
         widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}))
@@ -88,7 +91,7 @@ class StudentCreationForm(forms.Form):
     picture = forms.ImageField(
         label='Profile Image',
         required=False,
-        widget=forms.ClearableFileInput(attrs={'class': 'form-control-file', 'placeholder': 'Picture' }))
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control file-upload-info', 'placeholder': 'Picture' }))
 
     def __init__(self, *args, **kwargs):
         kwargs.pop("instance")
@@ -100,6 +103,11 @@ class StudentCreationForm(forms.Form):
             first_name=self.cleaned_data['first_name'],
             last_name=self.cleaned_data['last_name'])
         
+        if not created:
+            student = user.student.get()
+            student.is_active = False
+            student.save()
+
         student = Student.objects.create(user=user, 
                                         cohort=self.cleaned_data['cohort'],
                                         track=self.cleaned_data['track'],
@@ -109,9 +117,8 @@ class StudentCreationForm(forms.Form):
         return student, created
 
 
-
 """ Tutor creation form """
-class TutorCreationForm(forms.Form):
+class TutorForm(forms.ModelForm):
 
     track = forms.ModelChoiceField(
         label="Track",
@@ -127,20 +134,20 @@ class TutorCreationForm(forms.Form):
         label='Last Name',
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}))
     
-    def __init__(self, *args, **kwargs):
-        kwargs.pop("instance")
-        super().__init__(*args, **kwargs)
+    class Meta:
+        model = User
+        fields = ["email", "first_name", "last_name", "track"]
 
-    def save(self, commit=True):
-        user = User.objects.create_user(
-            email=self.cleaned_data['email'], 
-            first_name=self.cleaned_data['first_name'],
-            last_name=self.cleaned_data['last_name'])
+
+    # def save(self, commit=True):
+    #     user = User.objects.create_user(
+    #         email=self.cleaned_data['email'], 
+    #         first_name=self.cleaned_data['first_name'],
+    #         last_name=self.cleaned_data['last_name'])
         
-        tutor = Tutor.objects.create(user=user, 
-                                        track=self.cleaned_data['track'])
-        #tutor.save()
-        return tutor
+    #     tutor = Tutor.objects.create(user=user, 
+    #                                     track=self.cleaned_data['track'])
+    #     return tutor
 
      
 class LoginForm(forms.Form):
@@ -163,6 +170,48 @@ class CustomSetPasswordForm(SetPasswordForm):
         widget=forms.PasswordInput(attrs={"autocomplete": "new-password", "class": "form-control"}),
     )
 
+    def save(self, commit=True):
+        password = self.cleaned_data["new_password1"]
+        self.user.set_password(password)
+        if not hasattr(self.user, "tutor"):
+            self.user.student.is_verified = True 
+            if commit:
+                self.user.save()
+                self.user.student.save()
+        if commit:
+            self.user.save()
+        return self.user
+
+
+class CustomPasswordChangeForm(PasswordChangeForm):
+
+    error_messages = {
+        "password_incorrect": "Your old password was entered incorrectly. Please enter it again.",
+        "password_mismatch": "The two password fields didn’t match.",
+    }
+    
+    old_password = forms.CharField(
+        label="Old password",
+        strip=False,
+        widget=forms.PasswordInput(
+            attrs={"class": " form-control", "placeholder": "Enter your old password"}
+        ),
+    )
+    new_password1 = forms.CharField(
+        label="New password",
+        widget=forms.PasswordInput(
+            attrs={"class": " form-control", "placeholder": "Enter your new password"}),
+        strip=False,
+    )
+    new_password2 = forms.CharField(
+        label="New password confirmation",
+        strip=False,
+        widget=forms.PasswordInput(
+            attrs={"class": " form-control", "placeholder": "Confirm your new password"}),
+    )
+
+    field_order = ["old_password", "new_password1", "new_password2"]
+
 
 class TutorUpdateForm(forms.ModelForm):
     track = forms.ModelChoiceField(
@@ -182,6 +231,7 @@ class TutorUpdateForm(forms.ModelForm):
     # def __init__(self, *args, **kwargs):
     #     kwargs.pop("instance")
     #     super().__init__(*args, **kwargs)
+
     model = User
     fields = ["email", "first_name", "last_name", "track"]
 
@@ -190,6 +240,7 @@ class StudentUpdateForm(forms.ModelForm):
     class Meta:
         model = Student
         exclude = ("is_verified", "is_suspended")
+
 
 class ProfilePictureForm(forms.ModelForm):
     picture = forms.CharField(

@@ -9,11 +9,14 @@ from django.http.response import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
-from django.views.generic.base import TemplateResponseMixin, View
+from django.views.generic.base import TemplateResponseMixin, View, ContextMixin
 from accounts.models import Student, Tutor
 from accounts.forms import TutorUpdateForm
 from .forms import CourseForm, TopicForm, TopicFormSet
 from .models import Course, Topic, SubTopic
+
+from braces.views import CsrfExemptMixin, JsonRequestResponseMixin
+from django.views import View
 
 
 class TutorUserRequiredMixin(UserPassesTestMixin):
@@ -24,9 +27,11 @@ class TutorDashboardView(TutorUserRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         tutor= self.request.user.tutor
         students= Student.objects.filter(track=tutor.track)
+        courses = Course.objects.filter(track=tutor.track)
         context = {
             'tutor':tutor,
-            'students':students
+            'students':students,
+            'courses': courses,
         }
         return render (self.request, 'tutor/tutor_dashboard.html', context=context)
 
@@ -47,6 +52,7 @@ class CourseDetail(TutorUserRequiredMixin, DetailView):
     slug_field= 'slug'
     slug_url_kwarg= 'course_slug'
     template_name = 'tutor/course_detail.html'
+   
    
 class CourseAndTopicCreateView(TutorUserRequiredMixin, CreateView):
     model = Course
@@ -85,6 +91,7 @@ class CreateTopicView(TutorUserRequiredMixin, SuccessMessageMixin, CreateView):
     form_class = TopicForm
     success_message = 'Topic created successfully'
     template_name = 'tutor/topic_form.html'
+
 
     def form_valid(self, form):
         course_slug = self.kwargs['course_slug']
@@ -283,13 +290,12 @@ class SubTopicCreateUpdateView(TemplateResponseMixin, View):
         form = self.get_form(self.model, instance=self.obj, data=request.POST, files=request.FILES)
         if form.is_valid():
             if id:
-                # Update existing object
                 obj = form.save(commit=False)
                 if 'file' in request.FILES:
                     obj.file = request.FILES['file']
                 obj.save()
-            else:
-                # Create new object
+
+            if not id:
                 obj = form.save(commit=False)
                 if 'file' in request.FILES:
                     obj.file = request.FILES['file']
@@ -341,6 +347,21 @@ class SubTopicDetailView(TutorUserRequiredMixin, DetailView):
     pk_url_kwarg ='id'
 
 
-    
+class TopicOrderView(CsrfExemptMixin, JsonRequestResponseMixin, View):
+    def post(self, request):
+        for id, order in self.request_json.items():
+            Topic.active_objects.filter(id=id, course__course_tutor=request.user.tutor).update(order=order)
+        return self.render_json_response({'saved': 'OK'})
+
+class SubTopicOrderView(CsrfExemptMixin, JsonRequestResponseMixin, View):
+    def post(self, request):
+        for id, order in self.request_json.items():
+            print(self.request_json.items())
+            print('id', id)
+            print('order', order)
+            SubTopic.active_objects.filter(id=id, topic__course__course_tutor=request.user.tutor) \
+                                                                    .update(order=order)
+        return self.render_json_response({'saved': 'OK'})
+  
 
         

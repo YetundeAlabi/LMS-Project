@@ -1,12 +1,12 @@
 import csv
 from io import TextIOWrapper
+
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-
-from .models import Cohort
-from .models import Applicant
 from lms_admin.models import Track
+
+from .models import Applicant, Cohort
 
 
 class TrackForm(forms.ModelForm):
@@ -21,8 +21,25 @@ class TrackForm(forms.ModelForm):
         model = Track
         fields = ('name', 'description',)
 
+    def clean_name(self):
+        name = self.cleaned_data.get('name')
+        if self.instance is not None: 
+            if Track.objects.filter(name__iexact=name).exclude(pk=self.instance.pk).exists():
+                raise ValidationError()
+        return name
+    
+    def save(self, *args, **kwargs):
+        if Track.active_objects.filter(name=self.name).exists():
+                raise ValidationError('A track with the same name already exists.')
+        super().save(*args, **kwargs)
+
 
 class ApplicantForm(forms.ModelForm):
+    def __init__(self, company, *args, **kwargs):
+        self.company = company
+        super().__init__(*args, **kwargs)
+        self.fields['track'].queryset = Track.objects.filter(company_id=company.id)
+
     class Meta:
         model = Applicant
         exclude = ("is_approved", "cohort")

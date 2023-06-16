@@ -1,5 +1,4 @@
 {% extends 'base.html'%}
-
 {% block navbar %}
     
     {% include 'nav_bar.html' %}
@@ -8,23 +7,17 @@
 
 {% block content %}
 
-<div class="content-wrapper">
+<div class="content-wrapper" style="background-color: #EBEBEC;">
 
     <div class="col-12 grid-margin stretch-card">
         <div class="card">
           <div class="card-body">
                 <h4 class="card-title">Tutor Update Form</h4>
                 <p class="card-description">
-                    Enter details to edit a Tutor
-                </p>
-                <form method="POST" class="form-control">
+                    Update detail
+                <form method="POST" class="forms-sample">
   
                     {% csrf_token %}
-                    
-                    {% for errors in forms.non_field_errors %}
-                        {{ error }}
-                    {% endfor %}
-
                     {% if form.errors %}
                       <div class="alert alert-danger">
                         <strong>Oops! There was an error:</strong>
@@ -41,11 +34,29 @@
                     {% endif %}
   
                     <div class="form-group">
-                        {{ form.as_p }} 
+                        {{ form.first_name.label_tag }}
+                        {{ form.first_name }}
                     </div>
 
+                    <div class="form-group">
+                        {{ form.last_name.label_tag }}
+                        {{ form.last_name }}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.email.label_tag }}
+                        {{ form.email }}
+                    </div>
+        
+                    <div class="form-group">
+                        {{ form.track.label_tag }}
+                        {{ form.track }}
+                    </div>
+                    
                     <input class="btn btn-primary mr-2" value="Submit" type="submit">
                     <a href="{% url 'lms_admin:tutor_list' %}" class="btn btn-danger">Cancel</a>
+  
+                    
   
                 </form>
             </div>
@@ -53,4 +64,4 @@
     </div>
   </div>
 
-  {%endblock%}
+{% endblock %}

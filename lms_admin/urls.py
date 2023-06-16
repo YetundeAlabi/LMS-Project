@@ -3,7 +3,7 @@ from django.urls import path
 app_name = 'lms_admin'
 
 from .views import (CohortCreateFormView, CohortListView, CohortDetailView, TutorListView, TutorCreateFormView, 
-                    TutorDetailView, TutorDeleteView, TutorUpdateView, ToggleTutorSuspendView, ApplicantListView, ApplicantThankYouView)
+                    TutorDetailView, TutorDeleteView, TutorUpdateView, ToggleTutorSuspendView, ApplicantListView,AllApplicantListView, ApplicantThankYouView)
 
 from lms_admin import views
 
@@ -37,6 +37,7 @@ urlpatterns = [
     path('applicants_approval/', views.ApplicantApprovalFormView.as_view(), name="applicants_approval"),
     path('approved_applicants_export/', views.ExportApprovedApplicantsCSVView.as_view(), name="export_approved_applicants"),
     path('applicant_list/', ApplicantListView.as_view(), name='applicant_list'),
+    path('applicants/', AllApplicantListView.as_view(), name='all_applicant'),
     path('applicant_thankyou/', ApplicantThankYouView.as_view(), name='applicant_thank_you'),
     
 ]

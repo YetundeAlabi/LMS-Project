@@ -12,13 +12,14 @@ from django.views import View, generic
 from django.views.generic import CreateView
 from django.views.generic.edit import UpdateView
 
-from .forms import (LoginForm, SignUpForm, StudentUpdateForm, TutorUpdateForm,
-                    UserForm)
-from .models import Student, Tutor, User
+from .forms import (LoginForm, StudentUpdateForm, TutorUpdateForm,
+                    UserForm, CustomPasswordChangeForm)
+from .models import Student, Tutor
 
 # Create your views here.
 
 User = get_user_model()
+
 
 class TutorSignUpView(CreateView):
     model = Tutor
@@ -26,9 +27,9 @@ class TutorSignUpView(CreateView):
     template_name = 'accounts/signup.html' 
     success_url = reverse_lazy('login')
 
-
 class SignOutView(LogoutView):
-    next_page = reverse_lazy('accounts:login')
+    next_page = reverse_lazy('home_page')
+
 
 class LoginView(generic.FormView):
     form_class = LoginForm
@@ -53,13 +54,14 @@ class LoginView(generic.FormView):
             elif hasattr(user, "tutor"):
                 return reverse('course:tutor_dashboard_view')
             else:
-                return reverse('home_page')
+                return reverse('student:course_list')
         return reverse('login')
         
             
-class ChangePasswordView(PasswordChangeView):
-    template_name = 'accounts/change_password.html'  
-    success_url = reverse_lazy('login')
+class CustomPasswordChangeView(PasswordChangeView):
+    template_name = 'accounts/change_password.html' 
+    form_class = CustomPasswordChangeForm 
+    success_url = reverse_lazy('accounts:login')
 
 
 class TutorUpdateView(LoginRequiredMixin, UpdateView):

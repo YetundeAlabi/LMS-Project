@@ -1,0 +1,22 @@
+<!-- topic.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Topics</title>
+</head>
+<body>
+    <h1>Student Topics</h1>
+
+    {% if student_topics %}
+        <ul>
+            {% for topic in student_topics %}
+            <li>{{ topic.slug }} <a href="{% url 'student:subtopic_redirect' student_course_slug=student_course_slug student_topic_slug=topic.slug %}">View</a></li>
+
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No topics found for this student course.</p>
+    {% endif %}
+</body>
+</html>
