@@ -11,22 +11,63 @@
     <div class="row">
         <div class="col-md-12 grid-margin">
             <div class="row">
-                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                <div class="col-12 col-xl-8">
                     <h2>{{ course.title }}</h2>
-                    <p>Topic Description: {{ course.description }} </small></p>
-                    <p>Created at: {{ course.created_at }} </small></p>
-                    <p>Availability status: {{ course.is_active }} </small></p>
+                    <p><strong> Topic Description: </strong>{{ course.description }}</p>
+                    <p><strong>Created at:</strong> {{ course.created_at }} </p>
+                    <p><strong>Availability status:</strong> {{ course.is_active }}</p>
 
                 </div>
             </div>
         </div>
     </div>
-    <a class="btn btn-warning mt-4 mb-4" href="{% url 'course:update_course' course.slug %}">Update</a>
-    <a class="btn btn-danger mt-4 mb-4" href="{% url 'course:delete_course' course.slug %}">Delete</a>
-    <a class="btn btn-primary mt-4 mb-4" href="{% url 'course:tutor_dashboard_view' %}">Back</a>
-    
 
+    <div class="mb-4">
+        <a class="btn btn-info" href="{% url 'course:update_course' course.slug %}">Update</a>
+        <a class="btn btn-danger" href="{% url 'course:delete_course' course.slug %}">Delete</a>
+    </div>
+    <div>
+        <a class="btn btn-success mb-4 mt-4" href="{% url 'course:create_topic' course.slug %}">Create New Topics</a>
+    </div>
+
+    
+    <div class="row">
+        <div class="col-md-10 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-title mb-0">Topics under {{ course.title }}</p> 
+        
+                    <div class="table-responsive">
+                        <table class="table table-striped-lms table-hover">
+                            <thead>
+                            <tr>
+                                <th>S/N</th>
+                                <th>Title</th>
+                                <th>Date Created</th>
+                                <th></th>           
+                            </tr>  
+                            </thead>
+                        
+                            <tbody id="topic">
+                            {% for topic in topics %}
+                                <tr data-id="{{ topic.id }}">
+                                    <td class="order">{{ topic.order|add:1 }}</td>
+                                    <td>{{ topic.title }}</td>
+                                    <td>{{ topic.created_at }}</td>
+                                    <td>
+                                        <a class="btn btn-info btn-sm btn-rounded" href="{% url 'course:subtopic_list' topic.course.slug topic.id %}">Lessons</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+  
 
 {% endblock %}
 
