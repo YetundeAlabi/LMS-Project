@@ -54,7 +54,7 @@ class Topic(BaseContent):
     order = OrderField(blank=True, for_fields=['course'], null=True)
     
     class Meta:
-        ordering= ['order']
+        ordering= ['-order']
         
     def __str__(self):
         return f"{self.order}_{self.title}"
@@ -100,7 +100,7 @@ class SubTopic(BaseContent):
 
   
     class Meta:
-        ordering= ['order']
+        ordering= ['-order']
         
     def __str__(self):
         return f"{self.order}_{self.object_id}"

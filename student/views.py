@@ -3,8 +3,8 @@ from .models import StudentCourse, StudentTopic, StudentSubTopic
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView
 from django.shortcuts import get_object_or_404
-from django.contrib.auth.mixins import LoginRequiredMixin
-# Create your views here.
+from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
 
 
 class StudentCourseListView(View):
@@ -20,9 +20,11 @@ class StudentCourseListView(View):
 class StudentTopicListView(View):
     def get(self, request, *args, **kwargs):
         student_course_slug = self.kwargs['student_course_slug']
+        print(student_course_slug)
         student_course = get_object_or_404(StudentCourse, slug=student_course_slug)
         student = self.request.user.student_set.first()
         student_topics = StudentTopic.objects.filter(student_course__student=student, student_course=student_course)
+        print(student_course_slug)
 
         context = {
             'student_course_slug': student_course_slug,
@@ -45,7 +47,20 @@ class StudentSubtopicListView(View):
             'student_subtopics': student_subtopics
         }
         return render(self.request, 'student/subtopic.html', context=context)
-    
+
+
+class StudentSubtopicRedirectView(View):
+    def get(self, *args, **kwargs):
+        student_topic_slug=self.kwargs['student_topic_slug']
+        student_course_slug=self.kwargs['student_course_slug']
+        student_topic=get_object_or_404(StudentTopic, slug=student_topic_slug)
+        try:
+            student_subtopic=StudentSubTopic.objects.filter(student_topic=student_topic, progress_level=100.0).last()
+            return redirect('student:student_subtopic_detail', student_course_slug=student_course_slug, student_topic_slug=student_topic_slug, student_subtopic_id=student_subtopic.id)
+        except AttributeError:
+            student_subtopic=StudentSubTopic.objects.filter(student_topic=student_topic,progress_level=0.0 ).first()
+            return redirect('student:student_subtopic_detail', student_course_slug=student_course_slug, student_topic_slug=student_topic_slug, student_subtopic_id=student_subtopic.id)
+        
 
 class StudentSubtopicDetailView(View):
     def get(self, request, *args, **kwargs):

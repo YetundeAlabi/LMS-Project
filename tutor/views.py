@@ -1,5 +1,3 @@
-from typing import Any
-from django import http
 from django.apps import apps
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -382,7 +380,6 @@ class TutorUpdateView(UpdateView):
         tutor = form.instance
         tutor.user.first_name = form.cleaned_data['first_name']
         tutor.user.last_name = form.cleaned_data['last_name']
-        tutor.user.email = form.cleaned_data['email']
         tutor.picture = form.cleaned_data['picture']
         tutor.user.save()
         return super().form_valid(form)
