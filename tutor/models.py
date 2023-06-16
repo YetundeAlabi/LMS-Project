@@ -21,7 +21,7 @@ class ActiveManager(models.Manager):
 
 class BaseContent(models.Model):
     title=models.CharField(max_length=225, blank=True, null=True)
-    description=models.TextField(blank=True, null=True)
+    description=models.TextField(max_length=100, blank=True, null=True)
     is_active=models.BooleanField(default=True)
     created_at= models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
@@ -54,7 +54,7 @@ class Topic(BaseContent):
     order = OrderField(blank=True, for_fields=['course'], null=True)
     
     class Meta:
-        ordering= ['-order']
+        ordering= ['order']
         
     def __str__(self):
         return f"{self.order}_{self.title}"
@@ -100,7 +100,7 @@ class SubTopic(BaseContent):
 
   
     class Meta:
-        ordering= ['-order']
+        ordering= ['order']
         
     def __str__(self):
         return f"{self.order}_{self.object_id}"

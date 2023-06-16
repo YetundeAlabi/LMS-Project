@@ -1,29 +1,14 @@
-
-
 {% extends 'base.html' %}
 {%block content%}
-<!-- course.html -->
-    {% comment %} <h1>Student Courses</h1>
 
-    {% if student_courses %}
-        <ul>
-            
-                <li>Track: {{ detail.track }}</li>
-                <li>{{ detail.course.title }}---------<a href="{% url 'student:topic_list' course.slug %}">View topics</a></li>
-                <li>Progress_level: {{ detail.progress_level }}</li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No courses found for this student.</p>
-    {% endif %} {% endcomment %}
 <div class="content-wrapper" style="background-color: #EBEBEC;">
    <div class="mb-5 px-3" >
     <h3><strong>Track: {{student_track}} </strong></h3>
    </div>
    {% if student_courses %}
    <div class="mb-5">
-     <a href="#" class="btn btn-primary btn-sm">Active Learning</a>
-     <a href="#" class="btn btn-primary btn-sm">Completed</a>
+     <a href="#" class="btn">Active Learning</a>
+     <a href="#" class="btn">Completed</a>
    </div>
 
    {% for student_course in student_courses %}
