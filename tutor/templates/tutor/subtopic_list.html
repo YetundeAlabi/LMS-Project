@@ -9,7 +9,7 @@
 <div class="content-wrapper" style="background-color: #EBEBEC">
   <div class="row">
     <div class="col-md">
-      <h3>Add new Lesson:</h3>
+      <h3>Choose format to add new Lesson: </h3>
       <a class="btn btn-primary mt-4 mb-4" href="{% url 'course:create_subtopic' topic.course.slug topic.id 'text' %}">Text</a>
       <a class="btn btn-info mt-4 mb-4" href="{% url 'course:create_subtopic' topic.course.slug topic.id 'video' %}">Video</a>
       <a class="btn btn-danger mt-4 mb-4" href="{% url 'course:create_subtopic' topic.course.slug topic.id 'file' %}">File</a>
@@ -17,25 +17,24 @@
     </div>
   </div>
 
-  {% if subtopics %}
   <div class="row">
-    <div class="col-md grid-margin stretch-card">
+    <div class="col-md-10 grid-margin stretch-card">
       <div class="card">
         <div class="card-body">
-          <p class="card-title mb-0">Lessons in {{ topic.title }}</p>
+          <p class="card-title mb-0">Lessons under {{ topic.title }}</p>
           <div class="table-responsive">
             <table class="table table-striped-lms table-hover">
               <thead>
                 <tr>
                   <th>S/N</th>
                   <th>Title</th>
-                  <th>Content_type</th>
+                  <th>Content Type</th>
                 </tr>
               </thead>
               <tbody id="subtopic">
                 {% for subtopic in subtopics %}
                 <tr data-id="{{ subtopic.id }}">
-                  <td>Lession:{{ forloop.counter }}</td>
+                  <td>Lession {{ forloop.counter }}</td>
                   <td>
                     <div data-id="{{ subtopic.id }}">{{ subtopic.item.title }}</div>
                   </td>
@@ -54,15 +53,13 @@
                       <h5>Video</h5>
                     {% endif %}
                   </td>
-                  <td style="padding: 0;">
-                    <div class="row" style="margin: 0;">
-                      <div class="col-md-2 mt-4" style="padding: 0;">
-                        <div class="d-flex justify-content-start">
-                          <a class="btn btn-info mb-4 mr-2" href="{% url 'course:subtopic_detail' course_slug=topic.course.slug topic_id=topic.id model_name=subtopic.content_type.model id=subtopic.id %}" style="font-size: 12px; padding: 12px 20px;">View</a>
-                        </div>
-                      </div>
-                    </div>
+                  <td>
+                      <a class="btn btn-rounded btn-sm btn-info" href="{% url 'course:subtopic_detail' course_slug=topic.course.slug topic_id=topic.id model_name=subtopic.content_type.model id=subtopic.id %}">View</a>
                   </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="4"> No subtopics under this topic yet </td>
                 </tr>
                 {% endfor %}
               </tbody>
@@ -72,10 +69,6 @@
       </div>
     </div>
   </div>
-  </div>
-  {% else %}
-  <p>No subtopic under this topic yet</p>
-  {% endif %}
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html5sortable/0.13.3/html5sortable.min.js"></script>
   <script>
@@ -107,4 +100,5 @@
         });
     });
   </script>
-{% endblock content %}
+</div>
+{% endblock %}
