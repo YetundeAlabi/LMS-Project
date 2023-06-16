@@ -1,3 +1,4 @@
+from braces.views import CsrfExemptMixin, JsonRequestResponseMixin
 from typing import Any, Dict
 from django.apps import apps
 from django.contrib import messages
@@ -9,6 +10,7 @@ from django.http import Http404
 from django.http.response import HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
+from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.views.generic.base import TemplateResponseMixin, View, ContextMixin, TemplateView
 from accounts.models import Student, Tutor
@@ -17,9 +19,9 @@ from .forms import CourseForm, TopicForm, TopicFormSet
 from .models import Course, Topic, SubTopic
 from accounts.models import User
 from django.views.generic.base import TemplateResponseMixin
-from .forms import TutorUpdateForm
-from braces.views import CsrfExemptMixin, JsonRequestResponseMixin
-from django.views import View
+from .forms import TutorUpdateFormfrom accounts.models import Student, Tutor
+from accounts.forms import TutorUpdateForm
+
 
 
 class TutorUserRequiredMixin(UserPassesTestMixin):
@@ -31,15 +33,10 @@ class TutorDashboardView(TutorUserRequiredMixin, View):
         tutor= self.request.user.tutor
         students= Student.objects.filter(track=tutor.track)
         courses = Course.objects.filter(track=tutor.track)
-        courses_list = [course.title for course in courses]
-        courses_topic_count = [course.topic_set.count() for course in courses]
-        
         context = {
             'tutor':tutor,
             'students':students,
             'courses': courses,
-            'courses_list': courses_list,
-            'courses_topic_count': courses_topic_count,
         }
         return render (self.request, 'tutor/tutor_dashboard.html', context=context)
 
@@ -119,7 +116,7 @@ class CreateTopicView(TutorUserRequiredMixin, SuccessMessageMixin, CreateView):
 
     def get_success_url(self):
         course_slug = self.kwargs['course_slug']
-        return reverse('course:topic_list', kwargs={'course_slug': course_slug})
+        return reverse('course:course_detail', kwargs={'course_slug': course_slug})
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -132,6 +129,11 @@ class TopicDetailView(TutorUserRequiredMixin, DetailView):
     template_name='tutor'
     context_object_name = 'topic'
     template_name = 'tutor/topic_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['subtopics'] = SubTopic.objects.filter(topic=self.get_object())
+        return context
 
 
 class CourseUpdateView(TutorUserRequiredMixin, SuccessMessageMixin, UpdateView):    

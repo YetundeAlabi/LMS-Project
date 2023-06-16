@@ -12,7 +12,7 @@
     <div class="col-md">
       <h3>Subtopic Detail</h3>
       <hr>
-      <h3>Topic: {{ subtopic.topic }}</h3>
+      <h3>Topic: {{ subtopic.topic.title }}</h3>
       <h4>Lesson Title: {{ subtopic.item.title }}</h4>
 
       {% if subtopic.content_type.model == 'text' %}
