@@ -29,7 +29,6 @@ class StudentCompletedCourseListView(TemplateView):
         context = super().get_context_data(**kwargs)
         student = self.request.user.students.first()
         context['student_track'] = student.track
-        # context["student_courses"] = StudentCourse.objects.filter(student=student)
         context["student_courses"] = StudentCourse.objects.filter(student=student, progress_level=100)
         return context
  
