@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{%block content%}
+
+<div class="content-wrapper" style="background-color: #EBEBEC;">
+   <div class="mb-5 px-3" >
+    <h3><strong>Track: {{student_track}} </strong></h3>
+   </div>
+   {% if student_courses %}
+   <div class="mb-5">
+     <a href="#" class="btn active"><strong>Active Learning</strong></a>
+     <a href="#" class="btn"><strong>Completed</strong></a>
+     <hr class="line mt-0">
+   </div>
+
+   {% for student_course in student_courses %}
+   {% if  student_course.is_completed%}
+    <div class="card p-3 mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-6">
+                <h5 class="card-title">{{student_course.course.title}}</h5>
+                </div>
+                <div class="col-sm-6 d-flex justify-content-end mb-3">
+                    <a href="{% url 'student:topic_list' student_course.slug %}" class="btn btn-success btn-sm">Completed</a>
+                </div>
+            </div>
+            <div class="progress" style="height: 15px;">
+                <div class="progress-bar" role="progressbar" aria-label="Basic example" style="width: {{student_course.progress_level}}%" aria-valuenow="{{student_course.progress_level}}" aria-valuemin="0" aria-valuemax="100">{{student_course.progress_level}}%</div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {%endfor%}
+    {%endif%}
+</div>
+{% endblock %}

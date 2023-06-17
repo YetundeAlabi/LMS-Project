@@ -1,3 +1,4 @@
+from typing import List
 from django.shortcuts import render
 from .models import StudentCourse, StudentTopic, StudentSubTopic
 from django.views import View
@@ -8,16 +9,28 @@ from django.shortcuts import redirect
 
 # Create your views here.
 
-class StudentCourseListView(TemplateView):
+class StudentActiveCourseListView(TemplateView):
     template_name = "student/course.html"
-
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         student = self.request.user.students.first()
         context['student_track'] = student.track
-        context["student_courses"] = StudentCourse.objects.filter(student=student)
+        context["student_courses"] = StudentCourse.objects.filter(student=student, progress_level__lt=100)
         return context
     
+
+class StudentCompletedCourseListView(TemplateView):
+    template_name = "student/course.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        student = self.request.user.students.first()
+        context['student_track'] = student.track
+        # context["student_courses"] = StudentCourse.objects.filter(student=student)
+        context["student_courses"] = StudentCourse.objects.filter(student=student, progress_level=100)
+        return context
+ 
 
 class StudentTopicListView(View):
     def get(self, request, *args, **kwargs):
