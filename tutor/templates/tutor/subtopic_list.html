@@ -21,7 +21,7 @@
     <div class="col-md-10 grid-margin stretch-card">
       <div class="card">
         <div class="card-body">
-          <p class="card-title mb-0">Lessons under {{ topic.title }}</p>
+          <p class="card-title mb-0">Lessons</p>
           <div class="table-responsive">
             <table class="table table-striped-lms table-hover">
               <thead>
@@ -84,11 +84,8 @@
       contentOrder = {};
       var contents = document.querySelectorAll('#subtopic div');
       contents.forEach(function(content, index) {
-        // Update content index
         contentOrder[content.dataset.id] = index;
       });
-
-      // Add new order to the HTTP request options
       options['body'] = JSON.stringify(contentOrder);
       // Send HTTP request
       fetch(contentOrderUrl, options)
