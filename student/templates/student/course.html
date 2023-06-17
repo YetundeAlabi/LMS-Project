@@ -1,23 +1,29 @@
 {% extends 'base.html' %}
 {%block content%}
-
+<style>
+    .active {
+      background-color: blue;
+      color: white;
+    }
+  </style>
+  
 <div class="content-wrapper" style="background-color: #EBEBEC;">
    <div class="mb-5 px-3" >
     <h3><strong>Track: {{student_track}} </strong></h3>
    </div>
-   {% if student_courses %}
+   
    <div class="mb-5">
-     <a href="#" class="btn">Active Learning</a>
-     <a href="#" class="btn">Completed</a>
+     <a href="{% url 'student:course_list' %}" class="btn" id="activeBtn"><strong>Active Learning</strong></a>
+     <a href="{% url 'student:completed_course_list' %}" class="btn" id="completedBtn"><strong>Completed</strong></a>
+     <hr class="line mt-0">
    </div>
-
+   {% if student_courses %}
    {% for student_course in student_courses %}
     <div class="card p-3 mb-4">
         <div class="card-body">
             <div class="row">
                 <div class="col-sm-6">
                 <h5 class="card-title">{{student_course.course.title}}</h5>
-        
                 </div>
                 <div class="col-sm-6 d-flex justify-content-end mb-3">
                     <a href="{% url 'student:topic_list' student_course.slug %}" class="btn btn-primary btn-sm">Continue</a>
@@ -27,9 +33,37 @@
                 <div class="progress-bar" role="progressbar" aria-label="Basic example" style="width: {{student_course.progress_level}}%" aria-valuenow="{{student_course.progress_level}}" aria-valuemin="0" aria-valuemax="100">{{student_course.progress_level}}%</div>
             </div>
         </div>
-
     </div>
+    
     {%endfor%}
+    {%else%}
+    <div class="card text-center">
+        <div class="card-body">
+          <h4 class="card-title">No completed Course yet</h4>
+          <h6 class="card-title">Work Towards Your Learning Goals</h6>
+          <p class="card-text">Programs you've completed will show up here.</p>
+        </div>
+    </div>
     {%endif%}
 </div>
+<script>
+    // Get the buttons
+    const activeBtn = document.getElementById('activeBtn');
+    const completedBtn = document.getElementById('completedBtn');
+  
+    // Add click event listeners to the buttons
+    activeBtn.addEventListener('click', function(event) {
+      
+      activeBtn.classList.add('active');
+      completedBtn.classList.remove('active');
+    });
+  
+    completedBtn.addEventListener('click', function(event) {
+      
+      completedBtn.classList.add('active');
+      activeBtn.classList.remove('active');
+    });
+  </script>
+ 
+  
 {% endblock %}
