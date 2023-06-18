@@ -13,8 +13,7 @@
         <div class="col-md-12 grid-margin">
             <div class="row">
                 <div class="col-12 col-xl-8 mb-4 mb-xl-0">
-                    <h2>{{ track.name }}</h2>
-                    <h5> {{ track.slug }} </h5>
+                    <h2 class="text-uppercase">{{ track.name }}</h2>
                     <p class="text-muted">{{ track.description }} </small></p>
 
                 </div>
@@ -51,8 +50,13 @@
                         <td> {{ student.user.last_name}} </td>
                         <td> {{ student.user.first_name}}</td>
                         <td><span>{{ student.user.email }}</span> </td>
-                        <td class="font-weight-medium"><a href="{% url 'lms_admin:student_toggle_suspend' pk=student.pk %}"class="badge badge-info">Suspend</a></td>
-                        <td><a class="badge badge-primary" href="{% url 'lms_admin:student_detail' pk=student.pk %}">View</a></td>
+                        <td class="font-weight-medium">
+                          <div class="badge {% if not student.is_suspended %}
+                          badge-success"> Active</div></td>
+                          {% else %}
+                          badge-warning">Suspended</div></td>
+                          {%endif%}
+                        <td><a class="btn btn-info btn-sm btn-rounded" href="{% url 'lms_admin:student_detail' pk=student.pk %}">View</a></td>
   
                       </tr>
                     {% empty %}

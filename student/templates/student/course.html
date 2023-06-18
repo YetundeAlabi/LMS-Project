@@ -1,4 +1,9 @@
 {% extends 'base.html' %}
+
+{% block navbar %}
+  {% include 'student/student_sidebar.html' %}
+{% endblock %} 
+
 {%block content%}
 <style>
     .active {
@@ -26,7 +31,7 @@
                 <h5 class="card-title">{{student_course.course.title}}</h5>
                 </div>
                 <div class="col-sm-6 d-flex justify-content-end mb-3">
-                    <a href="{% url 'student:topic_list' student_course.slug %}" class="btn btn-primary btn-sm">Continue</a>
+                    <a href="{% url 'student:topic_list' student_course.slug %}" class="btn btn-info btn-sm">Continue</a>
                 </div>
             </div>
             <div class="progress" style="height: 15px;">
