@@ -35,7 +35,7 @@
                 </div>
             </div>
             <div class="progress" style="height: 15px;">
-                <div class="progress-bar" role="progressbar" aria-label="Basic example" style="width: {{student_course.progress_level}}%" aria-valuenow="{{student_course.progress_level}}" aria-valuemin="0" aria-valuemax="100">{{student_course.progress_level}}%</div>
+                <div class="progress-bar" role="progressbar" aria-label="Basic example" style="width: {{student_course.progress_level}}%" aria-valuenow="{{student_course.progress_level}}" aria-valuemin="0" aria-valuemax="100">{{student_course.progress_level|floatformat:1}}%</div>
             </div>
         </div>
     </div>

@@ -38,7 +38,7 @@ from base.constants import FEMALE, MALE
 
 class AdminUserRequiredMixin(UserPassesTestMixin):
     def test_func(self):
-        return self.request.user.is_superuser
+        return self.request.user.is_staff
 
 class DashboardView(LoginRequiredMixin, AdminUserRequiredMixin, TemplateView): 
     template_name = "lms_admin/dashboard3.html"
@@ -49,11 +49,11 @@ class DashboardView(LoginRequiredMixin, AdminUserRequiredMixin, TemplateView):
         context['students'] = Student.objects.all()
         context['tutors'] = Tutor.objects.all()
         context['tracks'] = Track.objects.all()
-        context['cohort'] = Cohort.objects.last()
+        context['cohort'] = Cohort.objects.get(year=current_year)
         context['applicants'] = Applicant.objects.all()
         context['male_applicants'] = Applicant.objects.filter(
             gender='M', cohort__year=current_year).count()
-        context['female_applicants'] =  Applicant.objects.filter(gender='F').count()
+        context['female_applicants'] =  Applicant.objects.filter(gender='F', cohort__year=current_year).count()
         return context
 
 
@@ -410,9 +410,9 @@ class ToggleTutorSuspendView(LoginRequiredMixin, AdminUserRequiredMixin, View): 
         tutor.is_suspended = not tutor.is_suspended
         tutor.save(update_fields=['is_suspended'])
         if tutor.is_suspended:
-            messages.warning(self.request, f"{tutor.user.first_name} has been suspended successfully")
-        else:
-            messages.success(self.request, f"Suspension has been lifted for {tutor.user.first_name}")
+            messages.success(self.request, f"{tutor.user.first_name} has been suspended successfully")
+            return HttpResponseRedirect(reverse('lms_admin:tutor_list'))
+        messages.success(self.request, f"Suspension has been lifted for {tutor.user.first_name}")
         return HttpResponseRedirect(reverse('lms_admin:tutor_list'))
 
 

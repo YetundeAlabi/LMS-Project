@@ -23,7 +23,6 @@ from .forms import TutorUpdateForm
 from accounts.forms import TutorUpdateForm
 
 
-
 class TutorUserRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.tutor
