@@ -143,14 +143,17 @@ class StudentCreateView(LoginRequiredMixin, CreateView):
         register_courses(self.object)
         
         subject = 'Login Instructions' if not created else  'Account Setup Instructions'
+
         context = {
                   'user': user,
                   'set_password_url': self.get_login_url() if not created else self.get_password_reset_url(user),
                }
+        
         message = get_template('lms_admin/email_template.html').render(context)
         recipient = [user.email,]
         send_verification_mail.delay(subject, recipient, message)
         messages.success(self.request, "Student has been created successfully")
+
         return HttpResponseRedirect(reverse('lms_admin:student_list'))
 
     def get_password_reset_url(self, user):
