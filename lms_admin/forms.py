@@ -25,13 +25,8 @@ class TrackForm(forms.ModelForm):
         name = self.cleaned_data.get('name')
         if self.instance is not None: 
             if Track.objects.filter(name__iexact=name).exclude(pk=self.instance.pk).exists():
-                raise ValidationError()
-        return name
-    
-    def save(self, *args, **kwargs):
-        if Track.active_objects.filter(name=self.name).exists():
                 raise ValidationError('A track with the same name already exists.')
-        super().save(*args, **kwargs)
+        return name
 
 
 class ApplicantForm(forms.ModelForm):
