@@ -11,7 +11,7 @@
 
 <div class="content-wrapper" style="background-color: #EBEBEC;">
 
-    <h2>Student Information</h2>
+    <h2>My Profile</h2>
 
     <h3 class="mt-5">Bio Data: </h3>
     <br>
@@ -31,9 +31,8 @@
 
             </div>
 
-    <a class="btn btn-primary mt-4 mb-4" href="{% url 'lms_admin:student_update' pk=student.pk %}">Update Student Details</a>
-    <a class="btn btn-danger mt-4 mb-4" href="{% url 'lms_admin:student_delete' pk=student.pk %}">Delete Student </a>
-    </br>
-    <a href="{% url 'lms_admin:student_list' %}" class="btn btn-danger">Return To Students List</a>
+    <a class="btn btn-primary mt-4 mb-4" href="{% url 'student:profile_update' %}">Update Profile Picture</a>
+    
+    
 </div>
 {% endblock %}
