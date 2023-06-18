@@ -72,6 +72,9 @@ class Tutor(DeletableBaseModel):
     picture = models.ImageField(upload_to='accounts/media', blank=True)
     track = models.ForeignKey(Track, on_delete=models.SET_NULL, related_name="tutors", null=True)
 
+    def get_fullname(self):
+        return f'{self.user.first_name} {self.user.last_name}'
+
     def __str__(self):
         return self.user.email
 

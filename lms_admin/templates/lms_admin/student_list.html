@@ -46,11 +46,19 @@
                       <td> {{ student.user.last_name}}</td>
                       <td><span>{{ student.user.email }}</span> </td>
                       <td>{{ student.track.name }}</td>
-                      <td class="font-weight-medium"><a href="{% url 'lms_admin:student_toggle_suspend' pk=student.pk%}" class="btn btn-sm btn-rounded {% if not student.is_suspended %}
+                      <td class="font-weight-medium">
+                        <form action="{% url 'lms_admin:student_toggle_suspend' pk=student.pk %}" method="POST" class="d-inline">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-sm btn-rounded {% if not student.is_suspended %}btn-success{% else %}btn-warning{% endif %}">
+                            {% if not student.is_suspended %}Active{% else %}Suspended{% endif %}
+                          </button>
+                        </form>
+                      </td>
+                        {% comment %} <a href="{% url 'lms_admin:student_toggle_suspend' pk=student.pk%}" class="btn btn-sm btn-rounded {% if not student.is_suspended %}
                           btn-success"> Active</a></td>
                           {% else %}
                           btn-warning">Suspended</a></td>
-                          {%endif%}
+                          {%endif%} {% endcomment %}
                       <td><a class="btn btn-sm btn-info btn-rounded" href="{% url 'lms_admin:student_detail' pk=student.pk%}">View</a></td>
 
                     </tr>

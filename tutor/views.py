@@ -20,7 +20,6 @@ from .models import Course, Topic, SubTopic
 from accounts.models import User
 from django.views.generic.base import TemplateResponseMixin
 from .forms import TutorUpdateForm
-from accounts.models import Student, Tutor
 from accounts.forms import TutorUpdateForm
 
 

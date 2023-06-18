@@ -22,7 +22,7 @@ from django.views import View
 from django.views.generic import (
     CreateView, DetailView, FormView, ListView, UpdateView, TemplateView, DeleteView
 )
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 
 from tutor.studentcadd import register_courses
 from accounts.forms import StudentCreationForm, TutorForm, TutorUpdateForm, StudentUpdateForm
@@ -36,7 +36,11 @@ from base.constants import FEMALE, MALE
 
 # Create your views here
 
-class DashboardView(LoginRequiredMixin, TemplateView): 
+class AdminUserRequiredMixin(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.is_staff
+
+class DashboardView(LoginRequiredMixin, AdminUserRequiredMixin, TemplateView): 
     template_name = "lms_admin/dashboard3.html"
 
     def get_context_data(self, **kwargs):
@@ -45,16 +49,16 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         context['students'] = Student.objects.all()
         context['tutors'] = Tutor.objects.all()
         context['tracks'] = Track.objects.all()
-        context['cohort'] = Cohort.objects.last()
+        context['cohort'] = Cohort.objects.get(year=current_year)
         context['applicants'] = Applicant.objects.all()
         context['male_applicants'] = Applicant.objects.filter(
             gender='M', cohort__year=current_year).count()
-        context['female_applicants'] =  Applicant.objects.filter(gender='F').count()
+        context['female_applicants'] =  Applicant.objects.filter(gender='F', cohort__year=current_year).count()
         return context
 
 
 # Track Views
-class TrackCreateView(LoginRequiredMixin, CreateView):
+class TrackCreateView(LoginRequiredMixin, AdminUserRequiredMixin, CreateView):
     """Track Create View"""
     model = Track
     form_class = TrackForm
@@ -73,7 +77,7 @@ class TrackCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
     
 
-class TrackListView(LoginRequiredMixin, ListView):
+class TrackListView(LoginRequiredMixin, AdminUserRequiredMixin, ListView):
     """Track List View to list all active Tracks"""
     model = Track
     template_name = 'lms_admin/track_list1.html'
@@ -83,7 +87,7 @@ class TrackListView(LoginRequiredMixin, ListView):
             return Track.active_objects.all()
     
 
-class TrackDetailView(LoginRequiredMixin, DetailView): 
+class TrackDetailView(LoginRequiredMixin, AdminUserRequiredMixin, DetailView): 
     """Generic Track Detail View"""
     model = Track 
     template_name = 'lms_admin/track_detail.html'
@@ -97,7 +101,7 @@ class TrackDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-class TrackUpdateView(LoginRequiredMixin, UpdateView):
+class TrackUpdateView(LoginRequiredMixin, AdminUserRequiredMixin, UpdateView):
     """Generic Track Update View"""
     model = Track
     form_class = TrackForm
@@ -116,7 +120,7 @@ class TrackUpdateView(LoginRequiredMixin, UpdateView):
         return self.object.get_absolute_url()
 
 
-class TrackConfirmDeleteView(TemplateView):
+class TrackConfirmDeleteView(LoginRequiredMixin, AdminUserRequiredMixin,TemplateView):
     template_name = "lms_admin/track_confirm_delete.html"
     slug_url_kwarg = 'slug'
     slug_field = 'slug'
@@ -128,7 +132,7 @@ class TrackConfirmDeleteView(TemplateView):
 
 
 # Student Views
-class StudentCreateView(LoginRequiredMixin, CreateView):
+class StudentCreateView(LoginRequiredMixin, AdminUserRequiredMixin, CreateView):
     """Student Create Form View to create one student at a time"""
     model = Student
     form_class = StudentCreationForm
@@ -138,19 +142,21 @@ class StudentCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         student, created = form.save()
         user = student.user
-        self.object = student
 
-        register_courses(self.object)
+        register_courses(student)
         
         subject = 'Login Instructions' if not created else  'Account Setup Instructions'
+
         context = {
                   'user': user,
                   'set_password_url': self.get_login_url() if not created else self.get_password_reset_url(user),
                }
+        
         message = get_template('lms_admin/email_template.html').render(context)
         recipient = [user.email,]
         send_verification_mail.delay(subject, recipient, message)
         messages.success(self.request, "Student has been created successfully")
+
         return HttpResponseRedirect(reverse('lms_admin:student_list'))
 
     def get_password_reset_url(self, user):
@@ -164,24 +170,24 @@ class StudentCreateView(LoginRequiredMixin, CreateView):
         return self.request.build_absolute_uri(reverse('accounts:login')) 
 
 
-class StudentListView(LoginRequiredMixin, ListView):
+class StudentListView(LoginRequiredMixin, AdminUserRequiredMixin, ListView):
     """Generic Student List View to list all students"""
     model = Student
     template_name = 'lms_admin/student_list.html'
     context_object_name = 'students'
 
     def get_queryset(self):
-        return Student.objects.all()
+        return Student.active_objects.all()
 
 
-class StudentDetailView(LoginRequiredMixin, DetailView):
+class StudentDetailView(LoginRequiredMixin, AdminUserRequiredMixin, DetailView):
     """Generic Student Detail View""" 
     model = Student 
     template_name = 'lms_admin/student_detail.html'
     context_object_name = 'student'
 
 
-class StudentUpdateView(LoginRequiredMixin, UpdateView):
+class StudentUpdateView(LoginRequiredMixin, AdminUserRequiredMixin, UpdateView):
     """Generic Student Update Form View"""
     model = Student
     form_class = StudentUpdateForm
@@ -217,21 +223,25 @@ class StudentUpdateView(LoginRequiredMixin, UpdateView):
         return HttpResponseRedirect(reverse('lms_admin:student_detail', kwargs={'pk': student.pk}))
     
 
-class StudentDeleteView( LoginRequiredMixin, DeleteView):
+class StudentDeleteView(LoginRequiredMixin, AdminUserRequiredMixin, DeleteView):
     model = Student
     template_name = 'lms_admin/student_delete_confirm.html'
     success_url = reverse_lazy('lms_admin:student_list')
 
 
-class ToggleStudentSuspendView(LoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
+class ToggleStudentSuspendView(LoginRequiredMixin,  AdminUserRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
         student = get_object_or_404(Student, id=kwargs['pk'])
         student.is_suspended = not student.is_suspended
         student.save(update_fields=['is_suspended'])
+        if student.is_suspended:
+            messages.warning(self.request, f"{student.user.first_name} has been suspended successfully")
+        else:
+            messages.success(self.request, f"Suspension has been lifted for {student.user.first_name}")
         return HttpResponseRedirect(reverse('lms_admin:student_list'))
 
 
-class StudentImportView(PasswordResetView, FormView):
+class StudentImportView(PasswordResetView, AdminUserRequiredMixin, FormView):
     """Student Import View to create many students from a CSV file and send login/set password URLs in email"""
     template_name = 'lms_admin/import_students.html'
     form_class = StudentImportForm
@@ -276,7 +286,7 @@ class StudentImportView(PasswordResetView, FormView):
 
 
 # Cohort Views
-class CohortCreateFormView(LoginRequiredMixin, CreateView):
+class CohortCreateFormView(LoginRequiredMixin, AdminUserRequiredMixin, CreateView):
     """Generic Cohort Create View"""
     form_class = CohortCreateForm
     template_name = "lms_admin/cohort_create_form.html"
@@ -287,7 +297,7 @@ class CohortCreateFormView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
     
 
-class CohortListView(LoginRequiredMixin, ListView):
+class CohortListView(LoginRequiredMixin, AdminUserRequiredMixin, ListView):
     "Cohort List View to list all Cohorts"
     model = Cohort
     template_name = "admin/cohort_list.html"
@@ -298,7 +308,7 @@ class CohortListView(LoginRequiredMixin, ListView):
         return queryset
 
 
-class CohortDetailView(LoginRequiredMixin, DetailView): 
+class CohortDetailView(LoginRequiredMixin, AdminUserRequiredMixin, DetailView): 
     model = Cohort
     template_name = 'lms_admin/cohort_detail.html'
     context_object_name = 'cohort'
@@ -310,7 +320,7 @@ class CohortDetailView(LoginRequiredMixin, DetailView):
 
     
 #Tutor Views 
-class TutorCreateFormView(LoginRequiredMixin, CreateView): #PermissionRequiredMixin,
+class TutorCreateFormView(LoginRequiredMixin, AdminUserRequiredMixin, CreateView): #PermissionRequiredMixin,
     form_class = TutorForm
     template_name = "lms_admin/tutor_create_form.html"
     success_url = reverse_lazy('lms_admin:tutor_list')
@@ -344,17 +354,17 @@ class TutorCreateFormView(LoginRequiredMixin, CreateView): #PermissionRequiredMi
         return self.request.build_absolute_uri(url)
 
 
-class TutorListView(LoginRequiredMixin,  ListView): #PermissionRequiredMixin,
+class TutorListView(LoginRequiredMixin, AdminUserRequiredMixin, ListView): #PermissionRequiredMixin,
     """Generic Tutor List View to view all Tutors"""
     model = Tutor
     template_name = "lms_admin/tutor_list.html"
     context_object_name = 'tutors'
 
     def get_queryset(self):
-        return Tutor.objects.all()
+        return Tutor.active_objects.all()
 
 
-class TutorUpdateView(LoginRequiredMixin, UpdateView): #PermissionRequiredMixin,
+class TutorUpdateView(LoginRequiredMixin, AdminUserRequiredMixin, UpdateView): #PermissionRequiredMixin,
     form_class = TutorForm
     template_name = "lms_admin/tutor_update_form.html"
     
@@ -373,25 +383,32 @@ class TutorUpdateView(LoginRequiredMixin, UpdateView): #PermissionRequiredMixin,
         return HttpResponseRedirect(reverse('lms_admin:tutor_list'))
         
     
-class TutorDetailView(DetailView):
+class TutorDetailView(LoginRequiredMixin, AdminUserRequiredMixin, DetailView):
     model = Tutor
     template_name = "lms_admin/tutor_detail.html"
 
+class TutorConfirmDeleteView(LoginRequiredMixin, AdminUserRequiredMixin,TemplateView):
+    template_name = "lms_admin/tutor_confirm_delete.html"
 
-class TutorDeleteView(LoginRequiredMixin, View):
-    
-    def get(self, request, *args, **kwargs):
-        tutor = get_object_or_404(Tutor, id=kwargs['pk'])
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tutor'] = Tutor.objects.get(pk=self.kwargs['pk'])
+        return context 
+
+
+class TutorDeleteView(LoginRequiredMixin, AdminUserRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        tutor = get_object_or_404(Tutor, pk=kwargs['pk'])
         tutor.is_deleted = True
-        tutor.save() 
+        tutor.save(update_fields=['is_deleted']) 
         return HttpResponseRedirect(reverse('lms_admin:tutor_list'))
 
 
-class ToggleTutorSuspendView(LoginRequiredMixin, View): #PermissionRequiredMixin,
-    def get(self, request, *args, **kwargs):
+class ToggleTutorSuspendView(LoginRequiredMixin, AdminUserRequiredMixin, View): #PermissionRequiredMixin,
+    def post(self, request, *args, **kwargs):
         tutor = get_object_or_404(Tutor, pk=kwargs['pk'])
         tutor.is_suspended = not tutor.is_suspended
-        tutor.save()
+        tutor.save(update_fields=['is_suspended'])
         if tutor.is_suspended:
             messages.success(self.request, f"{tutor.user.first_name} has been suspended successfully")
             return HttpResponseRedirect(reverse('lms_admin:tutor_list'))
@@ -420,7 +437,7 @@ class ApplicantThankYouView(View):
         return render(request, self.template_name)
 
 
-class ApplicantApprovalFormView(LoginRequiredMixin, View):
+class ApplicantApprovalFormView(LoginRequiredMixin, AdminUserRequiredMixin, View):
     template_name = 'lms_admin/applicant_checklist.html'
 
     def get(self, request):
@@ -439,7 +456,7 @@ class ApplicantApprovalFormView(LoginRequiredMixin, View):
         return render(request, self.template_name, {'form': form})
     
     
-class AllApplicantListView(ListView):
+class AllApplicantListView(LoginRequiredMixin, AdminUserRequiredMixin, ListView):
     model = Applicant
     template_name = 'lms_admin/all_applicants.html'
     context_object_name = 'applicants'
@@ -451,7 +468,7 @@ class AllApplicantListView(ListView):
         return context
 
 
-class ApplicantListView(ListView):
+class ApplicantListView(LoginRequiredMixin, AdminUserRequiredMixin, ListView):
     model = Applicant
     template_name = 'lms_admin/applicant_list.html'
     context_object_name = 'applicants'
@@ -463,7 +480,7 @@ class ApplicantListView(ListView):
 
 
 
-class ExportApprovedApplicantsCSVView(View):
+class ExportApprovedApplicantsCSVView(LoginRequiredMixin, AdminUserRequiredMixin, View):
      def get(self, request):
         # Filter approved applicants using ApprovedApplicantManager and filter for only current cohort
         approved_applicants = Applicant.approved.filter(cohort=Cohort.objects.get(year=timezone.now().year))

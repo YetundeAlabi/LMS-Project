@@ -3,7 +3,8 @@ from django.urls import path
 app_name = 'lms_admin'
 
 from .views import (CohortCreateFormView, CohortListView, CohortDetailView, TutorListView, TutorCreateFormView, 
-                    TutorDetailView, TutorDeleteView, TutorUpdateView, ToggleTutorSuspendView, ApplicantListView,AllApplicantListView, ApplicantThankYouView)
+                    TutorDetailView, TutorDeleteView, TutorUpdateView, ToggleTutorSuspendView, ApplicantListView,
+                    AllApplicantListView, ApplicantThankYouView, TutorConfirmDeleteView)
 
 from lms_admin import views
 
@@ -16,6 +17,7 @@ urlpatterns = [
     path("tutor/<int:pk>/", TutorDetailView.as_view(), name="tutor_detail"),
     path("tutor/<int:pk>/update/", TutorUpdateView.as_view(), name="tutor_update"),
     path("tutor/<int:pk>/delete/", TutorDeleteView.as_view(), name="tutor_delete"),
+    path("tutor/<int:pk>/confirm_delete/", TutorConfirmDeleteView.as_view(), name="tutor_confirm_delete"),
     path("tutor/<int:pk>/togglesuspend/",
          ToggleTutorSuspendView.as_view(), name="tutor_toggle_suspend"),
     path("cohort/", CohortListView.as_view(), name="cohort_list"),
