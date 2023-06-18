@@ -394,6 +394,7 @@ class ToggleTutorSuspendView(LoginRequiredMixin, View): #PermissionRequiredMixin
         tutor.save()
         if tutor.is_suspended:
             messages.success(self.request, f"{tutor.user.first_name} has been suspended successfully")
+            return HttpResponseRedirect(reverse('lms_admin:tutor_list'))
         messages.success(self.request, f"Suspension has been lifted for {tutor.user.first_name}")
         return HttpResponseRedirect(reverse('lms_admin:tutor_list'))
 
