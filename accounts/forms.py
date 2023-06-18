@@ -113,7 +113,8 @@ class StudentCreationForm(forms.Form):
                                         track=self.cleaned_data['track'],
                                         gender=self.cleaned_data['gender'],
                                         picture=self.cleaned_data['picture'])
-        #student.save()
+        if not created:
+            student.is_verified = True
         return student, created
 
 
@@ -174,10 +175,10 @@ class CustomSetPasswordForm(SetPasswordForm):
         password = self.cleaned_data["new_password1"]
         self.user.set_password(password)
         if not hasattr(self.user, "tutor"):
-            self.user.student.is_verified = True 
+            self.user.students.get().is_verified = True 
             if commit:
                 self.user.save()
-                self.user.student.save()
+                self.user.students.get().save()
         if commit:
             self.user.save()
         return self.user

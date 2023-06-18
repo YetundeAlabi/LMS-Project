@@ -32,10 +32,6 @@ class TrackForm(forms.ModelForm):
 
 
 class ApplicantForm(forms.ModelForm):
-    def __init__(self, company, *args, **kwargs):
-        self.company = company
-        super().__init__(*args, **kwargs)
-        self.fields['track'].queryset = Track.objects.filter(company_id=company.id)
 
     class Meta:
         model = Applicant
