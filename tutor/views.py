@@ -7,16 +7,19 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.forms.models import modelform_factory
 from django.forms.widgets import TextInput, Textarea
 from django.http import Http404
-from django.http.response import HttpResponseRedirect
+from django.http.response import HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
-from django.views.generic.base import TemplateResponseMixin, View, ContextMixin
-
+from django.views.generic.base import TemplateResponseMixin, View, ContextMixin, TemplateView
+from accounts.models import Student, Tutor
+from .forms import TutorUpdateForm
 from .forms import CourseForm, TopicForm, TopicFormSet
 from .models import Course, Topic, SubTopic
-from accounts.models import Student, Tutor
+from accounts.models import User
+from django.views.generic.base import TemplateResponseMixin
+from .forms import TutorUpdateFormfrom accounts.models import Student, Tutor
 from accounts.forms import TutorUpdateForm
 
 
@@ -203,7 +206,7 @@ class TopicUpdateView(TutorUserRequiredMixin, SuccessMessageMixin, UpdateView):
 
 
 class TopicDeleteView(TutorUserRequiredMixin, View):
-    
+
     def get_object(self):
         pk = self.kwargs['pk']
         return get_object_or_404(Topic, id=pk)
@@ -376,4 +379,20 @@ class SubTopicOrderView(CsrfExemptMixin, JsonRequestResponseMixin, View):
         return self.render_json_response({'saved': 'OK'})
   
 
-        
+class TutorProfileView(TemplateView):
+    template_name = 'tutor/tutor_profile.html'
+
+
+class TutorUpdateView(UpdateView):
+    model = Tutor
+    form_class = TutorUpdateForm
+    template_name = 'tutor/tutor_update.html'
+    success_url = reverse_lazy('course:tutor_profile')
+
+    def form_valid(self, form):
+        tutor = form.instance
+        tutor.user.first_name = form.cleaned_data['first_name']
+        tutor.user.last_name = form.cleaned_data['last_name']
+        tutor.picture = form.cleaned_data['picture']
+        tutor.user.save()
+        return super().form_valid(form)
