@@ -8,7 +8,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, T
 from django.views.generic import TemplateView
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
-from django.urls import reverse_lazy
+from django.urls import reverse
 from django.shortcuts import redirect
 from django.contrib import messages
 from accounts.models import Student 
@@ -18,21 +18,32 @@ from .forms import ProfileUpdateForm
 
 class StudentProfileDetailView(LoginRequiredMixin, DetailView):
     model = Student
-    template_name = 'student/profile.html'
-    context_object_name = 'profile'
+    template_name = 'student/profile_detail.html'
 
-    def get_object(self):
-        return self.request.user.students
-
+    def get_object(self, queryset=None):
+        return get_object_or_404(Student, user=self.request.user)
+    
 
 class StudentProfileUpdateView(LoginRequiredMixin, UpdateView):
-    
     form_class = ProfileUpdateForm
-    template_name = 'student/update_profile.html'
-    success_url = reverse_lazy('profile')
+    template_name = 'student/profile_update.html'
 
-    def get_object(self):
-        return self.request.user.students
+    def get_object(self, queryset=None):
+        return get_object_or_404(Student, user=self.request.user)
+
+    def get_initial(self):
+        initial = super().get_initial()
+        student = self.get_object()
+        initial['picture'] = student.picture
+        return initial
+
+    def form_valid(self, form):
+        student = self.get_object()
+        student.picture = form.cleaned_data['picture']
+        student.user.save()
+        student.save()
+        messages.success(self.request, "picture updated successfully")
+        return HttpResponseRedirect(reverse('student:profile_detail'))
 
 
 class StudentActiveCourseListView(TemplateView):
