@@ -9,7 +9,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views import View, generic
-from django.views.generic import CreateView
+from django.views.generic import CreateView, TemplateView
 from django.views.generic.edit import UpdateView
 
 from .forms import (LoginForm, StudentUpdateForm, TutorUpdateForm,
@@ -52,11 +52,22 @@ class LoginView(generic.FormView):
             if user.is_staff:
                 return reverse('lms_admin:dashboard')
             elif hasattr(user, "tutor"):
+                tutor = user.tutor
+                if tutor.is_suspended:
+                    return reverse('accounts:suspended_view')
                 return reverse('course:tutor_dashboard_view')
             else:
+                students = user.students.all()
+                for student in students:
+                    if student.is_suspended:
+                      return reverse('accounts:suspended_view')  
                 return reverse('student:course_list')
         return reverse('login')
-        
+
+
+class SuspendedAcccountView(TemplateView):
+    template_name = 'accounts/suspended_view.html'
+
             
 class CustomPasswordChangeView(PasswordChangeView):
     template_name = 'accounts/change_password.html' 

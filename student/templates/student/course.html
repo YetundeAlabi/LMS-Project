@@ -1,4 +1,9 @@
 {% extends 'base.html' %}
+
+{% block navbar %}
+  {% include 'student/student_sidebar.html' %}
+{% endblock %} 
+
 {%block content%}
 <style>
     .active {
@@ -26,11 +31,11 @@
                 <h5 class="card-title">{{student_course.course.title}}</h5>
                 </div>
                 <div class="col-sm-6 d-flex justify-content-end mb-3">
-                    <a href="{% url 'student:topic_list' student_course.slug %}" class="btn btn-primary btn-sm">Continue</a>
+                    <a href="{% url 'student:topic_list' student_course.slug %}" class="btn btn-info btn-sm">Continue</a>
                 </div>
             </div>
             <div class="progress" style="height: 15px;">
-                <div class="progress-bar" role="progressbar" aria-label="Basic example" style="width: {{student_course.progress_level}}%" aria-valuenow="{{student_course.progress_level}}" aria-valuemin="0" aria-valuemax="100">{{student_course.progress_level}}%</div>
+                <div class="progress-bar" role="progressbar" aria-label="Basic example" style="width: {{student_course.progress_level}}%" aria-valuenow="{{student_course.progress_level}}" aria-valuemin="0" aria-valuemax="100">{{student_course.progress_level|floatformat:1}}%</div>
             </div>
         </div>
     </div>
