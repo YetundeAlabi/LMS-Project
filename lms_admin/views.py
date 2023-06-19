@@ -211,6 +211,8 @@ class StudentUpdateView(LoginRequiredMixin, AdminUserRequiredMixin, UpdateView):
         initial['first_name'] = student.user.first_name
         initial['last_name'] = student.user.last_name
         initial['email'] = student.user.email
+        initial['phone_number'] = student.phone_number
+        initial['address'] = student.address
         return initial
 
     def form_valid(self, form):
