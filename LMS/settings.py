@@ -19,8 +19,8 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATES_DIR = BASE_DIR / 'LMS'/ 'templates'
 
-SECRET_KEY = os.environ.get('SECRET_KEY')
-
+SECRET_KEY='django-insecure-rug6#*i@wg9kbt#i5bbc&*&07e-o%fg84z$q)33+x&pl+pu7gv'
+# SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
