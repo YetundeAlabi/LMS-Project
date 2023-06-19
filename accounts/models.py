@@ -93,9 +93,9 @@ class Tutor(DeletableBaseModel):
     is_suspended = models.BooleanField(default=False)
     picture = models.ImageField(upload_to='accounts/media', blank=True, default='static/images/pi.png')
     track = models.ForeignKey(Track, on_delete=models.SET_NULL, related_name="tutors", null=True)
-    github_link = models.URLField()
-    linkedin_link = models.URLField()
-    twitter_link = models.URLField()
+    github_link = models.URLField(blank=True, null=True)
+    linkedin_link = models.URLField(blank=True, null=True)
+    twitter_link = models.URLField(blank=True, null=True)
 
     def get_fullname(self):
         return f'{self.user.first_name} {self.user.last_name}'
