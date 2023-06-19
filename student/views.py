@@ -23,13 +23,12 @@ class StudentProfileDetailView(LoginRequiredMixin, DetailView):
 
 
 class StudentProfileUpdateView(LoginRequiredMixin, UpdateView):
-    
     form_class = ProfileUpdateForm
-    template_name = 'student/update_profile.html'
+    template_name = 'student/profile_update.html'
     success_url = reverse_lazy('profile')
 
     def get_object(self):
-        return self.request.user.students
+        return self.request.user.students.first()
 
 
 class StudentCourseListView(TemplateView):
