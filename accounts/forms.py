@@ -117,7 +117,6 @@ class StudentForm(forms.ModelForm):
 
 """ Tutor creation form """
 class TutorForm(forms.ModelForm):
-
     track = forms.ModelChoiceField(
         label="Track",
         queryset=Track.active_objects.all(),
@@ -131,6 +130,7 @@ class TutorForm(forms.ModelForm):
     last_name = forms.CharField(
         label='Last Name',
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}))
+    
     
     class Meta:
         model = User

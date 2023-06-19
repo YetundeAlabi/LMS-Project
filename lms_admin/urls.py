@@ -35,7 +35,6 @@ urlpatterns = [
     path("student/<int:pk>/delete/", views.StudentDeleteView.as_view(), name="student_delete"),
     path("student/<int:pk>/togglesuspend/", views.ToggleStudentSuspendView.as_view(), name="student_toggle_suspend"),
     path('import_students/', views.StudentImportView.as_view(), name='import_students'),
-    path('apply/', views.ApplicantCreateView.as_view(), name="apply"),
     path('applicants_approval/', views.ApplicantApprovalFormView.as_view(), name="applicants_approval"),
     path('approved_applicants_export/', views.ExportApprovedApplicantsCSVView.as_view(), name="export_approved_applicants"),
     path('applicant_list/', ApplicantListView.as_view(), name='applicant_list'),
