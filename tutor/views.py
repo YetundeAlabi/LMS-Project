@@ -328,20 +328,10 @@ class SubTopicCreateUpdateView(TemplateResponseMixin, View):
                 subtopic.description = form.cleaned_data['description']
                 subtopic.save()
                 students=Student.objects.filter(track=subtopic.topic.course.track)
-                student_topic=StudentTopic.objects.get(topic=self.topic)
-
-
-
-                # for student in students:
-                #     student_course = StudentCourse.objects.get(id=self.kwargs['pk'])
-                #     StudentSubTopic.objects.create(
-                #         student_topic__student_course=student_course,
-                #         student_topic=student_topic,
-                #         sub_topic=subtopic
-                #     )
-
-
-
+                student_topics=StudentTopic.objects.filter(topic=self.topic)
+                for student_topic in student_topics:
+                    StudentSubTopic.objects.create(student_topic=student_topic, sub_topic=subtopic)
+                
                 print(subtopic.topic.course.track)
             return HttpResponseRedirect(reverse('course:subtopic_list', kwargs={'course_slug': self.topic.course.slug, 'pk': topic_id}))
         return self.render_to_response({'form': form, 'object': self.obj})
