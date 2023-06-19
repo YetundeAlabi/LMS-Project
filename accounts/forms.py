@@ -66,56 +66,53 @@ class UserForm(forms.ModelForm):
         return tutor
 
 
-class StudentCreationForm(forms.Form):
+class StudentForm(forms.ModelForm):
+
     cohort = forms.ModelChoiceField(
         label="Cohort",
         queryset=Cohort.objects.all(),
         widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Cohort'}))
+    
     track = forms.ModelChoiceField(
         label="Track",
         queryset=Track.active_objects.all(),
         widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Track'}))
+    
     gender = forms.ChoiceField(
         label='Gender',
         choices=Student.GENDER_CHOICES,
         widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Gender'}))
+    
     email = forms.EmailField(
         label='Email',
         widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}))
+    
     first_name = forms.CharField(
         label='First Name',
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}))
+    
     last_name = forms.CharField(
         label='Last Name',
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}))
+    
     picture = forms.ImageField(
         label='Profile Image',
         required=False,
         widget=forms.ClearableFileInput(attrs={'class': 'form-control file-upload-info', 'placeholder': 'Picture' }))
+    
+    phone_number = forms.CharField(
+        label='Phone Number',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number'}),
+    )
+    address = forms.CharField(
+        label='Home Address',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Home Address'}),
+    )
 
-    def __init__(self, *args, **kwargs):
-        kwargs.pop("instance")
-        super().__init__(*args, **kwargs)
 
-    def save(self, commit=True):
-        user, created = User.objects.get_or_create(
-            email=self.cleaned_data['email'], 
-            first_name=self.cleaned_data['first_name'],
-            last_name=self.cleaned_data['last_name'])
-        
-        if not created:
-            student = user.student.get()
-            student.is_active = False
-            student.save()
-
-        student = Student.objects.create(user=user, 
-                                        cohort=self.cleaned_data['cohort'],
-                                        track=self.cleaned_data['track'],
-                                        gender=self.cleaned_data['gender'],
-                                        picture=self.cleaned_data['picture'])
-        if not created:
-            student.is_verified = True
-        return student, created
+    class Meta:
+        model = User
+        fields = ["email", "first_name", "last_name", "cohort", "track", "gender", "picture", "address", "phone_number"]
 
 
 """ Tutor creation form """
@@ -240,7 +237,7 @@ class StudentUpdateForm(forms.ModelForm):
 
     class Meta:
         model = Student
-        exclude = ("is_verified", "is_suspended")
+        exclude = ("cohort", "is_verified", "is_suspended")
 
 
 class ProfilePictureForm(forms.ModelForm):

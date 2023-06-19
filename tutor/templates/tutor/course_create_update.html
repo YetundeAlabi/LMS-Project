@@ -9,7 +9,7 @@
     <div class="col-12 grid-margin stretch-card">
       <div class="card">
         <div class="card-body">
-          <h4 class="card-title">Create a New Course</h4>
+          <h3 class="card-title">Add a New Course</h3>
           <p class="card-description">Enter details to create a new Course</p>
           <form method="POST" class="forms-sample">
             {% csrf_token %}
@@ -38,7 +38,7 @@
             <div id="topic-formset-wrapper" style="display: none;">
               {{ topic_formset.management_form }}
               {% for form in topic_formset %}
-                <h1>Add Topic for the Course</h1>
+                <h4 class="mb-3 mt-2">Add Topic</h4>
                 <div class="form-group">
                   {{ form.title.label_tag }}
                   {{ form.title }}

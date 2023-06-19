@@ -25,7 +25,7 @@ from django.views.generic import (
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 
 from tutor.studentcadd import register_courses
-from accounts.forms import StudentCreationForm, TutorForm, TutorUpdateForm, StudentUpdateForm
+from accounts.forms import StudentForm, TutorForm, TutorUpdateForm, StudentUpdateForm
 from accounts.models import Student, Tutor, User
 from lms_admin.forms import (
                             TrackForm, CohortCreateForm, StudentImportForm,ApplicantChecklistForm, ApplicantForm)
@@ -48,7 +48,7 @@ class DashboardView(LoginRequiredMixin, AdminUserRequiredMixin, TemplateView):
         current_year = timezone.now().year
         context['students'] = Student.objects.all()
         context['tutors'] = Tutor.objects.all()
-        context['tracks'] = Track.objects.all()
+        context['tracks'] = Track.active_objects.all()
         context['cohort'] = Cohort.objects.get(year=current_year)
         context['applicants'] = Applicant.objects.all()
         context['male_applicants'] = Applicant.objects.filter(
@@ -65,12 +65,6 @@ class TrackCreateView(LoginRequiredMixin, AdminUserRequiredMixin, CreateView):
     template_name = 'lms_admin/track_create.html'
     success_url = reverse_lazy('lms_admin:track_list')
 
-    def save(self, *args, **kwargs):
-        # Move to the form
-        if not self.pk:
-            if Track.active_objects.filter(name=self.name).exists():
-                raise ValidationError('A track with the same name already exists.')
-        super().save(*args, **kwargs)
 
     def form_valid(self, form):
         messages.success(self.request, "Track created successfully")
@@ -134,16 +128,28 @@ class TrackConfirmDeleteView(LoginRequiredMixin, AdminUserRequiredMixin,Template
 # Student Views
 class StudentCreateView(LoginRequiredMixin, AdminUserRequiredMixin, CreateView):
     """Student Create Form View to create one student at a time"""
-    model = Student
-    form_class = StudentCreationForm
+    form_class = StudentForm
     template_name = 'lms_admin/student_create.html'
     success_url = reverse_lazy('student_list')
 
     def form_valid(self, form):
-        student, created = form.save()
-        user = student.user
+        
+        email=form.cleaned_data.get('email') 
+        first_name=form.cleaned_data.get('first_name')
+        last_name=form.cleaned_data.get('last_name') 
+        cohort=form.cleaned_data.get('cohort')
+        track=form.cleaned_data.get('track')
+        gender=form.cleaned_data.get('gender')
+        picture=form.cleaned_data.get('picture')
 
-        register_courses(student)
+        user, created = User.objects.get_or_create(email=email, 
+                                                    first_name=first_name, 
+                                                    last_name=last_name)
+        student = Student.objects.create(user=user, cohort=cohort, track=track, 
+                                            gender=gender, picture=picture)
+        
+        self.object = student
+        register_courses(self.object)
         
         subject = 'Login Instructions' if not created else  'Account Setup Instructions'
 
@@ -189,28 +195,29 @@ class StudentDetailView(LoginRequiredMixin, AdminUserRequiredMixin, DetailView):
 
 class StudentUpdateView(LoginRequiredMixin, AdminUserRequiredMixin, UpdateView):
     """Generic Student Update Form View"""
-    model = Student
-    form_class = StudentUpdateForm
+    form_class = StudentForm
     template_name = 'lms_admin/student_update.html'
 
     def get_object(self, queryset=None):
         return Student.objects.get(pk= self.kwargs["pk"])
 
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        form = self.get_form()
-        form.initial = self.get_initial()
-        form.fields['first_name'].initial = self.object.user.first_name
-        form.fields['last_name'].initial = self.object.user.last_name
-        form.fields['email'].initial = self.object.user.email
-        form.fields['gender'].initial = self.object.gender
-        form.fields['track'].initial = self.object.track
-        form.fields['picture'].initial = self.object.picture
+    def get_initial(self):
+        initial = super().get_initial()
+        student = self.get_object()
+        initial['cohort'] = student.cohort
+        initial['track'] = student.track
+        initial['gender'] = student.gender
+        initial['picture'] = student.picture
+        initial['first_name'] = student.user.first_name
+        initial['last_name'] = student.user.last_name
+        initial['email'] = student.user.email
+        initial['phone_number'] = student.phone_number
+        initial['address'] = student.address
+        return initial
 
-        return self.render_to_response(self.get_context_data(form=form))
-        
     def form_valid(self, form):
         student = self.get_object()
+        student.cohort = form.cleaned_data['cohort']
         student.track = form.cleaned_data['track']
         student.gender = form.cleaned_data['gender']
         student.picture = form.cleaned_data['picture']
@@ -220,7 +227,7 @@ class StudentUpdateView(LoginRequiredMixin, AdminUserRequiredMixin, UpdateView):
         student.user.save()
         student.save()
         messages.success(self.request, "Student information updated successfully")
-        return HttpResponseRedirect(reverse('lms_admin:student_detail', kwargs={'pk': student.pk}))
+        return HttpResponseRedirect(reverse('lms_admin:student_list'))
     
 
 class StudentDeleteView(LoginRequiredMixin, AdminUserRequiredMixin, DeleteView):
@@ -370,6 +377,15 @@ class TutorUpdateView(LoginRequiredMixin, AdminUserRequiredMixin, UpdateView): #
     
     def get_object(self, queryset=None):
         return Tutor.objects.get(pk= self.kwargs["pk"])
+
+    def get_initial(self):
+        initial = super().get_initial()
+        tutor = self.get_object()
+        initial['track'] = tutor.track
+        initial['first_name'] = tutor.user.first_name
+        initial['last_name'] = tutor.user.last_name
+        initial['email'] = tutor.user.email
+        return initial
      
     def form_valid(self, form):
         tutor = self.get_object()
