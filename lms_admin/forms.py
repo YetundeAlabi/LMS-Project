@@ -5,6 +5,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from lms_admin.models import Track
+from phonenumber_field.formfields import PhoneNumberField
 
 from .models import Applicant, Cohort
 
@@ -56,6 +57,14 @@ class ApplicantForm(forms.ModelForm):
         label='Track',
         queryset=Track.active_objects.all(),
         widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    address = forms.CharField(
+        label='Home Address',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Home Address'})
+    )
+    phone_number = forms.CharField(
+        label='Phone Number',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number'}),
     )
 
 
