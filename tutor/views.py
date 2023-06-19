@@ -199,7 +199,7 @@ class TopicUpdateView(TutorUserRequiredMixin, SuccessMessageMixin, UpdateView):
     
     def get_success_url(self):
         course_slug = self.object.course.slug
-        return reverse_lazy('course:topic_list', kwargs={'course_slug': course_slug})
+        return reverse_lazy('course:course_detail', kwargs={'course_slug': course_slug})
 
 
 class TopicDeleteView(TutorUserRequiredMixin, View):
@@ -224,7 +224,7 @@ class TopicDeleteView(TutorUserRequiredMixin, View):
         topic.is_active = False
         topic.save()
         messages.info(request, 'Topic deleted successfully')
-        return redirect('course:topic_list', course_slug=topic.course.slug)
+        return redirect('course:course_detail', course_slug=topic.course.slug)
 
     
 class TrackStudentListView(TutorUserRequiredMixin, ListView):
@@ -317,7 +317,7 @@ class SubTopicCreateUpdateView(TemplateResponseMixin, View):
                 subtopic.title = form.cleaned_data['title']
                 subtopic.description = form.cleaned_data['description']
                 subtopic.save()
-            return HttpResponseRedirect(reverse('course:subtopic_list', kwargs={'course_slug': self.topic.course.slug, 'pk': topic_id}))
+            return HttpResponseRedirect(reverse('course:topic_detail', kwargs={'course_slug': self.topic.course.slug, 'pk': topic_id}))
         return self.render_to_response({'form': form, 'object': self.obj})
 
 
