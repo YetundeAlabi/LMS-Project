@@ -20,7 +20,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATES_DIR = BASE_DIR / 'LMS'/ 'templates'
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
-
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
