@@ -92,11 +92,11 @@ class Tutor(DeletableBaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name="tutor")
     is_verified = models.BooleanField(default=False)
     is_suspended = models.BooleanField(default=False)
-    picture = models.ImageField(upload_to='accounts/media', blank=True)
+    picture = models.ImageField(upload_to='accounts/media', blank=True, default='static/images/pi.png')
     track = models.ForeignKey(Track, on_delete=models.SET_NULL, related_name="tutors", null=True)
-    # github_link = models.URLField()
-    # linkedin_link = models.URLField()
-    # twitter_link = models.URLField()
+    github_link = models.URLField()
+    linkedin_link = models.URLField()
+    twitter_link = models.URLField()
 
     def get_fullname(self):
         return f'{self.user.first_name} {self.user.last_name}'

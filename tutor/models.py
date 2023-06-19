@@ -116,6 +116,7 @@ class File(BaseContent):
     def get_file_url(self):
         return self.file.url
 
+
 class Video(BaseContent):
     url = models.URLField()
 
