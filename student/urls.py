@@ -4,7 +4,7 @@ from . import views
 
 app_name='student'
 urlpatterns = [
-    path('profile/', views.StudentProfileDetailView.as_view(), name='profile'),
+    path('profile/', views.StudentProfileDetailView.as_view(), name='profile_detail'),
     path('profile/update/', views.StudentProfileUpdateView.as_view(), name='profile_update'),
     path('student_courses/', views.StudentActiveCourseListView.as_view(), name='course_list'),
     path('student_courses/completed', views.StudentCompletedCourseListView.as_view(), name='completed_course_list'),

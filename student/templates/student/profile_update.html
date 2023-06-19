@@ -2,7 +2,7 @@
 
 {% block navbar %}
     
-    {% include 'student/side_bar.html' %}
+    {% include 'student/student_sidebar.html' %}
 
 {% endblock %}
 
@@ -12,7 +12,7 @@
     
                 <h4 class="card-title">Student Update Form</h4>
                 
-                <form method="POST" class="forms-sample">
+                <form method="POST" enctype="multipart/form-data">
   
                     {% csrf_token %}
                     {% if form.errors %}
