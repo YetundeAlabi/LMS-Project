@@ -38,6 +38,7 @@ from base.constants import FEMALE, MALE
 
 class AdminUserRequiredMixin(UserPassesTestMixin):
     def test_func(self):
+        print(self.request.user, self.request.user.is_staff)
         return self.request.user.is_staff
 
 class DashboardView(LoginRequiredMixin, AdminUserRequiredMixin, TemplateView): 
