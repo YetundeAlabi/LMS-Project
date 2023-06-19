@@ -1,19 +1,12 @@
 import csv
-from typing import Any, Dict, Optional, Type
 
 from django.contrib import messages
-from django.contrib.auth.mixins import (LoginRequiredMixin,
-                                        PermissionRequiredMixin)
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.views import PasswordResetView
-from django.core.exceptions import ValidationError
-from django.core.mail import send_mail
-from django.db import IntegrityError, models
-from django.db.models.query import QuerySet
-from django.forms.models import BaseModelForm
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, redirect, render
-from django.template.loader import get_template, render_to_string
+from django.shortcuts import get_object_or_404, render
+from django.template.loader import get_template
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.encoding import force_bytes
@@ -22,23 +15,21 @@ from django.views import View
 from django.views.generic import (
     CreateView, DetailView, FormView, ListView, UpdateView, TemplateView, DeleteView
 )
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 from tutor.studentcadd import register_courses
-from accounts.forms import StudentForm, TutorForm, TutorUpdateForm, StudentUpdateForm
+from accounts.forms import StudentForm, TutorForm
 from accounts.models import Student, Tutor, User
 from lms_admin.forms import (
                             TrackForm, CohortCreateForm, StudentImportForm,ApplicantChecklistForm, ApplicantForm)
 from lms_admin.models import Track
 from .models import Applicant, Cohort
 from .tasks import send_verification_mail
-from base.constants import FEMALE, MALE
 
 # Create your views here
 
 class AdminUserRequiredMixin(UserPassesTestMixin):
     def test_func(self):
-        print(self.request.user, self.request.user.is_staff)
         return self.request.user.is_staff
 
 class DashboardView(LoginRequiredMixin, AdminUserRequiredMixin, TemplateView): 

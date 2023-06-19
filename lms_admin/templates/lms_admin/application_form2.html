@@ -64,6 +64,16 @@
                         {{ form.email }}
                     </div>
 
+                    <div class="col-12 mb-3">
+                        <label for="{{ form.address.id_for_label }}">Home Address:</label>
+                        {{ form.address }}
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <label for="{{ form.phone_number.id_for_label }}">Phone Number:</label>
+                        {{ form.phone_number }}
+                    </div>
+
                     <div class="row ml-auto">
                         <div class="col-5 mb-3">
                             <label for="{{ form.gender.id_for_label }}">Gender:</label>

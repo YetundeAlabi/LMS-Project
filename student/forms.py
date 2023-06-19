@@ -9,7 +9,6 @@ class ProfileUpdateForm(forms.ModelForm):
         required=False,
         widget=forms.ClearableFileInput(attrs={'class': 'form-control file-upload-info', 'placeholder': 'Picture' }))
 
-
     class Meta:
         model = Student
         fields = ('picture' ,)
