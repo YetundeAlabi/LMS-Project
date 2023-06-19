@@ -16,6 +16,11 @@
               <span class="fas fa-th-large"></span>
               Dashboard
             </a>
+            {% elif user.students %}
+            <a href="{% url 'student:course_list' %}" class="small mr-3">
+              <span class="fas fa-th-large"></span>
+              Dashboard
+            </a>
             {% else %}
             <a href="{% url 'lms_admin:dashboard' %}" class="small mr-3">
               <span class="fas fa-th-large"></span>
