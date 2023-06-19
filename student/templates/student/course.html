@@ -31,7 +31,7 @@
                 <h5 class="card-title">{{student_course.course.title}}</h5>
                 </div>
                 <div class="col-sm-6 d-flex justify-content-end mb-3">
-                    <a href="{% url 'student:topic_list' student_course.slug %}" class="btn btn-info btn-sm">Continue</a>
+                    <a href="{% url 'student:topic_list' student_course_slug=student_course.slug pk=student_course.id %}" class="btn btn-info btn-sm">Continue</a>
                 </div>
             </div>
             <div class="progress" style="height: 15px;">

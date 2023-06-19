@@ -16,7 +16,8 @@ from accounts.models import Student, Tutor
 from .forms import TutorUpdateForm
 from .forms import CourseForm, TopicForm, TopicFormSet
 from .models import Course, Topic, SubTopic
-from accounts.models import User
+from accounts.models import Student
+from student.models import StudentCourse, StudentTopic, StudentSubTopic
 from django.views.generic.base import TemplateResponseMixin
 from .forms import TutorUpdateForm
 from accounts.forms import TutorUpdateForm
@@ -79,6 +80,11 @@ class CourseAndTopicCreateView(TutorUserRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.course_tutor = self.request.user.tutor
         form.instance.track = self.request.user.tutor.track
+        course_students=Student.objects.filter(track=form.instance.track)
+        course=form.instance.save()
+        for student in course_students:
+            student_course=StudentCourse.objects.create(student=student, track=form.instance.track, course=form.instance)
+            print(student_course)
         context = self.get_context_data()
         topic_formset = context['topic_formset']
 
@@ -89,6 +95,9 @@ class CourseAndTopicCreateView(TutorUserRequiredMixin, CreateView):
             for instance in topic_formset:
                 instance.course = course
                 instance.save()
+                topic=instance
+                student_topic=StudentTopic.objects.create(student_course=student_course, topic= topic)
+                print(student_topic)
             return super().form_valid(form)
         else:
             return self.form_invalid(form)
@@ -318,6 +327,12 @@ class SubTopicCreateUpdateView(TemplateResponseMixin, View):
                 subtopic.title = form.cleaned_data['title']
                 subtopic.description = form.cleaned_data['description']
                 subtopic.save()
+                students=Student.objects.filter(track=subtopic.topic.course.track)
+                student_topic=StudentTopic.objects.get(topic=self.topic)
+                for student in students:
+                    StudentSubTopic.objects.create(student_topic=student_topic, sub_topic=subtopic)
+                    # StudentSubTopic.objects.create()
+                print(subtopic.topic.course.track)
             return HttpResponseRedirect(reverse('course:subtopic_list', kwargs={'course_slug': self.topic.course.slug, 'pk': topic_id}))
         return self.render_to_response({'form': form, 'object': self.obj})
 
