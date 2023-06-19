@@ -48,8 +48,8 @@
                 {% elif student_subtopic.sub_topic.content_type.model == 'video' %}
                     <h5>Content Type: Video</h5>
                 {% video student_subtopic.sub_topic.item.url "small" %}
-                {% endif %}
-            {% endif %}
+                
+             
         {% elif student_subtopic.sub_topic.content_type.model == 'video' %}
             <h5>Content Type: Video</h5>
             {% video student_subtopic.sub_topic.item.url "small" %}
