@@ -1,4 +1,10 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block navbar %}
+    {% include 'tutor/tutor_nav_bar.html' %}
+{% endblock %} 
+
 {% block content %}
 <style>
     body{
@@ -23,6 +29,7 @@
 }
 </style>
 {% if request.user.tutor %}
+<div class="content-wrapper" style="background-color: #EBEBEC;">
 <div class="container">
     <div class="main-body">
         <div class="row">
@@ -30,7 +37,11 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex flex-column align-items-center text-center">
-                            <img src="{{ request.user.tutor.picture_url }}" alt="Admin" class="rounded-circle p-1 bg-primary" width="110">
+                            {% if request.user.tutor.picture %}
+                                <img class="rounded-circle p-1 bg-primary" width="110" src="{{ request.user.tutor.picture.url }}" alt="Tutor">
+                            {% else %}
+                                <img class="rounded-circle p-1 bg-primary" width="110" src="{% static 'images/pi.png' %}" alt="Default Tutor Picture">
+                            {% endif %}
                             <div class="mt-3">
                                 <h4>{{ request.user.first_name|title }} {{ request.user.last_name|title }}</h4>
                                 <p class="text-secondary mb-1">{{ request.user.tutor.track }} Developer</p>
@@ -93,6 +104,7 @@
                             <div class="col-sm-3">
                                 <h6 class="mb-0">Track:</h6>
                             </div>
+                            
                             <h6>{{ request.user.tutor.track }}</h6>
             
                         </div>
@@ -132,6 +144,7 @@
         </div>
        
     </div>
+</div>
 </div>
     {% else %}
     <h>You are not a tutor </h>

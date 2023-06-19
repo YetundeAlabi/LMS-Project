@@ -21,7 +21,7 @@ class ActiveManager(models.Manager):
 
 class BaseContent(models.Model):
     title=models.CharField(max_length=225, blank=True, null=True)
-    description=models.TextField(max_length=100, blank=True, null=True)
+    description=models.TextField(max_length=500, blank=True, null=True)
     is_active=models.BooleanField(default=True)
     created_at= models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
