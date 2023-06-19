@@ -1,5 +1,4 @@
 from braces.views import CsrfExemptMixin, JsonRequestResponseMixin
-from typing import Any, Dict
 from django.apps import apps
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -7,7 +6,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.forms.models import modelform_factory
 from django.forms.widgets import TextInput, Textarea
 from django.http import Http404
-from django.http.response import HttpResponseRedirect, HttpResponseForbidden
+from django.http.response import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views import View
