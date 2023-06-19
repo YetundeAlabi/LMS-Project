@@ -99,7 +99,7 @@
         </div>
       </div>
     </div>
-    
+
   </div>
 
 <!--Student track barchart -->
@@ -108,7 +108,7 @@
     <div class="card-body dashboard-card-body">
       <p class="card-title mb-4" style="color: #00008b;"> Tutors</p>
       <div class="table-responsive">
-        <table class="table table-striped-lms table-hover" style="width: 100%;">
+        <table class="table table-striped-lms table-hover datatable" style="width: 100%;">
           <thead>
             <tr>
               <th>S/N</th>
@@ -125,10 +125,10 @@
               <td> {{ tutor.user.first_name}} {{ tutor.user.last_name}} </td>
               <td><span>{{ tutor.user.email }}</span> </td>
               <td>{{ tutor.track.name }}</td>
-              <td class="font-weight-medium"><a href="{% url 'lms_admin:tutor_toggle_suspend' pk=tutor.pk%}" class="btn {%if not tutor.is_suspended %}
-                  btn-info"> Active</a></td>
+              <td class="font-weight-medium"><div class="badge {% if not tutor.is_suspended %}
+                  badge-success"> Active</div></td>
                   {% else %}
-                  btn-warning">Inactive</a></td>
+                  badge-warning">Suspended</div></td>
                   {%endif%}
             </tr>
             {% empty %}
@@ -147,7 +147,7 @@
 </div>
 {%endblock%}
 
-{%block script%}
+{%block script %}
 
       <!-- Bar Chart -->
     

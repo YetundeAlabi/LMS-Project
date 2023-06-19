@@ -11083,8 +11083,8 @@ fieldset:disabled .wizard > .actions a,
 
 .btn-primary, .wizard > .actions a {
   color: #fff;
-  background-color: #54565b;
-  border-color: #54565b;
+  background-color: #e1261c;
+  border-color: #e1261c;
 }
 
 .login-btn{
@@ -28603,7 +28603,7 @@ div.tagsinput span.tag a {
 }
 
 .sidebar .nav .nav-item.active > .nav-link {
-  background: #4B49AC;
+  background: #e1261c;
   position: relative;
 }
 

@@ -67,36 +67,52 @@ class UserForm(forms.ModelForm):
 
 
 class StudentForm(forms.ModelForm):
+
     cohort = forms.ModelChoiceField(
         label="Cohort",
         queryset=Cohort.objects.all(),
         widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Cohort'}))
+    
     track = forms.ModelChoiceField(
         label="Track",
         queryset=Track.active_objects.all(),
         widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Track'}))
+    
     gender = forms.ChoiceField(
         label='Gender',
         choices=Student.GENDER_CHOICES,
         widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Gender'}))
+    
     email = forms.EmailField(
         label='Email',
         widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}))
+    
     first_name = forms.CharField(
         label='First Name',
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}))
+    
     last_name = forms.CharField(
         label='Last Name',
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}))
+    
     picture = forms.ImageField(
         label='Profile Image',
         required=False,
         widget=forms.ClearableFileInput(attrs={'class': 'form-control file-upload-info', 'placeholder': 'Picture' }))
+    
+    phone_number = forms.CharField(
+        label='Phone Number',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number'}),
+    )
+    address = forms.CharField(
+        label='Home Address',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Home Address'}),
+    )
 
 
     class Meta:
         model = User
-        fields = ["email", "first_name", "last_name", "cohort", "track", "gender", "picture"]
+        fields = ["email", "first_name", "last_name", "cohort", "track", "gender", "picture", "address", "phone_number"]
 
 
 """ Tutor creation form """
@@ -156,10 +172,10 @@ class CustomSetPasswordForm(SetPasswordForm):
         password = self.cleaned_data["new_password1"]
         self.user.set_password(password)
         if not hasattr(self.user, "tutor"):
-            self.user.student.is_verified = True 
+            self.user.students.get().is_verified = True 
             if commit:
                 self.user.save()
-                self.user.student.save()
+                self.user.students.get().save()
         if commit:
             self.user.save()
         return self.user
@@ -221,7 +237,7 @@ class StudentUpdateForm(forms.ModelForm):
 
     class Meta:
         model = Student
-        exclude = ("is_verified", "is_suspended")
+        exclude = ("cohort", "is_verified", "is_suspended")
 
 
 class ProfilePictureForm(forms.ModelForm):
