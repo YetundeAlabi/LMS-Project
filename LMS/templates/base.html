@@ -167,7 +167,7 @@
           <div class = "messages">
               {% for message in messages %}
                   <div class="alert alert-{% if message.tags == "error" %}danger{% else%}{{ message.tags }}{% endif %}">{{ message }}
-                    <button class="alert__close">x</button>
+                    <button class="alert__close" style="color: inherit; float: right; border: none; background: none; padding: 0; cursor: pointer;">x</button>
                   </div>
               {% endfor %}
           </div>

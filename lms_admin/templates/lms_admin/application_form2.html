@@ -48,6 +48,20 @@
             
                 <form method="post">
                     {% csrf_token %}
+                    {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <strong>Oops! There was an error:</strong>
+                        <ul>
+                          {% for field, error in form.errors.items %}
+                            {% if field != NON_FIELD_ERRORS %}
+                              <li>{{ field }}: {{ error }}</li>
+                            {% else %}
+                              <li>{{ error }}</li>
+                            {% endif %}
+                          {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
 
                     <div class="col-12 mb-3">
                         <label for="{{ form.first_name.id_for_label }}">First Name:</label>
@@ -62,6 +76,16 @@
                     <div class="col-12 mb-3">
                         <label for="{{ form.email.id_for_label }}">Email:</label>
                         {{ form.email }}
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <label for="{{ form.address.id_for_label }}">Home Address:</label>
+                        {{ form.address }}
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <label for="{{ form.phone_number.id_for_label }}">Phone Number:</label>
+                        {{ form.phone_number }}
                     </div>
 
                     <div class="row ml-auto">

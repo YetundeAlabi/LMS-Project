@@ -37,6 +37,5 @@ urlpatterns = [
                                                      form_class = CustomSetPasswordForm,
                                                      success_url = reverse_lazy("accounts:set_password_complete")
                                                      ),
-         name='set_password'),
-    path('account_suspended/', views.SuspendedAcccountView.as_view(), name='suspended_view'),
+        name='set_password')
 ]

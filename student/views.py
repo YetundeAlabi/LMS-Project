@@ -53,7 +53,7 @@ class StudentActiveCourseListView(TemplateView):
         context = super().get_context_data(**kwargs)
         student = self.request.user.students.first()
         context['student_track'] = student.track
-        context["student_courses"] = StudentCourse.objects.filter(student=student, progress_level__lt=100)
+        context["student_courses"] = StudentCourse.objects.filter(student=student, course__is_active=True, progress_level__lt=100)
         return context
     
 
@@ -71,8 +71,9 @@ class StudentCompletedCourseListView(TemplateView):
 class StudentTopicListView(View):
     def get(self, request, *args, **kwargs):
         student_course_slug = self.kwargs['student_course_slug']
+        id = self.kwargs['pk']
         print(student_course_slug)
-        student_course = get_object_or_404(StudentCourse, slug=student_course_slug)
+        student_course = get_object_or_404(StudentCourse, slug=student_course_slug, id=id)
         student = self.request.user.students.first()
         student_topics = StudentTopic.objects.filter(student_course__student=student, student_course=student_course)
        
@@ -87,7 +88,8 @@ class StudentTopicListView(View):
 class StudentSubtopicListView(View):
     def get(self, request, *args, **kwargs):
         student_topic_slug = self.kwargs['student_topic_slug']
-        student_topic = get_object_or_404(StudentTopic, slug=student_topic_slug)
+        id = self.kwargs['pk']
+        student_topic = get_object_or_404(StudentTopic, slug=student_topic_slug, id=id)
         student_subtopics = StudentSubTopic.objects.filter(
             student_topic__student_course__student=self.request.user.students.first(),
             student_topic=student_topic
@@ -103,6 +105,8 @@ class StudentSubtopicListView(View):
 class StudentSubtopicRedirectView(View):
     def get(self, request, *args, **kwargs):
         student_topic_slug = self.kwargs['student_topic_slug']
+        id = self.kwargs['pk']
+        print(id)
         student_course_slug = self.kwargs['student_course_slug']
         student_topic = get_object_or_404(StudentTopic, slug=student_topic_slug)
         student_subtopic = StudentSubTopic.objects.filter(student_topic=student_topic)
@@ -112,11 +116,9 @@ class StudentSubtopicRedirectView(View):
                 student_subtopic = student_subtopic.filter(progress_level=100.0).last()
             else:
                 student_subtopic = student_subtopic.filter(progress_level=0.0).first()
-            
-            return redirect('student:student_subtopic_detail', student_course_slug=student_course_slug, student_topic_slug=student_topic_slug, student_subtopic_id=student_subtopic.id)
-        
+            return redirect('student:student_subtopic_detail', student_course_slug=student_course_slug, pk=self.kwargs['pk'], student_topic_slug=student_topic_slug, student_subtopic_id=student_subtopic.id)
         messages.info(request, 'No subtopic available')
-        return redirect('student:topic_list', student_course_slug=student_course_slug)
+        return redirect('student:topic_list', student_course_slug=student_course_slug, pk =self.kwargs['pk'])
 
 
 class StudentSubtopicDetailView(View):
@@ -142,6 +144,7 @@ class StudentSubtopicDetailView(View):
         # Get the previous and next subtopics based on the current subtopic's position
         previous_subtopic = student_subtopics.filter(id__lt=student_subtopic_id).order_by('-id').first()
         next_subtopic = student_subtopics.filter(id__gt=student_subtopic_id).order_by('id').first()
+        
 
         context = {
             'student_subtopics': student_subtopics,
