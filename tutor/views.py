@@ -18,9 +18,7 @@ from .forms import TutorUpdateForm, CourseForm, TopicForm, TopicFormSet
 from .models import Course, Topic, SubTopic
 from accounts.models import User
 from django.views.generic.base import TemplateResponseMixin
-from accounts.models import Student, Tutor
-
-
+from .forms import TutorUpdateForm
 
 
 class TutorUserRequiredMixin(UserPassesTestMixin):

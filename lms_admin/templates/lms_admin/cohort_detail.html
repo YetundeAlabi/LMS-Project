@@ -13,7 +13,7 @@
         <div class="col-md-12 grid-margin">
             <div class="row">
                 <div class="col-12 col-xl-8 mb-4 mb-xl-0">
-                    <h2>{{ cohort.get_name }}</h2>
+                    <h2 class="text-uppercase">{{ cohort.get_name }}</h2>
 
                 </div>
             </div>
@@ -48,10 +48,10 @@
                         <td> {{ student.user.last_name}} </td>
                         <td> {{ student.user.first_name}}</td>
                         <td><span>{{ student.user.email }}</span> </td>
-                        <td class="font-weight-medium"><a href="{% url 'lms_admin:student_toggle_suspend' pk=student.pk%}" class="btn btn-sm btn-rounded {% if not student.is_suspended %}
-                          btn-success"> Active</a></td>
+                        <td class="font-weight-medium"><div class="badge {% if not student.is_suspended %}
+                          badge-success"> Active</div></td>
                           {% else %}
-                          btn-warning">Suspended</a></td>
+                          badge-warning">Suspended</div></td>
                           {%endif%}
                          <td><a class="btn btn-sm btn-info btn-rounded" href="{% url 'lms_admin:student_detail' pk=student.pk %}">View</a></td>
   

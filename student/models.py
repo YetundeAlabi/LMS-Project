@@ -23,6 +23,7 @@ class StudentCourse(models.Model):
 
     def __str__(self):
         return f' {self.course.title} for {self.student.user.first_name}'
+    
 
 
 class StudentTopic(models.Model):

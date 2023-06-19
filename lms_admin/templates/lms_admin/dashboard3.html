@@ -1,5 +1,4 @@
 {% extends 'base.html' %} 
-
 {% block navbar %}
     
     {% include 'nav_bar.html' %}
@@ -95,7 +94,7 @@
     <div class="col-lg-6">
       <div class="card mt-5">
         <div class="card-body dashboard-card-body">
-          <h5 class="card-title" style="color: #000080;">Demography of Courses with Topic Count</h5>
+          <h5 class="card-title" style="color: #000080;">Demography of Male to Female Applicants</h5>
           <canvas id="doughnutChart" style="max-height: 400px;"></canvas>
         </div>
       </div>
@@ -126,10 +125,10 @@
               <td> {{ tutor.user.first_name}} {{ tutor.user.last_name}} </td>
               <td><span>{{ tutor.user.email }}</span> </td>
               <td>{{ tutor.track.name }}</td>
-              <td class="font-weight-medium"><a href="{% url 'lms_admin:tutor_toggle_suspend' pk=tutor.pk%}" class="btn {%if not tutor.is_suspended %}
-                  btn-info"> Active</a></td>
+              <td class="font-weight-medium"><div class="badge {% if not tutor.is_suspended %}
+                  badge-success"> Active</div></td>
                   {% else %}
-                  btn-warning">Inactive</a></td>
+                  badge-warning">Suspended</div></td>
                   {%endif%}
             </tr>
             {% empty %}

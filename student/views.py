@@ -1,25 +1,61 @@
+from typing import List
 from django.shortcuts import render
+from django.contrib.auth.mixins import (LoginRequiredMixin,
+                                        PermissionRequiredMixin)
 from .models import StudentCourse, StudentTopic, StudentSubTopic
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView
 from django.views.generic import TemplateView
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
+from django.urls import reverse_lazy
 from django.shortcuts import redirect
 from django.contrib import messages
+from accounts.models import Student 
+from .forms import ProfileUpdateForm
 
 # Create your views here.
 
-class StudentCourseListView(TemplateView):
-    template_name = "student/course.html"
+class StudentProfileDetailView(LoginRequiredMixin, DetailView):
+    model = Student
+    template_name = 'student/profile.html'
+    context_object_name = 'profile'
 
+    def get_object(self):
+        return self.request.user.students
+
+
+class StudentProfileUpdateView(LoginRequiredMixin, UpdateView):
+    
+    form_class = ProfileUpdateForm
+    template_name = 'student/update_profile.html'
+    success_url = reverse_lazy('profile')
+
+    def get_object(self):
+        return self.request.user.students
+
+
+class StudentActiveCourseListView(TemplateView):
+    template_name = "student/course.html"
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         student = self.request.user.students.first()
         context['student_track'] = student.track
-        context["student_courses"] = StudentCourse.objects.filter(student=student)
+        context["student_courses"] = StudentCourse.objects.filter(student=student, progress_level__lt=100)
         return context
     
+
+class StudentCompletedCourseListView(TemplateView):
+    template_name = "student/course.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        student = self.request.user.students.first()
+        context['student_track'] = student.track
+        context["student_courses"] = StudentCourse.objects.filter(student=student, progress_level=100)
+        return context
+ 
 
 class StudentTopicListView(View):
     def get(self, request, *args, **kwargs):
