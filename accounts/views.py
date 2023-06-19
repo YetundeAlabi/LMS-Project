@@ -41,6 +41,19 @@ class LoginView(generic.FormView):
         password = form.cleaned_data["password"]
         user = authenticate(email=email, password=password)
         if user is not None:
+            if hasattr(user, 'tutor'):
+                tutor = user.tutor
+                if tutor.is_suspended:
+                    messages.warning(self.request, "Your account has been suspended. Contact admin for more info.")
+                    return super().form_invalid(form)
+                
+            elif hasattr(user, 'students'):
+                students = user.students.all()
+                for student in students:
+                    if student.is_suspended:
+                        messages.warning(self.request, "Your account has been suspended. Contact admin for more info.")
+                        return super().form_invalid(form)   
+                    
             login(self.request, user)
             return super().form_valid(form)
         messages.error(self.request, "Invalid email or password")
@@ -52,21 +65,10 @@ class LoginView(generic.FormView):
             if user.is_staff:
                 return reverse('lms_admin:dashboard')
             elif hasattr(user, "tutor"):
-                tutor = user.tutor
-                if tutor.is_suspended:
-                    return reverse('accounts:suspended_view')
                 return reverse('course:tutor_dashboard_view')
             else:
-                students = user.students.all()
-                for student in students:
-                    if student.is_suspended:
-                      return reverse('accounts:suspended_view')  
                 return reverse('student:course_list')
         return reverse('login')
-
-
-class SuspendedAcccountView(TemplateView):
-    template_name = 'accounts/suspended_view.html'
 
             
 class CustomPasswordChangeView(PasswordChangeView):

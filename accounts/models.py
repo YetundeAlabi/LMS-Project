@@ -13,7 +13,6 @@ from base.managers import MyUserManager, ActiveUserManager
 from base.models import DeletableBaseModel
 from phonenumber_field.modelfields import PhoneNumberField
 
-    
 
 class User(AbstractBaseUser, PermissionsMixin):
     """ Custom user model that supports using email instead of username"""
