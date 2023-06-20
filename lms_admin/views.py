@@ -133,12 +133,16 @@ class StudentCreateView(LoginRequiredMixin, AdminUserRequiredMixin, CreateView):
         track=form.cleaned_data.get('track')
         gender=form.cleaned_data.get('gender')
         picture=form.cleaned_data.get('picture')
+        phone_number=form.cleaned_data.get('phone_number')
+        address=form.cleaned_data.get('address')
+        
 
         user, created = User.objects.get_or_create(email=email, 
                                                     first_name=first_name, 
                                                     last_name=last_name)
         student = Student.objects.create(user=user, cohort=cohort, track=track, 
-                                            gender=gender, picture=picture)
+                                            gender=gender, picture=picture, 
+                                            phone_number=phone_number, address=address)
         
         self.object = student
         register_courses(self.object)
@@ -255,13 +259,16 @@ class StudentImportView(PasswordResetView, AdminUserRequiredMixin, FormView):
             cohort = student['cohort'] 
             gender = student['gender']
             track = student['track']
+            phone_number = student['phone_number']
+            address = student['address']
 
             user, created = User.objects.get_or_create(email=email,
                                                         first_name=first_name,
                                                         last_name=last_name)
             print(track)
             track_obj = Track.active_objects.get(name=track.strip())
-            student = Student.objects.create(user=user, cohort=cohort, gender=gender, track=track_obj)
+            student = Student.objects.create(user=user, cohort=cohort, gender=gender, track=track_obj,
+                                             phone_number=phone_number, address=address)
             subject = 'Account Setup Instructions' if created else 'Login Instructions'
             context = {
                     'first_name': first_name,
@@ -329,6 +336,7 @@ class TutorCreateFormView(LoginRequiredMixin, AdminUserRequiredMixin, CreateView
         email = form.cleaned_data.get('email')
         first_name = form.cleaned_data.get('first_name')
         last_name= form.cleaned_data.get('last_name')
+        
         user = User.objects.create_user(email=email, 
                                         first_name=first_name, 
                                         last_name=last_name)
