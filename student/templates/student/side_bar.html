@@ -2,9 +2,9 @@
     <ul class="nav">
         {% for subtopic in student_subtopics %}
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'student:student_subtopic_detail' student_course_slug=student_course.slug student_topic_slug=student_topic.slug student_subtopic_id=subtopic.id %}">
-                    <i class="fas fa-file menu-icon"></i>
-                    <span class="menu-title">{{ subtopic.slug }} {% if subtopic.progress_level == 100 %}<span class="ml-3 checkmark"><i class="fas fa-check"></i></span>{% endif %}</span>
+                <a class="nav-link" href="{% url 'student:student_subtopic_detail' student_course_slug=student_course.slug pk=student_course.id student_topic_slug=student_topic.slug student_subtopic_id=subtopic.id %}">
+                    {% if subtopic.progress_level == 100 %}<span class="mr-3 checkmark"><i class="fas fa-check"></i></span>{% endif %}
+                    <span class="menu-title">{{ subtopic.sub_topic.title }} </span>
                 </a>
             </li>
         {% endfor %}

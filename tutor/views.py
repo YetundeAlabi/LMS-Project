@@ -1,5 +1,4 @@
 from braces.views import CsrfExemptMixin, JsonRequestResponseMixin
-from typing import Any, Dict
 from django.apps import apps
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -7,18 +6,21 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.forms.models import modelform_factory
 from django.forms.widgets import TextInput, Textarea
 from django.http import Http404
-from django.http.response import HttpResponseRedirect, HttpResponseForbidden
+from django.http.response import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.views.generic.base import TemplateResponseMixin, View, ContextMixin, TemplateView
 from accounts.models import Student, Tutor
-from .forms import TutorUpdateForm, CourseForm, TopicForm, TopicFormSet
+from .forms import TutorUpdateForm
+from .forms import CourseForm, TopicForm, TopicFormSet
 from .models import Course, Topic, SubTopic
-from accounts.models import User
+from accounts.models import Student
+from student.models import StudentCourse, StudentTopic, StudentSubTopic
 from django.views.generic.base import TemplateResponseMixin
 from .forms import TutorUpdateForm
+from accounts.forms import TutorUpdateForm
 
 
 class TutorUserRequiredMixin(UserPassesTestMixin):
@@ -78,6 +80,11 @@ class CourseAndTopicCreateView(TutorUserRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.course_tutor = self.request.user.tutor
         form.instance.track = self.request.user.tutor.track
+        course_students=Student.objects.filter(track=form.instance.track)
+        course=form.instance.save()
+        for student in course_students:
+            student_course=StudentCourse.objects.create(student=student, track=form.instance.track, course=form.instance)
+            print(student_course)
         context = self.get_context_data()
         topic_formset = context['topic_formset']
 
@@ -88,6 +95,9 @@ class CourseAndTopicCreateView(TutorUserRequiredMixin, CreateView):
             for instance in topic_formset:
                 instance.course = course
                 instance.save()
+                topic=instance
+                student_topic=StudentTopic.objects.create(student_course=student_course, topic= topic)
+                print(student_topic)
             return super().form_valid(form)
         else:
             return self.form_invalid(form)
@@ -224,7 +234,7 @@ class TopicDeleteView(TutorUserRequiredMixin, View):
         topic.is_active = False
         topic.save()
         messages.info(request, 'Topic deleted successfully')
-        return redirect('course:course_detail', course_slug=topic.course.slug)
+        return redirect('course:topic_list', course_slug=topic.course.slug)
 
     
 class TrackStudentListView(TutorUserRequiredMixin, ListView):
@@ -317,7 +327,15 @@ class SubTopicCreateUpdateView(TemplateResponseMixin, View):
                 subtopic.title = form.cleaned_data['title']
                 subtopic.description = form.cleaned_data['description']
                 subtopic.save()
-            return HttpResponseRedirect(reverse('course:topic_detail', kwargs={'course_slug': self.topic.course.slug, 'pk': topic_id}))
+                students=Student.objects.filter(track=subtopic.topic.course.track)
+                student_topics=StudentTopic.objects.filter(topic=self.topic)
+                for student_topic in student_topics:
+                    StudentSubTopic.objects.create(student_topic=student_topic, sub_topic=subtopic)
+
+
+
+                print(subtopic.topic.course.track)
+            return HttpResponseRedirect(reverse('course:subtopic_list', kwargs={'course_slug': self.topic.course.slug, 'pk': topic_id}))
         return self.render_to_response({'form': form, 'object': self.obj})
 
 
@@ -364,6 +382,7 @@ class TopicOrderView(CsrfExemptMixin, JsonRequestResponseMixin, View):
         for id, order in self.request_json.items():
             Topic.active_objects.filter(id=id, course__course_tutor=request.user.tutor).update(order=order)
         return self.render_json_response({'saved': 'OK'})
+    
 
 class SubTopicOrderView(CsrfExemptMixin, JsonRequestResponseMixin, View):
     def post(self, request):
@@ -390,6 +409,9 @@ class TutorUpdateView(UpdateView):
         tutor = form.instance
         tutor.user.first_name = form.cleaned_data['first_name']
         tutor.user.last_name = form.cleaned_data['last_name']
+        tutor.github_link = form.cleaned_data['github_link']
+        tutor.linkedin_link = form.cleaned_data['linkedin_link']
+        tutor.twitter_link = form.cleaned_data['twitter_link']
         tutor.picture = form.cleaned_data['picture']
         tutor.user.save()
         return super().form_valid(form)

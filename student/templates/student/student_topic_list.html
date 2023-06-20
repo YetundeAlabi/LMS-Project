@@ -47,7 +47,7 @@
                   <ul>
                     <span style="margin-left: 3%; font-size: large;"><b>Topics</b></span>
                     {% for student_topic in student_topics %}
-                    <a href="{% url 'student:subtopic_redirect' student_course_slug=student_course_slug student_topic_slug=student_topic.slug %}">
+                    <a href="{% url 'student:subtopic_redirect' student_course_slug=student_course_slug student_topic_slug=student_topic.slug pk=student_course.id %}">
                     <div class="topic-cards">
                         <div class="card" >
                             <div class="card-header" style="border-radius: 20px; box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2);">

@@ -93,6 +93,8 @@ class StudentImportForm(forms.Form):
                 'last_name': row['last_name'],
                 'gender': row['gender'],
                 'track': row['track'],
+                'phone_number': row['phone_number'],
+                'address': row['address'],
                 'cohort': self.cleaned_data['cohort'], 
                   
                 
