@@ -1,18 +1,19 @@
-from typing import List
-from django.shortcuts import render
+from typing import List, Optional, Type
+
+from accounts.models import Student
+from django.contrib import messages
 from django.contrib.auth.mixins import (LoginRequiredMixin,
                                         PermissionRequiredMixin)
-from .models import StudentCourse, StudentTopic, StudentSubTopic
-from django.views import View
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView
-from django.views.generic import TemplateView
-from django.shortcuts import get_object_or_404
+from django.forms.models import BaseModelForm
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.shortcuts import redirect
-from django.contrib import messages
-from accounts.models import Student 
+from django.views import View
+from django.views.generic import (CreateView, DetailView, ListView,
+                                  TemplateView, UpdateView)
+
 from .forms import ProfileUpdateForm
+from .models import StudentCourse, StudentSubTopic, StudentTopic
 
 # Create your views here.
 
@@ -31,7 +32,7 @@ class StudentProfileUpdateView(LoginRequiredMixin, UpdateView):
     def get_object(self, queryset=None):
         return get_object_or_404(Student, user=self.request.user)
 
-    def get_initial(self):
+    def get_initial(self): #todo: No need for code block if model form is used
         initial = super().get_initial()
         student = self.get_object()
         initial['picture'] = student.picture
@@ -111,11 +112,11 @@ class StudentSubtopicRedirectView(View):
         student_topic = get_object_or_404(StudentTopic, slug=student_topic_slug)
         student_subtopic = StudentSubTopic.objects.filter(student_topic=student_topic)
         
-        if student_subtopic.exists():
-            if student_subtopic.filter(progress_level=100.0).exists():
-                student_subtopic = student_subtopic.filter(progress_level=100.0).last()
-            else:
-                student_subtopic = student_subtopic.filter(progress_level=0.0).first()
+        if student_subtopic.filter(progress_level=100.0).exists():
+            student_subtopic = student_subtopic.filter(progress_level=100.0).last()
+        else:
+            student_subtopic = student_subtopic.filter(progress_level=0.0).first()
+        if student_subtopic is not None:
             return redirect('student:student_subtopic_detail', student_course_slug=student_course_slug, pk=self.kwargs['pk'], student_topic_slug=student_topic_slug, student_subtopic_id=student_subtopic.id)
         messages.info(request, 'No subtopic available')
         return redirect('student:topic_list', student_course_slug=student_course_slug, pk =self.kwargs['pk'])

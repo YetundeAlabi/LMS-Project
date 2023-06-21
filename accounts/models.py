@@ -14,29 +14,6 @@ from base.models import DeletableBaseModel
 from phonenumber_field.modelfields import PhoneNumberField
 
 
-class User(AbstractBaseUser, PermissionsMixin):
-    """ Custom user model that supports using email instead of username"""
-    
-    email = models.EmailField(max_length=255, unique=True, verbose_name="email address")
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
-
-    REQUIRED_FIELDS= []
-    USERNAME_FIELD = "email"
-    
-    objects = MyUserManager()
-    active_objects = ActiveUserManager()
-
-    def __str__(self):
-        return self.email 
-    
-    @property
-    def is_admin(self):
-        return self.is_staff
-
-
 class NigerianPhoneNumberField(PhoneNumberField):
     default_validators = [
         RegexValidator(
@@ -53,6 +30,41 @@ class NigerianPhoneNumberField(PhoneNumberField):
         defaults.update(kwargs)
         return super().formfield(**defaults)
     
+
+class User(AbstractBaseUser, PermissionsMixin):
+    """ Custom user model that supports using email instead of username"""
+    FEMALE = constants.FEMALE
+    MALE = constants.MALE
+
+    GENDER_CHOICES =(
+        ('F', FEMALE),
+        ('M', MALE),
+    )
+
+    email = models.EmailField(max_length=255, unique=True, verbose_name="email address")
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    gender = models.CharField(max_length=20, choices=GENDER_CHOICES)
+    is_verified = models.BooleanField(default=False)
+    picture = models.ImageField(upload_to='accounts/media', blank=True, null=True)
+    phone_number = NigerianPhoneNumberField(null=True, blank=True)
+    address = models.CharField(max_length=255, null=True, blank=True)
+
+    REQUIRED_FIELDS= []
+    USERNAME_FIELD = "email"
+    
+    objects = MyUserManager()
+    active_objects = ActiveUserManager()
+
+    def __str__(self):
+        return self.email 
+    
+    @property
+    def is_admin(self):
+        return self.is_staff
+
 
 class Student(DeletableBaseModel):
     FEMALE = constants.FEMALE

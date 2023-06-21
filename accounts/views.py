@@ -88,7 +88,7 @@ class TutorUpdateView(LoginRequiredMixin, UpdateView):
         return get_object_or_404(self.model, pk=tutor_id)
 
     def form_valid(self, form):
-        response = super().form_valid(form)
+        super().form_valid(form)
         tutor_id = self.kwargs.get('tutor_id')
         return redirect('tutor_detail', tutor_id=tutor_id)
     
@@ -106,6 +106,6 @@ class StudentUpdateView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         response = super().form_valid(form)
         student_id = self.kwargs.get('student_id')
-        return redirect('student_detail', student_id=student_id)
+        return redirect('student_detail', student_id=student_id) # todo: use HttpResponseRedirect
     
     

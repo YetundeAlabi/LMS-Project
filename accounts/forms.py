@@ -1,7 +1,7 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, SetPasswordForm, PasswordChangeForm
-from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model, password_validation
+from django.contrib.auth.forms import (PasswordChangeForm, SetPasswordForm,
+                                       UserCreationForm)
 from django.core.exceptions import ValidationError
 from lms_admin.models import Cohort, Track
 
@@ -67,22 +67,6 @@ class UserForm(forms.ModelForm):
 
 
 class StudentForm(forms.ModelForm):
-
-    cohort = forms.ModelChoiceField(
-        label="Cohort",
-        queryset=Cohort.objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Cohort'}))
-    
-    track = forms.ModelChoiceField(
-        label="Track",
-        queryset=Track.active_objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Track'}))
-    
-    gender = forms.ChoiceField(
-        label='Gender',
-        choices=Student.GENDER_CHOICES,
-        widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Gender'}))
-    
     email = forms.EmailField(
         label='Email',
         widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}))
@@ -94,33 +78,26 @@ class StudentForm(forms.ModelForm):
     last_name = forms.CharField(
         label='Last Name',
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}))
-    
-    picture = forms.ImageField(
-        label='Profile Image',
-        required=False,
-        widget=forms.ClearableFileInput(attrs={'class': 'form-control file-upload-info', 'placeholder': 'Picture' }))
-    
-    phone_number = forms.CharField(
-        label='Phone Number',
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number'}),
-    )
-    address = forms.CharField(
-        label='Home Address',
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Home Address'}),
-    )
-
 
     class Meta:
-        model = User
+        model = Student
         fields = ["email", "first_name", "last_name", "cohort", "track", "gender", "picture", "address", "phone_number"]
+        labels = {
+            'address': "Home Address",
+            'picture': "Profile Picture",
+        }
+        widgets = {
+            'track': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Track'}),
+            'cohort': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Cohort'}),
+            'gender': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Gebder'}),
+            'picture': forms.ClearableFileInput(attrs={'class': 'form-control file-upload-info', 'placeholder': 'Picture' }),
+            'phone_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number'}),
+            'address': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Home Address'}),
+        }
 
 
 """ Tutor creation form """
 class TutorForm(forms.ModelForm):
-    track = forms.ModelChoiceField(
-        label="Track",
-        queryset=Track.active_objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Track'}))
     email = forms.EmailField(
         label='Email',
         widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}))
@@ -131,11 +108,15 @@ class TutorForm(forms.ModelForm):
         label='Last Name',
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}))
     
-    
-    
     class Meta:
-        model = User
+        model = Tutor
         fields = ["email", "first_name", "last_name", "track"]
+        labels = {
+            'track': 'Trackkk'
+        }
+        widgets = {
+            'track': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Track'})
+        }
 
 
     # def save(self, commit=True):
