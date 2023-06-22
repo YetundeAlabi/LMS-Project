@@ -83,7 +83,7 @@ class TrackDetailView(LoginRequiredMixin, AdminUserRequiredMixin, DetailView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['track_students'] = Student.objects.filter(track=self.get_object())
+        context['track_students'] = Student.objects.filter(track=self.object())
         return context
 
 
@@ -92,11 +92,7 @@ class TrackUpdateView(LoginRequiredMixin, AdminUserRequiredMixin, UpdateView):
     model = Track
     form_class = TrackForm
     template_name = 'lms_admin/track_update.html'
-    slug_url_kwarg = 'slug'
-    slug_field = 'slug'
     
-    def get_object(self, queryset=None):
-        return Track.objects.get(slug=self.kwargs['slug'])
     
     def form_valid(self, form):
         messages.success(self.request, "Track information has been updated successfully")
@@ -191,41 +187,21 @@ class StudentDetailView(LoginRequiredMixin, AdminUserRequiredMixin, DetailView):
 
 class StudentUpdateView(LoginRequiredMixin, AdminUserRequiredMixin, UpdateView):
     """Generic Student Update Form View"""
+    model = Student
     form_class = StudentForm
     template_name = 'lms_admin/student_update.html'
-
-    def get_object(self, queryset=None):
-        return Student.objects.get(pk= self.kwargs["pk"])
+    success_url = '/LMS/admin/student/'
 
     def get_initial(self):
         initial = super().get_initial()
         student = self.get_object()
-        initial['cohort'] = student.cohort
-        initial['track'] = student.track
-        initial['gender'] = student.gender
-        initial['picture'] = student.picture
         initial['first_name'] = student.user.first_name
         initial['last_name'] = student.user.last_name
         initial['email'] = student.user.email
-        initial['phone_number'] = student.phone_number
-        initial['address'] = student.address
+        messages.success(self.request, "Student information updated successfully")
         return initial
 
-    def form_valid(self, form):
-        student = self.get_object()
-        student.cohort = form.cleaned_data['cohort']
-        student.track = form.cleaned_data['track']
-        student.gender = form.cleaned_data['gender']
-        student.picture = form.cleaned_data['picture']
-        student.user.first_name = form.cleaned_data['first_name']
-        student.user.last_name = form.cleaned_data['last_name']
-        student.user.email = form.cleaned_data['email']
-        student.user.save()
-        student.save()
-        messages.success(self.request, "Student information updated successfully")
-        return HttpResponseRedirect(reverse('lms_admin:student_list'))
     
-
 class StudentDeleteView(LoginRequiredMixin, AdminUserRequiredMixin, DeleteView):
     model = Student
     template_name = 'lms_admin/student_delete_confirm.html'
@@ -402,6 +378,7 @@ class TutorUpdateView(LoginRequiredMixin, AdminUserRequiredMixin, UpdateView): #
 class TutorDetailView(LoginRequiredMixin, AdminUserRequiredMixin, DetailView):
     model = Tutor
     template_name = "lms_admin/tutor_detail.html"
+    
 
 class TutorConfirmDeleteView(LoginRequiredMixin, AdminUserRequiredMixin,TemplateView):
     template_name = "lms_admin/tutor_confirm_delete.html"
