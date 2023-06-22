@@ -19,31 +19,24 @@ from .forms import ProfileUpdateForm
 class StudentProfileDetailView(LoginRequiredMixin, DetailView):
     model = Student
     template_name = 'student/profile_detail.html'
+    context_object_name = 'profile'
 
     def get_object(self, queryset=None):
-        return get_object_or_404(Student, user=self.request.user)
+        students = Student.objects.filter(user=self.request.user)
+        student = students.first()
+        return student
     
 
 class StudentProfileUpdateView(LoginRequiredMixin, UpdateView):
+    model = Student
     form_class = ProfileUpdateForm
     template_name = 'student/profile_update.html'
+    success_url = '/student/profile/'
 
     def get_object(self, queryset=None):
-        return get_object_or_404(Student, user=self.request.user)
-
-    def get_initial(self):
-        initial = super().get_initial()
-        student = self.get_object()
-        initial['picture'] = student.picture
-        return initial
-
-    def form_valid(self, form):
-        student = self.get_object()
-        student.picture = form.cleaned_data['picture']
-        student.user.save()
-        student.save()
-        messages.success(self.request, "picture updated successfully")
-        return HttpResponseRedirect(reverse('student:profile_detail'))
+        students = Student.objects.filter(user=self.request.user)
+        student = students.first()
+        return student
 
 
 class StudentActiveCourseListView(TemplateView):
