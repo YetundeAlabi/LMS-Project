@@ -406,6 +406,9 @@ class TutorUpdateView(UpdateView):
         tutor = form.instance
         tutor.user.first_name = form.cleaned_data['first_name']
         tutor.user.last_name = form.cleaned_data['last_name']
+        tutor.github_link = form.cleaned_data['github_link']
+        tutor.linkedin_link = form.cleaned_data['linkedin_link']
+        tutor.twitter_link = form.cleaned_data['twitter_link']
         tutor.picture = form.cleaned_data['picture']
         tutor.user.save()
         return super().form_valid(form)

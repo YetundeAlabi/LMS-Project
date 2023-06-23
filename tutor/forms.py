@@ -1,4 +1,4 @@
-from typing import Any, Dict, Mapping, Optional, Type, Union
+import re
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.files.base import File
@@ -53,12 +53,36 @@ class TutorUpdateForm(forms.ModelForm):
 
     class Meta:
         model = Tutor
-        fields = ['first_name', 'last_name', 'picture']
+        fields = ['first_name', 'last_name', 'picture', 'github_link', 'linkedin_link', 'twitter_link']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.instance.user:
             self.fields['first_name'].initial = self.instance.user.first_name
             self.fields['last_name'].initial = self.instance.user.last_name
+           
 
+    def clean_github_link(self):
+        github_link = self.cleaned_data.get('github_link')
+        if github_link:
+            github_pattern = r'^https?://(www\.)?github\.com/[\w-]+/?$'
+        if not re.match(github_pattern, github_link):
+            raise forms.ValidationError("Invalid GitHub link format.")
+        return github_link
+
+    def clean_linkedin_link(self):
+        linkedin_link = self.cleaned_data.get('linkedin_link')
+        if linkedin_link:
+            linkedin_pattern = r'^https?://(www\.)?linkedin\.com/in/[\w-]+/?$'
+            if not re.match(linkedin_pattern, linkedin_link):
+                raise forms.ValidationError("Invalid LinkedIn link format.")
+        return linkedin_link
+
+    def clean_twitter_link(self):
+        twitter_link = self.cleaned_data.get('twitter_link')
+        if twitter_link:
+            twitter_pattern = r'^https?://(www\.)?twitter\.com/[\w-]+/?$'
+            if not re.match(twitter_pattern, twitter_link):
+                raise forms.ValidationError("Invalid Twitter link format.")
+        return twitter_link
 
