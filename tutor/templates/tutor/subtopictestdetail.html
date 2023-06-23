@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% load embed_video_tags %}
+
+{% block navbar %}
+  {% include 'tutor/tutor_nav_bar.html' %}
+{% endblock %} 
+
+{% block content %}
+  <div class="content-wrapper" style="background-color: #EBEBEC">
+    <div class="row">
+      <div class="col-md">
+        <h3>Subtopic Detail</h3>
+        <hr>
+        <h3>Topic: {{ subtopic.topic.title }}</h3>
+        <h4>Lesson Title: {{ subtopic.item.title }}</h4>
+        
+        {{ subtopic.details|safe }}
+        
+        <div>
+          {% for link in subtopic.details|safe|extract_links %}
+            {% if link|is_video_url %}
+              {% with link|embed_video as embed_code %}
+                {{ embed_code|safe }}
+              {% endwith %}
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+

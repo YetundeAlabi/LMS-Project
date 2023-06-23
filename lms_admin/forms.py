@@ -4,9 +4,9 @@ from io import TextIOWrapper
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+
 from lms_admin.models import Track
 from phonenumber_field.formfields import PhoneNumberField
-
 from .models import Applicant, Cohort
 
 
@@ -35,42 +35,26 @@ class ApplicantForm(forms.ModelForm):
     class Meta:
         model = Applicant
         exclude = ("is_approved", "cohort")
+        labels = {
+            'address': "Home Address",
+            'picture': "Profile Picture",
+        }
+        widget = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}),
+            'email': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}),
+            'track': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Track'}),
+            'gender': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Gender'}),
+            'picture': forms.ClearableFileInput(attrs={'class': 'form-control file-upload-info', 'placeholder': 'Picture'}),
+            'phone_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number'}),
+            'address': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Home Address'}),
+        }
 
-    first_name = forms.CharField(
-        label='First Name',
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'})
-    )
-    last_name = forms.CharField(
-        label='Last Name',
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'})
-    )
-    email = forms.EmailField(
-        label='Email',
-        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'})
-    )
-    gender = forms.ChoiceField(
-        label='Gender',
-        choices=Applicant.GENDER_CHOICES,
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
-    track = forms.ModelChoiceField(
-        label='Track',
-        queryset=Track.active_objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
-    address = forms.CharField(
-        label='Home Address',
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Home Address'})
-    )
-    phone_number = forms.CharField(
-        label='Phone Number',
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number'}),
-    )
 
 
 class ApplicantChecklistForm(forms.Form):
     applicants = forms.ModelMultipleChoiceField(
-        queryset=Applicant.not_approved.filter(cohort__year=timezone.now().year),
+        queryset=Applicant.unapproved.filter(cohort__year=timezone.now().year),
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-control form-control-lg'}),
     )
 
