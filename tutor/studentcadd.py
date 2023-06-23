@@ -2,10 +2,17 @@ from tutor.models import Course, Topic, SubTopic
 from student.models import StudentCourse, StudentTopic, StudentSubTopic
 
 def register_courses(student):
+    courses_list = []
+    related_topics_list = []
+
     student_track_courses = Course.objects.filter(track=student.track)
   
     for course in student_track_courses:
-        student_course = StudentCourse.objects.create(student=student, track=student.track, course=course)
+        courses_list.append(course)
+    
+    StudentCourse.objects.bulk_create(courses_list)
+
+    # student_course = StudentCourse.objects.create(student=student, track=student.track, course=course)
 
     student_courses = StudentCourse.objects.filter(student=student)
   

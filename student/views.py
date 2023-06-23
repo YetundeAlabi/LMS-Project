@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 from django.views.generic import (DetailView, TemplateView, UpdateView)
 
-# from accounts.forms import UserProfileUpdateForm
+from accounts.forms import ProfileUpdateForm
 from .models import StudentCourse, StudentSubTopic, StudentTopic
 
 # Create your views here.
@@ -21,28 +21,6 @@ class StudentProfileDetailView(LoginRequiredMixin, DetailView):
         return student
     
 
-<<<<<<< HEAD
-# class StudentProfileUpdateView(LoginRequiredMixin, UpdateView):
-#     form_class = UseProfileUpdateForm
-#     template_name = 'student/profile_update.html'
-
-#     def get_object(self, queryset=None):
-#         return get_object_or_404(Student, user=self.request.user)
-
-#     # def get_initial(self): #todo: No need for code block if model form is used
-#     #     initial = super().get_initial()
-#     #     student = self.get_object()
-#     #     initial['picture'] = student.picture
-#     #     return initial
-
-#     def form_valid(self, form):
-#         student = self.get_object()
-#         student.user.picture = form.cleaned_data['picture']
-#         student.user.save()
-#         # student.save()
-#         messages.success(self.request, "picture updated successfully")
-#         return HttpResponseRedirect(reverse('student:profile_detail'))
-=======
 class StudentProfileUpdateView(LoginRequiredMixin, UpdateView):
     model = Student
     form_class = ProfileUpdateForm
@@ -53,7 +31,6 @@ class StudentProfileUpdateView(LoginRequiredMixin, UpdateView):
         students = Student.objects.filter(user=self.request.user)
         student = students.first()
         return student
->>>>>>> 522524971f2ceac865fd7e3eace2359c851b5a8b
 
 
 class StudentActiveCourseListView(TemplateView):

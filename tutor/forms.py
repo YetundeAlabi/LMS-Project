@@ -7,6 +7,8 @@ from django.forms import ModelForm, inlineformset_factory
 from django.forms.utils import ErrorList
 from .models import Course, Topic, SubTopic
 from accounts.models import User, Tutor
+from django.contrib.auth.forms import UserChangeForm
+from ckeditor_uploader.widgets import CKEditorUploadingWidget
 
 
 
@@ -107,3 +109,11 @@ class TutorUpdateForm(forms.ModelForm):
                 raise forms.ValidationError("Invalid Twitter link format.")
         return twitter_link
 
+
+class SubtopicForm(forms.ModelForm):
+    class Meta:
+        model = SubTopic
+        fields = ['details']
+        widgets = {
+            'details': CKEditorUploadingWidget(),
+        }

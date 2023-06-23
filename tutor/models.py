@@ -11,9 +11,8 @@ from django.utils.text import slugify
 from accounts.models import Tutor
 from lms_admin.models import Track
 from django.core.validators import FileExtensionValidator
-
 from .fields import OrderField
-
+from ckeditor_uploader.fields import RichTextUploadingField
 
 class ActiveManager(models.Manager):
     def get_queryset(self):
@@ -21,7 +20,7 @@ class ActiveManager(models.Manager):
 
 class BaseContent(models.Model):
     title=models.CharField(max_length=225, blank=True, null=True)
-    description=models.TextField(blank=True, null=True)
+    description=models.TextField(null=True, blank=True)
     is_active=models.BooleanField(default=True)
     created_at= models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
@@ -87,38 +86,39 @@ class Topic(BaseContent):
 
     #     return super().save(*args, **kwargs)
 
-class SubTopic(BaseContent):
-    topic = models.ForeignKey(Topic, on_delete=models.SET_NULL, blank=True, null=True, db_index=True)
-    content_type = models.ForeignKey(
-        ContentType,
-        on_delete=models.CASCADE,
-        limit_choices_to={'model__in': ('text', 'file', 'video')}
-    )
-    object_id = models.PositiveIntegerField()
-    item = GenericForeignKey('content_type', 'object_id')
-    order = OrderField(blank=True, for_fields=['topic'])
+# class SubTopic(BaseContent):
+#     details= RichTextUploadingField(null=True, blank=True)
+#     topic = models.ForeignKey(Topic, on_delete=models.SET_NULL, blank=True, null=True, db_index=True)
+#     content_type = models.ForeignKey(
+#         ContentType,
+#         on_delete=models.CASCADE,
+#         limit_choices_to={'model__in': ('text', 'file', 'video')}
+#     )
+#     object_id = models.PositiveIntegerField()
+#     item = GenericForeignKey('content_type', 'object_id')
+#     order = OrderField(blank=True, for_fields=['topic'])
 
   
-    class Meta:
-        ordering= ['order']
+#     class Meta:
+#         ordering= ['order']
         
-    def __str__(self):
-        return f"{self.order}_{self.object_id}"
+#     def __str__(self):
+#         return f"{self.order}_{self.object_id}"
   
     
-class Text(BaseContent):
-    text =models.TextField(blank=True, null=True)
+# class Text(BaseContent):
+#     text =models.TextField(blank=True, null=True)
 
 
-class File(BaseContent):
-    file = models.FileField(upload_to='files', validators= [FileExtensionValidator(allowed_extensions=['pdf','jpg','png'])])
+# class File(BaseContent):
+#     file = models.FileField(upload_to='files', validators= [FileExtensionValidator(allowed_extensions=['pdf','jpg','png'])])
 
-    def get_file_url(self):
-        return self.file.url
+#     def get_file_url(self):
+#         return self.file.url
 
 
-class Video(BaseContent):
-    url = models.URLField()
+# class Video(BaseContent):
+#     url = models.URLField()
 
 
 @receiver(post_save, sender=Course)
@@ -127,3 +127,12 @@ def course_slug(sender, instance, created, **kwargs):
         slug = slugify(instance.title)
         instance.slug = slug
         instance.save()
+
+
+class SubTopic(models.Model):
+    topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
+    details = RichTextUploadingField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.topic.title}---{self.id}"
+    
