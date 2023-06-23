@@ -23,7 +23,7 @@ from student.models import StudentCourse, StudentTopic, StudentSubTopic
 from django.views.generic.base import TemplateResponseMixin
 from .forms import TutorUpdateForm, SubtopicForm
 from accounts.forms import TutorUpdateForm
-from django.contrib.auth.models import User
+
 
 
 
