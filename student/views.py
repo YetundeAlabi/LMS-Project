@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 from django.views.generic import (DetailView, TemplateView, UpdateView)
 
-from accounts.forms import ProfileUpdateForm
+from .forms import ProfileUpdateForm
 from .models import StudentCourse, StudentSubTopic, StudentTopic
 
 # Create your views here.
