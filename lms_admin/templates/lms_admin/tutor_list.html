@@ -49,16 +49,11 @@
                       <td class="font-weight-medium">
                         <form action="{% url 'lms_admin:tutor_toggle_suspend' pk=tutor.pk %}" method="POST" class="d-inline">
                           {% csrf_token %}
-                          <button type="submit" class="btn btn-sm btn-rounded {% if not tutor.is_suspended %}btn-success{% else %}btn-warning{% endif %}">
-                            {% if not tutor.is_suspended %}Active{% else %}Suspended{% endif %}
+                          <button type="submit" class="btn btn-sm btn-rounded {% if tutor.user.is_active %}btn-success{% else %}btn-warning{% endif %}">
+                            {% if tutor.user.is_active %}Active{% else %}Suspended{% endif %}
                           </button>
                         </form>
                       </td>
-                        {% comment %} <a href="{% url 'lms_admin:tutor_toggle_suspend' pk=tutor.pk%}" class="btn btn-sm btn-rounded {%if not tutor.is_suspended %}
-                          btn-info"> Active</a></td>
-                          {% else %}
-                          btn-warning">Suspended</a></td>
-                          {%endif%} {% endcomment %}
                       <td><a class="btn btn-sm btn-info btn-rounded" href="{% url 'lms_admin:tutor_detail' pk=tutor.pk%}">View</a></td>
 
                     </tr>

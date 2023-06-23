@@ -19,6 +19,12 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATES_DIR = BASE_DIR / 'LMS'/ 'templates'
 
+<<<<<<< HEAD
+SECRET_KEY = os.environ.get('SECRET_KEY')
+
+=======
+SECRET_KEY = os.getenv('SECRET_KEY')
+>>>>>>> 522524971f2ceac865fd7e3eace2359c851b5a8b
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = True

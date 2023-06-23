@@ -15,7 +15,7 @@ from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.views.generic.base import TemplateResponseMixin, View, ContextMixin, TemplateView
 from accounts.models import Student, Tutor
-from .forms import TutorUpdateForm
+# from .forms import TutorUpdateForm
 from .forms import CourseForm, TopicForm, TopicFormSet
 from .models import Course, Topic, SubTopic
 from accounts.models import Student
@@ -112,7 +112,6 @@ class CreateTopicView(TutorUserRequiredMixin, SuccessMessageMixin, CreateView):
     form_class = TopicForm
     success_message = 'Topic created successfully'
     template_name = 'tutor/topic_form.html'
-
 
     def form_valid(self, form):
         course_slug = self.kwargs['course_slug']
@@ -407,13 +406,12 @@ class TutorUpdateView(UpdateView):
 
     def form_valid(self, form):
         tutor = form.instance
-        tutor.user.first_name = form.cleaned_data['first_name']
-        tutor.user.last_name = form.cleaned_data['last_name']
-        tutor.github_link = form.cleaned_data['github_link']
-        tutor.linkedin_link = form.cleaned_data['linkedin_link']
-        tutor.twitter_link = form.cleaned_data['twitter_link']
-        tutor.picture = form.cleaned_data['picture']
-        tutor.user.save()
+        user = tutor.user
+        user.github_link = form.cleaned_data['github_link']
+        user.linkedin_link = form.cleaned_data['linkedin_link']
+        user.twitter_link = form.cleaned_data['twitter_link']
+        user.picture = form.cleaned_data['picture']
+        user.save()
         return super().form_valid(form)
     
 

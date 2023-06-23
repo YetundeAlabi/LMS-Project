@@ -61,6 +61,8 @@ class NigerianPhoneNumberField(PhoneNumberField):
         }
         defaults.update(kwargs)
         return super().formfield(**defaults)
+    
+
 class Applicant(models.Model):
     FEMALE = constants.FEMALE
     MALE = constants.MALE
@@ -83,7 +85,7 @@ class Applicant(models.Model):
     
     objects = models.Manager()
     approved = ApprovedManager()
-    not_approved= UnApprovedManager()
+    unapproved= UnApprovedManager()
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"

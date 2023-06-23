@@ -7,8 +7,19 @@ class ProfileUpdateForm(forms.ModelForm):
     picture = forms.ImageField(
         label='Profile Image',
         required=False,
-        widget=forms.ClearableFileInput(attrs={'class': 'form-control file-upload-info', 'placeholder': 'Picture' }))
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control file-upload-info', 'placeholder': 'Picture' })
+    )
+    linkedin_link = forms.URLField(
+        label="LinkedIn",
+        required=False,
+        widget=forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'LinkedIn link'}),
+    )
+    twitter_link = forms.URLField(
+        label="Twitter",
+        required=False,
+        widget=forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'Twitter link'}),
+    )
 
     class Meta:
         model = Student
-        fields = ('picture' ,)
+        fields = ('picture',)

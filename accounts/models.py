@@ -14,29 +14,6 @@ from base.models import DeletableBaseModel
 from phonenumber_field.modelfields import PhoneNumberField
 
 
-class User(AbstractBaseUser, PermissionsMixin):
-    """ Custom user model that supports using email instead of username"""
-    
-    email = models.EmailField(max_length=255, unique=True, verbose_name="email address")
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
-
-    REQUIRED_FIELDS= []
-    USERNAME_FIELD = "email"
-    
-    objects = MyUserManager()
-    active_objects = ActiveUserManager()
-
-    def __str__(self):
-        return self.email 
-    
-    @property
-    def is_admin(self):
-        return self.is_staff
-
-
 class NigerianPhoneNumberField(PhoneNumberField):
     default_validators = [
         RegexValidator(
@@ -54,55 +31,29 @@ class NigerianPhoneNumberField(PhoneNumberField):
         return super().formfield(**defaults)
     
 
-class Student(DeletableBaseModel):
+class User(AbstractBaseUser, PermissionsMixin):
+    """ Custom user model that supports using email instead of username"""
     FEMALE = constants.FEMALE
     MALE = constants.MALE
-
 
     GENDER_CHOICES =(
         ('F', FEMALE),
         ('M', MALE),
     )
 
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='students')
-    cohort = models.ForeignKey(Cohort, on_delete=models.SET_NULL, related_name='students', null=True)
+    email = models.EmailField(max_length=255, unique=True, verbose_name="email address")
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
     gender = models.CharField(max_length=20, choices=GENDER_CHOICES)
     is_verified = models.BooleanField(default=False)
-    is_suspended = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=False)
-    picture = models.ImageField(upload_to='accounts/media', blank=True, null=True)
-    track = models.ForeignKey(Track, on_delete=models.SET_NULL, related_name="students", null=True)
+    picture = models.ImageField(upload_to='accounts/media', blank=True, null=True, default='static/images/pi.png')
     phone_number = NigerianPhoneNumberField(null=True, blank=True)
     address = models.CharField(max_length=255, null=True, blank=True)
-
-    
-    def get_full_name(self) -> str:
-        return f'{self.user.first_name} {self.user.last_name}'
-    
-    def __str__(self):
-        return f'{self.user.first_name} {self.user.last_name}'
-        
-
-    def get_absolute_url(self):
-        return reverse('student_detail', args=[str(self.id)])
-
-
-class Tutor(DeletableBaseModel):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name="tutor")
-    is_verified = models.BooleanField(default=False)
-    is_suspended = models.BooleanField(default=False)
-    picture = models.ImageField(upload_to='accounts/media', blank=True, default='static/images/pi.png')
-    track = models.ForeignKey(Track, on_delete=models.SET_NULL, related_name="tutors", null=True)
     github_link = models.URLField(blank=True, null=True)
     linkedin_link = models.URLField(blank=True, null=True)
     twitter_link = models.URLField(blank=True, null=True)
-
-    def get_fullname(self):
-        return f'{self.user.first_name} {self.user.last_name}'
-
-    def __str__(self):
-        return self.user.email
-
 
     @property
     def picture_url(self):
@@ -111,5 +62,46 @@ class Tutor(DeletableBaseModel):
         except:
             url =''
         return url
+    
+    REQUIRED_FIELDS= []
+    USERNAME_FIELD = "email"
+    
+    objects = MyUserManager()
+    active_objects = ActiveUserManager()
+
+    def __str__(self):
+        return self.email 
+    
+    @property
+    def is_admin(self):
+        return self.is_staff
+
+
+class Student(DeletableBaseModel):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='students')
+    cohort = models.ForeignKey(Cohort, on_delete=models.SET_NULL, related_name='students', null=True)
+    track = models.ForeignKey(Track, on_delete=models.SET_NULL, related_name="students", null=True)
+    
+    def get_full_name(self) -> str:
+        return f'{self.user.first_name} {self.user.last_name}'
+    
+    def __str__(self):
+        return f'{self.user.first_name} {self.user.last_name}'
+
+    def get_absolute_url(self):
+        return reverse('student_detail', args=[str(self.id)])
+
+
+class Tutor(DeletableBaseModel):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="tutor")
+    track = models.ForeignKey(Track, on_delete=models.SET_NULL, related_name="tutors", null=True)
+
+    def get_fullname(self):
+        return f'{self.user.first_name} {self.user.last_name}'
+
+    def __str__(self):
+        return self.user.email
+
+    
    
         
