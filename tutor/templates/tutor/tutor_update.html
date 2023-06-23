@@ -87,8 +87,8 @@
                     <div class="card-header">Profile Picture</div>
                     <div class="card-body text-center">
                         <!-- Profile picture image-->
-                        {% if request.user.tutor.picture %}
-                            <img class="rounded-circle p-1 bg-primary" width="110" src="{{ request.user.tutor.picture.url }}" alt="Tutor">
+                        {% if request.user.picture %}
+                            <img class="rounded-circle p-1 bg-primary" width="110" src="{{ request.user.picture.url }}" alt="Tutor">
                         {% else %}
                             <img class="rounded-circle p-1 bg-primary" width="110" src="{% static 'images/pi.png' %}" alt="Default Tutor Picture">
                         {% endif %}

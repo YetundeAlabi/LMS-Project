@@ -1,34 +1,15 @@
-from typing import Any, Dict
-
 from django.contrib import messages
-from django.contrib.auth import (authenticate, get_user_model, login, logout,
-                                 views)
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth import (authenticate, get_user_model, login)
 from django.contrib.auth.views import LogoutView, PasswordChangeView
-from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
-from django.views import View, generic
-from django.views.generic import CreateView, TemplateView
-from django.views.generic.edit import UpdateView
+from django.views import generic
+from django.views.generic import UpdateView
 
-from .forms import (LoginForm, StudentUpdateForm, TutorUpdateForm,
-                    UserForm, CustomPasswordChangeForm)
-from .models import Student, Tutor
+from .forms import (LoginForm, CustomPasswordChangeForm)
 
 # Create your views here.
 
 User = get_user_model()
-
-
-class TutorSignUpView(CreateView):
-    model = Tutor
-    form_class = UserForm
-    template_name = 'accounts/signup.html' 
-    success_url = reverse_lazy('login')
-
-class SignOutView(LogoutView):
-    next_page = reverse_lazy('home_page')
 
 
 class LoginView(generic.FormView):
@@ -40,20 +21,12 @@ class LoginView(generic.FormView):
         email = form.cleaned_data["email"]
         password = form.cleaned_data["password"]
         user = authenticate(email=email, password=password)
+        print(user, user.is_active)
         if user is not None:
-            if hasattr(user, 'tutor'):
-                tutor = user.tutor
-                if tutor.is_suspended:
-                    messages.warning(self.request, "Your account has been suspended. Contact admin for more info.")
-                    return super().form_invalid(form)
+            if not user.is_active:
+                messages.warning(self.request, "Your account has been suspended. Contact admin for more info.")
+                return super().form_invalid(form)
                 
-            elif hasattr(user, 'students'):
-                students = user.students.all()
-                for student in students:
-                    if student.is_suspended:
-                        messages.warning(self.request, "Your account has been suspended. Contact admin for more info.")
-                        return super().form_invalid(form)   
-                    
             login(self.request, user)
             return super().form_valid(form)
         messages.error(self.request, "Invalid email or password")
@@ -70,42 +43,12 @@ class LoginView(generic.FormView):
                 return reverse('student:course_list')
         return reverse('login')
 
-            
+
+class SignOutView(LogoutView):
+    next_page = reverse_lazy('home_page')
+
+
 class CustomPasswordChangeView(PasswordChangeView):
     template_name = 'accounts/change_password.html' 
     form_class = CustomPasswordChangeForm 
     success_url = reverse_lazy('accounts:login')
-
-
-class TutorUpdateView(LoginRequiredMixin, UpdateView):
-    model = Tutor
-    form_class = TutorUpdateForm
-    template_name = 'update_profile.html'
-    success_url = reverse_lazy('tutor-home')
-
-    def get_object(self, queryset=None):
-        tutor_id = self.kwargs.get('tutor_id')
-        return get_object_or_404(self.model, pk=tutor_id)
-
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        tutor_id = self.kwargs.get('tutor_id')
-        return redirect('tutor_detail', tutor_id=tutor_id)
-    
-
-class StudentUpdateView(LoginRequiredMixin, UpdateView):
-    model = Student
-    form_class = StudentUpdateForm
-    template_name = 'update_profile.html'
-    success_url = reverse_lazy('student-home')
-
-    def get_object(self, queryset=None):
-        student_id = self.kwargs.get('student_id')
-        return get_object_or_404(self.model, pk=student_id)
-
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        student_id = self.kwargs.get('student_id')
-        return redirect('student_detail', student_id=student_id)
-    
-    

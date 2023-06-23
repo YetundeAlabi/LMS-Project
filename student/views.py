@@ -1,18 +1,12 @@
-from typing import List
-from django.shortcuts import render
-from django.contrib.auth.mixins import (LoginRequiredMixin,
-                                        PermissionRequiredMixin)
-from .models import StudentCourse, StudentTopic, StudentSubTopic
-from django.views import View
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView
-from django.views.generic import TemplateView
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponseRedirect
-from django.urls import reverse
-from django.shortcuts import redirect
+from accounts.models import Student
 from django.contrib import messages
-from accounts.models import Student 
-from .forms import ProfileUpdateForm
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views import View
+from django.views.generic import (DetailView, TemplateView, UpdateView)
+
+# from accounts.forms import UserProfileUpdateForm
+from .models import StudentCourse, StudentSubTopic, StudentTopic
 
 # Create your views here.
 
@@ -27,6 +21,28 @@ class StudentProfileDetailView(LoginRequiredMixin, DetailView):
         return student
     
 
+<<<<<<< HEAD
+# class StudentProfileUpdateView(LoginRequiredMixin, UpdateView):
+#     form_class = UseProfileUpdateForm
+#     template_name = 'student/profile_update.html'
+
+#     def get_object(self, queryset=None):
+#         return get_object_or_404(Student, user=self.request.user)
+
+#     # def get_initial(self): #todo: No need for code block if model form is used
+#     #     initial = super().get_initial()
+#     #     student = self.get_object()
+#     #     initial['picture'] = student.picture
+#     #     return initial
+
+#     def form_valid(self, form):
+#         student = self.get_object()
+#         student.user.picture = form.cleaned_data['picture']
+#         student.user.save()
+#         # student.save()
+#         messages.success(self.request, "picture updated successfully")
+#         return HttpResponseRedirect(reverse('student:profile_detail'))
+=======
 class StudentProfileUpdateView(LoginRequiredMixin, UpdateView):
     model = Student
     form_class = ProfileUpdateForm
@@ -37,6 +53,7 @@ class StudentProfileUpdateView(LoginRequiredMixin, UpdateView):
         students = Student.objects.filter(user=self.request.user)
         student = students.first()
         return student
+>>>>>>> 522524971f2ceac865fd7e3eace2359c851b5a8b
 
 
 class StudentActiveCourseListView(TemplateView):
@@ -104,11 +121,11 @@ class StudentSubtopicRedirectView(View):
         student_topic = get_object_or_404(StudentTopic, slug=student_topic_slug)
         student_subtopic = StudentSubTopic.objects.filter(student_topic=student_topic)
         
-        if student_subtopic.exists():
-            if student_subtopic.filter(progress_level=100.0).exists():
-                student_subtopic = student_subtopic.filter(progress_level=100.0).last()
-            else:
-                student_subtopic = student_subtopic.filter(progress_level=0.0).first()
+        if student_subtopic.filter(progress_level=100.0).exists():
+            student_subtopic = student_subtopic.filter(progress_level=100.0).last()
+        else:
+            student_subtopic = student_subtopic.filter(progress_level=0.0).first()
+        if student_subtopic is not None:
             return redirect('student:student_subtopic_detail', student_course_slug=student_course_slug, pk=self.kwargs['pk'], student_topic_slug=student_topic_slug, student_subtopic_id=student_subtopic.id)
         messages.info(request, 'No subtopic available')
         return redirect('student:topic_list', student_course_slug=student_course_slug, pk =self.kwargs['pk'])
