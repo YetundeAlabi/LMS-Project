@@ -107,7 +107,7 @@ class SubTopic(BaseContent):
   
     
 class Text(BaseContent):
-    text =models.TextField(blank=True, null=True)
+    text = models.TextField(blank=True, null=True)
 
 
 class File(BaseContent):
