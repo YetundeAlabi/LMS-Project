@@ -79,11 +79,7 @@ class TrackDetailView(LoginRequiredMixin, AdminUserRequiredMixin, DetailView):
     
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
-<<<<<<< HEAD
-        context['track_students'] = Student.objects.filter(track=self.object)
-=======
         context['track_students'] = Student.objects.filter(track=self.object())
->>>>>>> 522524971f2ceac865fd7e3eace2359c851b5a8b
         return context
 
 
@@ -93,10 +89,7 @@ class TrackUpdateView(LoginRequiredMixin, AdminUserRequiredMixin, UpdateView):
     form_class = TrackForm
     template_name = 'lms_admin/track_update.html'
     
-<<<<<<< HEAD
-=======
     
->>>>>>> 522524971f2ceac865fd7e3eace2359c851b5a8b
     def form_valid(self, form):
         messages.success(self.request, "Track information has been updated successfully")
         return super().form_valid(form)
@@ -192,11 +185,7 @@ class StudentUpdateView(LoginRequiredMixin, AdminUserRequiredMixin, UpdateView):
     model = Student
     form_class = StudentForm
     template_name = 'lms_admin/student_update.html'
-<<<<<<< HEAD
-    model = Student
-=======
     success_url = '/LMS/admin/student/'
->>>>>>> 522524971f2ceac865fd7e3eace2359c851b5a8b
 
     def get_initial(self):
         initial = super().get_initial()
@@ -204,28 +193,9 @@ class StudentUpdateView(LoginRequiredMixin, AdminUserRequiredMixin, UpdateView):
         initial['first_name'] = student.user.first_name
         initial['last_name'] = student.user.last_name
         initial['email'] = student.user.email
-<<<<<<< HEAD
-        return initial
-
-    def form_valid(self, form):
-        student = self.get_object()
-        user = student.user
-        student.cohort = form.cleaned_data['cohort']
-        student.track = form.cleaned_data['track']
-        user.gender = form.cleaned_data['gender']
-        user.picture = form.cleaned_data['picture']
-        user.first_name = form.cleaned_data['first_name']
-        user.last_name = form.cleaned_data['last_name']
-        user.email = form.cleaned_data['email']
-        user.save()
-        student.save()
-        messages.success(self.request, "Student information updated successfully")
-        return HttpResponseRedirect(reverse('lms_admin:student_list'))
-=======
         messages.success(self.request, "Student information updated successfully")
         return initial
 
->>>>>>> 522524971f2ceac865fd7e3eace2359c851b5a8b
     
 class StudentDeleteView(LoginRequiredMixin, AdminUserRequiredMixin, DeleteView):
     model = Student

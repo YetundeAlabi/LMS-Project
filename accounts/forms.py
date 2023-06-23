@@ -40,16 +40,12 @@ class StudentForm(forms.ModelForm):
     
     class Meta:
         model = Student
-<<<<<<< HEAD
         fields = ["email", "first_name", "last_name", "cohort", "track", "gender", "address", 
                   "phone_number"]
         widgets = {
             'track': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Track'}),
             'cohort': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Cohort'})
         }
-=======
-        fields = ["email", "first_name", "last_name", "cohort", "track", "gender", "picture", "address", "phone_number"]
->>>>>>> 522524971f2ceac865fd7e3eace2359c851b5a8b
 
 
 """ Tutor creation form """
