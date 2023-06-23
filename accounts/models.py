@@ -48,10 +48,21 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     gender = models.CharField(max_length=20, choices=GENDER_CHOICES)
     is_verified = models.BooleanField(default=False)
-    picture = models.ImageField(upload_to='accounts/media', blank=True, null=True)
+    picture = models.ImageField(upload_to='accounts/media', blank=True, null=True, default='static/images/pi.png')
     phone_number = NigerianPhoneNumberField(null=True, blank=True)
     address = models.CharField(max_length=255, null=True, blank=True)
+    github_link = models.URLField(blank=True, null=True)
+    linkedin_link = models.URLField(blank=True, null=True)
+    twitter_link = models.URLField(blank=True, null=True)
 
+    @property
+    def picture_url(self):
+        try:
+            url = self.picture.url
+        except:
+            url =''
+        return url
+    
     REQUIRED_FIELDS= []
     USERNAME_FIELD = "email"
     
@@ -67,47 +78,23 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Student(DeletableBaseModel):
-    FEMALE = constants.FEMALE
-    MALE = constants.MALE
-
-
-    GENDER_CHOICES =(
-        ('F', FEMALE),
-        ('M', MALE),
-    )
-
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='students')
     cohort = models.ForeignKey(Cohort, on_delete=models.SET_NULL, related_name='students', null=True)
-    gender = models.CharField(max_length=20, choices=GENDER_CHOICES)
-    is_verified = models.BooleanField(default=False)
-    is_suspended = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=False)
-    picture = models.ImageField(upload_to='accounts/media', blank=True, null=True)
     track = models.ForeignKey(Track, on_delete=models.SET_NULL, related_name="students", null=True)
-    phone_number = NigerianPhoneNumberField(null=True, blank=True)
-    address = models.CharField(max_length=255, null=True, blank=True)
-
     
     def get_full_name(self) -> str:
         return f'{self.user.first_name} {self.user.last_name}'
     
     def __str__(self):
         return f'{self.user.first_name} {self.user.last_name}'
-        
 
     def get_absolute_url(self):
         return reverse('student_detail', args=[str(self.id)])
 
 
 class Tutor(DeletableBaseModel):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name="tutor")
-    is_verified = models.BooleanField(default=False)
-    is_suspended = models.BooleanField(default=False)
-    picture = models.ImageField(upload_to='accounts/media', blank=True, default='static/images/pi.png')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="tutor")
     track = models.ForeignKey(Track, on_delete=models.SET_NULL, related_name="tutors", null=True)
-    github_link = models.URLField(blank=True, null=True)
-    linkedin_link = models.URLField(blank=True, null=True)
-    twitter_link = models.URLField(blank=True, null=True)
 
     def get_fullname(self):
         return f'{self.user.first_name} {self.user.last_name}'
@@ -115,13 +102,6 @@ class Tutor(DeletableBaseModel):
     def __str__(self):
         return self.user.email
 
-
-    @property
-    def picture_url(self):
-        try:
-            url = self.picture.url
-        except:
-            url =''
-        return url
+    
    
         

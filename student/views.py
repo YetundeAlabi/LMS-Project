@@ -1,18 +1,11 @@
-from typing import List, Optional, Type
-
 from accounts.models import Student
 from django.contrib import messages
-from django.contrib.auth.mixins import (LoginRequiredMixin,
-                                        PermissionRequiredMixin)
-from django.forms.models import BaseModelForm
-from django.http import HttpResponseRedirect
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
 from django.views import View
-from django.views.generic import (CreateView, DetailView, ListView,
-                                  TemplateView, UpdateView)
+from django.views.generic import (DetailView, TemplateView, UpdateView)
 
-from .forms import ProfileUpdateForm
+# from accounts.forms import UserProfileUpdateForm
 from .models import StudentCourse, StudentSubTopic, StudentTopic
 
 # Create your views here.
@@ -25,26 +18,26 @@ class StudentProfileDetailView(LoginRequiredMixin, DetailView):
         return get_object_or_404(Student, user=self.request.user)
     
 
-class StudentProfileUpdateView(LoginRequiredMixin, UpdateView):
-    form_class = ProfileUpdateForm
-    template_name = 'student/profile_update.html'
+# class StudentProfileUpdateView(LoginRequiredMixin, UpdateView):
+#     form_class = UseProfileUpdateForm
+#     template_name = 'student/profile_update.html'
 
-    def get_object(self, queryset=None):
-        return get_object_or_404(Student, user=self.request.user)
+#     def get_object(self, queryset=None):
+#         return get_object_or_404(Student, user=self.request.user)
 
-    def get_initial(self): #todo: No need for code block if model form is used
-        initial = super().get_initial()
-        student = self.get_object()
-        initial['picture'] = student.picture
-        return initial
+#     # def get_initial(self): #todo: No need for code block if model form is used
+#     #     initial = super().get_initial()
+#     #     student = self.get_object()
+#     #     initial['picture'] = student.picture
+#     #     return initial
 
-    def form_valid(self, form):
-        student = self.get_object()
-        student.picture = form.cleaned_data['picture']
-        student.user.save()
-        student.save()
-        messages.success(self.request, "picture updated successfully")
-        return HttpResponseRedirect(reverse('student:profile_detail'))
+#     def form_valid(self, form):
+#         student = self.get_object()
+#         student.user.picture = form.cleaned_data['picture']
+#         student.user.save()
+#         # student.save()
+#         messages.success(self.request, "picture updated successfully")
+#         return HttpResponseRedirect(reverse('student:profile_detail'))
 
 
 class StudentActiveCourseListView(TemplateView):
