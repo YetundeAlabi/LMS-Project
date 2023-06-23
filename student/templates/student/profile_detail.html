@@ -41,16 +41,16 @@
                     <div class="card-body">
                         <div class="d-flex flex-column align-items-center text-center">
                            
-                                {% if object.picture %}
-                                    <img class="rounded-circle p-1 bg-primary" width="110" src="{{ object.picture.url }}" alt="Student Picture" >
+                                {% if profile.picture %}
+                                    <img class="rounded-circle p-1 bg-primary" width="110" src="{{ profile.picture.url }}" alt="Student Picture" >
                                 {% else %}
                                     <img class="rounded-circle p-1 bg-primary" width="110" src="{% static 'images/pi.png' %}" alt="Default Student Picture">
                                 {% endif %}
                             
                             <div class="mt-3">
-                                <h4>{{ object.get_full_name }}</h4>
-                                <h6>{{ object.track }}</h6>
-                                <h5>{{ object.cohort }}</h5>
+                                <h4>{{ profile.get_full_name }}</h4>
+                                <h6>{{ profile.track }}</h6>
+                                <h5>{{ profile.cohort }}</h5>
                                 <p class="text-muted font-size-sm">AFEX, Ibadan</p>
                             </div>
                         </div>
@@ -65,51 +65,51 @@
                             <div class="col-sm-3">
                                 <h6 class="mb-0">Name:</h6>
                             </div>
-                            <h6>{{ object.get_full_name }}</h6>
+                            <h6>{{ profile.get_full_name }}</h6>
                         </div>
                         
                         <div class="row mb-3">
                             <div class="col-sm-3">
                                 <h6 class="mb-0">Gender:</h6>
                             </div>
-                            <h6>{{ object.gender }}</h6>
+                            <h6>{{ profile.gender }}</h6>
                         </div>
                         <div class="row mb-3">
                             <div class="col-sm-3">
                                 <h6 class="mb-0">Cohort:</h6>
                             </div>
-                            <h6>{{ object.cohort }}</h6>
+                            <h6>{{ profile.cohort }}</h6>
                         </div>
                         <div class="row mb-3">
                             <div class="col-sm-3">
                                 <h6 class="mb-0">Track:</h6>
                             </div>
-                            <h6>{{ object.track }}</h6>
+                            <h6>{{ profile.track }}</h6>
                         </div>
                         <div class="row mb-3">
                             <div class="col-sm-3">
                                 <h6 class="mb-0">Phone_number:</h6>
                             </div>
-                            <h6>{{ object.phone_number }}</h6>
+                            <h6>{{ profile.phone_number }}</h6>
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-sm-3">
                                 <h6 class="mb-0">Address:</h6>
                             </div>
-                            <h6>{{ object.address }}</h6>
+                            <h6>{{ profile.address }}</h6>
                         </div>
                         <div class="row mb-3">
                             <div class="col-sm-3">
                                 <h6 class="mb-0">Verified:</h6>
                             </div>
-                            <h6>{{ object.is_verified | yesno | title }}</h6>
+                            <h6>{{ profile.is_verified | yesno | title }}</h6>
                         </div>
                         <div class="row mb-3">
                             <div class="col-sm-3">
                                 <h6 class="mb-0">Suspended:</h6>
                             </div>
-                            <h6>{{ object.is_suspended | yesno | title }}</h6>
+                            <h6>{{ profile.is_suspended | yesno | title }}</h6>
                         </div>
                     </div>
                 </div>

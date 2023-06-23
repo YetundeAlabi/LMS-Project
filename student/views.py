@@ -13,11 +13,15 @@ from .models import StudentCourse, StudentSubTopic, StudentTopic
 class StudentProfileDetailView(LoginRequiredMixin, DetailView):
     model = Student
     template_name = 'student/profile_detail.html'
+    context_object_name = 'profile'
 
     def get_object(self, queryset=None):
-        return get_object_or_404(Student, user=self.request.user)
+        students = Student.objects.filter(user=self.request.user)
+        student = students.first()
+        return student
     
 
+<<<<<<< HEAD
 # class StudentProfileUpdateView(LoginRequiredMixin, UpdateView):
 #     form_class = UseProfileUpdateForm
 #     template_name = 'student/profile_update.html'
@@ -38,6 +42,18 @@ class StudentProfileDetailView(LoginRequiredMixin, DetailView):
 #         # student.save()
 #         messages.success(self.request, "picture updated successfully")
 #         return HttpResponseRedirect(reverse('student:profile_detail'))
+=======
+class StudentProfileUpdateView(LoginRequiredMixin, UpdateView):
+    model = Student
+    form_class = ProfileUpdateForm
+    template_name = 'student/profile_update.html'
+    success_url = '/student/profile/'
+
+    def get_object(self, queryset=None):
+        students = Student.objects.filter(user=self.request.user)
+        student = students.first()
+        return student
+>>>>>>> 522524971f2ceac865fd7e3eace2359c851b5a8b
 
 
 class StudentActiveCourseListView(TemplateView):
