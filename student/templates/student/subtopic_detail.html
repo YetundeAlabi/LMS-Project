@@ -8,7 +8,11 @@
 {% block content %}
 
 <!-- Main Content -->
-<div class="content content-wrapper">
+<div class="content-wrapper">
+
+    <div class="row">
+        <a class="btn btn-secondary btn-sm mb-4" href="{% url 'student:topic_list' student_course_slug=student_course.course.slug pk=student_course.pk %}"><i class="fas fa-arrow-left ml-2 mr-2"></i></a>
+    </div>
     
     <div class="col-12">
         <div class="card">
@@ -20,15 +24,6 @@
                     <h5>Content Type: Text</h5>
                     <blockquote class="blockquote mt-3">
                         <p>{{ student_subtopic.sub_topic.item.text }}
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse ullamcorper nibh eget consequat interdum. Vivamus sollicitudin consequat libero, a facilisis felis ultrices et. Fusce feugiat mauris in tellus ullamcorper, in rutrum turpis ultricies. Sed vitae bibendum eros. Pellentesque lacinia neque quis gravida tempus. Sed bibendum lorem vel suscipit tristique. In hac habitasse platea dictumst. Quisque ultrices felis nec turpis tempus cursus. Nam blandit mauris eu tristique feugiat. Maecenas eget magna ac libero lobortis dictum. Morbi consequat mi non libero bibendum fringilla.
-
-                            Vestibulum ut nisl auctor, luctus metus in, faucibus mauris. Mauris convallis lorem vitae risus congue, sed commodo turpis hendrerit. Etiam pretium arcu in arcu convallis condimentum. Aliquam ultricies sapien nec lectus interdum, in commodo elit lacinia. Nulla faucibus, sapien sed fringilla dignissim, sem nisl sollicitudin eros, eu condimentum nisi ipsum ut orci. Morbi varius elementum nisl at iaculis. Vivamus eget diam eu nulla pulvinar condimentum at eget mauris. Fusce a ullamcorper arcu.
-
-                            Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Pellentesque quis mauris ac orci finibus iaculis. Fusce finibus bibendum dolor, vel venenatis nunc pellentesque id. Aliquam tristique, tellus eu dapibus volutpat, nunc turpis aliquam neque, vel convallis sem lectus id nisi. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Etiam consequat arcu eu justo egestas, sit amet finibus nulla lobortis. Curabitur ullamcorper lacus et est eleifend, in aliquam elit tristique. Nam fringilla nisl nec purus vulputate, et luctus justo lacinia. Aliquam sit amet dapibus mi.
-
-                            Donec maximus lectus mauris, in malesuada ligula congue in. Nullam at ipsum nec velit placerat luctus sed id tellus. Suspendisse nec ex eu lectus rhoncus interdum. Etiam ac elit eleifend, tristique eros et, lacinia ipsum. Maecenas semper est nec urna mattis consequat. Nunc dictum justo eget mauris fringilla facilisis. Nam sed urna et sem ultrices viverra vel ac mauris. Sed sit amet dui hendrerit, tempor mi eget, scelerisque lectus. Donec ac metus vel metus dictum efficitur. Praesent tincidunt urna eu lectus cursus viverra. Ut nec fringilla elit.
-
-                            Phasellus sit amet elit ac est feugiat sollicitudin vitae nec risus. Sed malesuada condimentum erat non tincidunt. Donec a cursus arcu. Proin dictum leo metus, non facilisis nunc pellentesque at. Vivamus convallis est a massa hendrerit, ut ullamcorper libero semper. Suspendisse et ultricies neque. Mauris
                         </p>
                     </blockquote>
                 {% elif student_subtopic.sub_topic.content_type.model == 'file' %}
@@ -50,19 +45,22 @@
                 {% video student_subtopic.sub_topic.item.url "small" %}
                 
              
-        {% elif student_subtopic.sub_topic.content_type.model == 'video' %}
-            <h5>Content Type: Video</h5>
-            {% video student_subtopic.sub_topic.item.url "small" %}
-        {% endif %}
+                {% elif student_subtopic.sub_topic.content_type.model == 'video' %}
+                <h5>Content Type: Video</h5>
+                {% video student_subtopic.sub_topic.item.url "small" %}
+                {% endif %}
+            </div>
 
-    <!-- Next and Previous Buttons -->
-    <div class="navigation-buttons">
-        {% if previous_subtopic %}
-            <a href="{% url 'student:student_subtopic_detail' student_course_slug=student_course_slug pk=student_course.id student_topic_slug=student_topic_slug student_subtopic_id=previous_subtopic.id %}" class="btn btn-primary mt-3">Previous</a>
-        {% endif %}
-        {% if next_subtopic %}
-            <a href="{% url 'student:student_subtopic_detail' student_course_slug=student_course_slug pk=student_course.id student_topic_slug=student_topic_slug student_subtopic_id=next_subtopic.id %}" class="btn btn-primary mt-3">Next</a>
-        {% endif %}
+            <!-- Next and Previous Buttons -->
+            <div class="navigation-buttons">
+                {% if previous_subtopic %}
+                    <a href="{% url 'student:student_subtopic_detail' student_course_slug=student_course_slug pk=student_course.id student_topic_slug=student_topic_slug student_subtopic_id=previous_subtopic.id %}" class="btn btn-primary mt-3">Previous</a>
+                {% endif %}
+                {% if next_subtopic %}
+                    <a href="{% url 'student:student_subtopic_detail' student_course_slug=student_course_slug pk=student_course.id student_topic_slug=student_topic_slug student_subtopic_id=next_subtopic.id %}" class="btn btn-primary mt-3">Next</a>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>
 

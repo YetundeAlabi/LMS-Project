@@ -213,7 +213,7 @@ class TopicUpdateView(TutorUserRequiredMixin, SuccessMessageMixin, UpdateView):
     
     def get_success_url(self):
         course_slug = self.object.course.slug
-        return reverse_lazy('course:topic_list', kwargs={'course_slug': course_slug})
+        return reverse_lazy('course:course_detail', kwargs={'course_slug': course_slug})
 
 
 class TopicDeleteView(TutorUserRequiredMixin, View):
@@ -382,6 +382,7 @@ class TopicOrderView(CsrfExemptMixin, JsonRequestResponseMixin, View):
         for id, order in self.request_json.items():
             Topic.active_objects.filter(id=id, course__course_tutor=request.user.tutor).update(order=order)
         return self.render_json_response({'saved': 'OK'})
+    
 
 class SubTopicOrderView(CsrfExemptMixin, JsonRequestResponseMixin, View):
     def post(self, request):

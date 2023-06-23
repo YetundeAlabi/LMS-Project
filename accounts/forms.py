@@ -111,7 +111,7 @@ class StudentForm(forms.ModelForm):
 
 
     class Meta:
-        model = User
+        model = Student
         fields = ["email", "first_name", "last_name", "cohort", "track", "gender", "picture", "address", "phone_number"]
 
 
@@ -130,6 +130,7 @@ class TutorForm(forms.ModelForm):
     last_name = forms.CharField(
         label='Last Name',
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}))
+    
     
     
     class Meta:

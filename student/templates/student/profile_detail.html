@@ -3,7 +3,7 @@
 
 {% block navbar %}
     
-    {% include 'nav_bar.html' %}
+    {% include 'student/student_sidebar.html' %}
 
 {% endblock %}
 
@@ -31,6 +31,8 @@
 }
 </style>
 
+
+
 <div class="container">
     <div class="main-body">
         <div class="row">
@@ -39,16 +41,16 @@
                     <div class="card-body">
                         <div class="d-flex flex-column align-items-center text-center">
                            
-                                {% if student.picture %}
-                                    <img class="rounded-circle p-1 bg-primary" width="110" src="{{ student.picture.url }}" alt="Student Picture" >
+                                {% if profile.picture %}
+                                    <img class="rounded-circle p-1 bg-primary" width="110" src="{{ profile.picture.url }}" alt="Student Picture" >
                                 {% else %}
                                     <img class="rounded-circle p-1 bg-primary" width="110" src="{% static 'images/pi.png' %}" alt="Default Student Picture">
                                 {% endif %}
                             
                             <div class="mt-3">
-                                <h4>{{ student.get_full_name }}</h4>
-                                <h6>{{ student.track }}</h6>
-                                <h5>{{ student.cohort }}</h5>
+                                <h4>{{ profile.get_full_name }}</h4>
+                                <h6>{{ profile.track }}</h6>
+                                <h5>{{ profile.cohort }}</h5>
                                 <p class="text-muted font-size-sm">AFEX, Ibadan</p>
                             </div>
                         </div>
@@ -63,59 +65,58 @@
                             <div class="col-sm-3">
                                 <h6 class="mb-0">Name:</h6>
                             </div>
-                            <h6>{{ student.get_full_name }}</h6>
+                            <h6>{{ profile.get_full_name }}</h6>
                         </div>
                         
                         <div class="row mb-3">
                             <div class="col-sm-3">
                                 <h6 class="mb-0">Gender:</h6>
                             </div>
-                            <h6>{{ student.gender }}</h6>
+                            <h6>{{ profile.gender }}</h6>
                         </div>
                         <div class="row mb-3">
                             <div class="col-sm-3">
                                 <h6 class="mb-0">Cohort:</h6>
                             </div>
-                            <h6>{{ student.cohort }}</h6>
+                            <h6>{{ profile.cohort }}</h6>
                         </div>
                         <div class="row mb-3">
                             <div class="col-sm-3">
                                 <h6 class="mb-0">Track:</h6>
                             </div>
-                            <h6>{{ student.track }}</h6>
+                            <h6>{{ profile.track }}</h6>
                         </div>
                         <div class="row mb-3">
                             <div class="col-sm-3">
                                 <h6 class="mb-0">Phone_number:</h6>
                             </div>
-                            <h6>{{ student.phone_number }}</h6>
+                            <h6>{{ profile.phone_number }}</h6>
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-sm-3">
                                 <h6 class="mb-0">Address:</h6>
                             </div>
-                            <h6>{{ student.address }}</h6>
+                            <h6>{{ profile.address }}</h6>
                         </div>
                         <div class="row mb-3">
                             <div class="col-sm-3">
                                 <h6 class="mb-0">Verified:</h6>
                             </div>
-                            <h6>{{ student.is_verified | yesno | title }}</h6>
+                            <h6>{{ profile.is_verified | yesno | title }}</h6>
                         </div>
                         <div class="row mb-3">
                             <div class="col-sm-3">
                                 <h6 class="mb-0">Suspended:</h6>
                             </div>
-                            <h6>{{ student.is_suspended | yesno | title }}</h6>
+                            <h6>{{ profile.is_suspended | yesno | title }}</h6>
                         </div>
                     </div>
                 </div>
                 <div>
-                    <a class="btn btn-primary mt-4 mb-4" href="{% url 'lms_admin:student_update' pk=student.pk %}">Update Student Details</a>
-                    <a class="btn btn-danger mt-4 mb-4" href="{% url 'lms_admin:student_delete' pk=student.pk %}">Delete Student</a>
+                    <a class="btn btn-primary mt-4 mb-4" href="{% url 'student:profile_update' %}">Profile Picture Update</a>
+    
             
-                    <a href="{% url 'lms_admin:student_list' %}" class="btn btn-danger">Return To Students List</a>
                </div>
             </div>
         </div>
