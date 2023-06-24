@@ -4,6 +4,21 @@
 {% block navbar %}
   
 {% endblock %}
+
+<style>
+    .btn-submit {
+        color: #e1261c;
+        background-color: #fff;
+        border-color: #e1261c
+    }
+
+    .btn-submit:hover {
+        color: #fff;
+        background-color: #e1261c;
+        border-color: #e1261c;
+    }
+
+</style>
   
 <div class="untree_co-section">
     <div class="container">
@@ -100,9 +115,9 @@
                         </div>
                     </div>
                     <div class="col-12">
-                        <input type="submit" value="Apply" class="btn btn-primary">
+                        <input type="submit" value="Apply" class="btn btn-submit">
                         &nbsp;&nbsp;&nbsp;&nbsp;
-                        <a href="{% url 'home_page' %}" class="btn btn-primary"> Cancel</a>
+                        <a href="{% url 'home_page' %}" class="btn btn-danger"> Cancel</a>
                     </div>
                     
                     

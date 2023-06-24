@@ -16,7 +16,7 @@
               <span class="fas fa-th-large"></span>
               Dashboard
             </a>
-            {% elif user.students %}
+            {% elif user.students.all %}
             <a href="{% url 'student:course_list' %}" class="small mr-3">
               <span class="fas fa-th-large"></span>
               Dashboard

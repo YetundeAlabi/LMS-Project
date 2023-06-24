@@ -54,14 +54,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     github_link = models.URLField(blank=True, null=True)
     linkedin_link = models.URLField(blank=True, null=True)
     twitter_link = models.URLField(blank=True, null=True)
-
-    @property
-    def picture_url(self):
-        try:
-            url = self.picture.url
-        except:
-            url =''
-        return url
     
     REQUIRED_FIELDS= []
     USERNAME_FIELD = "email"
@@ -71,6 +63,14 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email 
+    
+    @property
+    def picture_url(self):
+        try:
+            url = self.picture.url
+        except:
+            url =''
+        return url
     
     @property
     def is_admin(self):
@@ -85,11 +85,13 @@ class Student(DeletableBaseModel):
     def get_full_name(self) -> str:
         return f'{self.user.first_name} {self.user.last_name}'
     
+    def get_absolute_url(self):
+        return reverse('student_detail', args=[str(self.id)])
+    
     def __str__(self):
         return f'{self.user.first_name} {self.user.last_name}'
 
-    def get_absolute_url(self):
-        return reverse('student_detail', args=[str(self.id)])
+    
 
 
 class Tutor(DeletableBaseModel):

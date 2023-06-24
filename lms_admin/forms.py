@@ -39,7 +39,7 @@ class ApplicantForm(forms.ModelForm):
             'address': "Home Address",
             'picture': "Profile Picture",
         }
-        widget = {
+        widgets = {
             'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}),
             'email': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}),

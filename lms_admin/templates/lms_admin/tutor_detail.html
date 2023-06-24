@@ -10,7 +10,6 @@
 <style>
     body{
     background: #f7f7ff;
-    margin-top:20px;
 }
 .card {
     position: relative;
@@ -102,7 +101,7 @@
                             <h6> {{ tutor.track.name }}</h6>
             
                         </div>
-                        <a class="btn btn-primary mt-5" href="{% url 'lms_admin:tutor_update' pk=tutor.pk %}">Update Tutor Details</a>
+                        <a class="btn btn-success mt-5" href="{% url 'lms_admin:tutor_update' pk=tutor.pk %}">Update Tutor Details</a>
                         <a class="btn btn-danger mt-5" href="{% url 'lms_admin:tutor_confirm_delete' pk=tutor.pk %}">Delete Tutor</a>
                     </div>
                 </div>

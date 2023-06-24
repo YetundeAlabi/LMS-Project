@@ -106,8 +106,8 @@ class TutorForm(forms.ModelForm):
         github_link = self.cleaned_data.get('github_link')
         if github_link:
             github_pattern = r'^https?://(www\.)?github\.com/[\w-]+/?$'
-        if not re.match(github_pattern, github_link):
-            raise forms.ValidationError("Invalid GitHub link format.")
+            if not re.match(github_pattern, github_link):
+                raise forms.ValidationError("Invalid GitHub link format.")
         return github_link
 
     def clean_linkedin_link(self):

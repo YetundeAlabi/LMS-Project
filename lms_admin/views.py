@@ -1,5 +1,7 @@
 import csv
 
+from django.db import models
+
 from accounts.forms import StudentForm, TutorForm
 from accounts.models import Student, Tutor, User
 from django.contrib import messages
@@ -74,12 +76,10 @@ class TrackDetailView(LoginRequiredMixin, AdminUserRequiredMixin, DetailView):
     model = Track 
     template_name = 'lms_admin/track_detail.html'
     context_object_name = 'track'
-    slug_url_kwarg = 'slug'
-    slug_field = 'slug'
     
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['track_students'] = Student.objects.filter(track=self.object())
+        context['track_students'] = Student.objects.filter(track=self.get_object())
         return context
 
 
@@ -193,8 +193,11 @@ class StudentUpdateView(LoginRequiredMixin, AdminUserRequiredMixin, UpdateView):
         initial['first_name'] = student.user.first_name
         initial['last_name'] = student.user.last_name
         initial['email'] = student.user.email
-        messages.success(self.request, "Student information updated successfully")
         return initial
+
+    def form_valid(self, form):
+        messages.success(self.request, "Student information updated successfully")
+        return super().form_valid(form)
 
     
 class StudentDeleteView(LoginRequiredMixin, AdminUserRequiredMixin, DeleteView):
@@ -237,7 +240,8 @@ class StudentImportView(PasswordResetView, AdminUserRequiredMixin, FormView):
             user, created = User.objects.get_or_create(email=email,
                                                         first_name=first_name,
                                                         last_name=last_name,gender=gender,
-                                                        phone_number=phone_number, address=address)
+                                                        phone_number=phone_number, 
+                                                        address=address)
             print(track)
             track_obj = Track.active_objects.get(name=track.strip())
             student = Student.objects.create(user=user, cohort=cohort, track=track_obj)
@@ -495,9 +499,9 @@ class ExportApprovedApplicantsCSVView(LoginRequiredMixin, AdminUserRequiredMixin
         response['Content-Disposition'] = 'attachment; filename="approved_applicants.csv"'
 
         writer = csv.writer(response)
-        writer.writerow(['First Name', 'Last Name', 'Email', 'Gender', 'Track'])
+        writer.writerow(['first_name', 'last_name', 'email', 'gender', 'track', 'phone_number', 'address'])
 
         for applicant in approved_applicants:
-            writer.writerow([applicant.first_name, applicant.last_name, applicant.email, applicant.gender, applicant.track])
+            writer.writerow([applicant.first_name, applicant.last_name, applicant.email, applicant.gender, applicant.track, applicant.phone_number, applicant.address])
     
         return response
