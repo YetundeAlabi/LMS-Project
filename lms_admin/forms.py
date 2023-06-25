@@ -42,7 +42,7 @@ class ApplicantForm(forms.ModelForm):
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}),
-            'email': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}),
+            'email': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
             'track': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Track'}),
             'gender': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Gender'}),
             'picture': forms.ClearableFileInput(attrs={'class': 'form-control file-upload-info', 'placeholder': 'Picture'}),

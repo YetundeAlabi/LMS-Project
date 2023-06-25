@@ -63,6 +63,28 @@
       background: #e1261c;
       color: #fff;
     }
+
+    .sidebar .nav .nav-item .nav-link {
+      display: -webkit-flex;
+      display: flex;
+      -webkit-align-items: center;
+      align-items: center;
+      white-space: nowrap;
+      padding: 0.8125rem 1.937rem 0.8125rem 1rem;
+      color: #6C7383;
+      border-radius: 8px;
+      -webkit-transition-duration: 0.45s;
+      -moz-transition-duration: 0.45s;
+      -o-transition-duration: 0.45s;
+      transition-duration: 0.45s;
+      transition-property: color;
+      -webkit-transition-property: color;
+      }
+
+    .active {
+      background: #e1261c;
+      color: #fff;
+    }
     
     .sidebar .nav:not(.sub-menu) > .nav-item > .nav-link {
       margin: 0;
@@ -235,6 +257,30 @@
       $(document).ready(function (){
         $('.datatable').dataTable({});
       })
+    </script>
+
+    <script>
+      
+      document.addEventListener('DOMContentLoaded', function() {
+        let links = document.getElementsByClassName('side-nav-link');
+        for (let i = 0; i < links.length; i++) {
+          links[i].addEventListener('click', setActiveLink);
+        }
+      });
+      
+      function setActiveLink(event) {
+        // Add the 'active' class to the clicked link
+        this.classList.add('active');
+      
+        // Remove the 'active' class from all links
+        let links = document.getElementsByClassName('side-nav-link');
+        for (let i = 0; i < links.length; i++) {
+          if (links[i] !== this) {
+            links[i].classList.remove('active');
+          }
+        }
+      }
+      
     </script>
     
     {% block script %} 
