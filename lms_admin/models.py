@@ -54,7 +54,7 @@ class NigerianPhoneNumberField(PhoneNumberField):
             code="invalid_phone_number",
         ),
     ]
-
+    
     def formfield(self, **kwargs):
         defaults = {
             "validators": self.default_validators,
