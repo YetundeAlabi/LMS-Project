@@ -49,8 +49,8 @@
                       <td class="font-weight-medium">
                         <form action="{% url 'lms_admin:student_toggle_suspend' pk=student.pk %}" method="POST" class="d-inline">
                           {% csrf_token %}
-                          <button type="submit" class="btn btn-sm btn-rounded {% if not student.is_suspended %}btn-success{% else %}btn-warning{% endif %}">
-                            {% if not student.is_suspended %}Active{% else %}Suspended{% endif %}
+                          <button type="submit" class="btn btn-sm btn-rounded {% if student.user.is_active %}btn-success{% else %}btn-warning{% endif %}">
+                            {% if student.user.is_active %}Active{% else %}Suspended{% endif %}
                           </button>
                         </form>
                       </td>

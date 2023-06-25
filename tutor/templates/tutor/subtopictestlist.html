@@ -1,0 +1,30 @@
+
+
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Subtopic Test List</h1>
+  
+  <table>
+    <thead>
+      <tr>
+        <th>Subtopic</th>
+        <th>View</th>
+        
+      </tr>
+    </thead>
+    <tbody>
+      {% for subtopictest in Subtopictests %}
+        <tr>
+          <td>{{ subtopictest.topic }}--{{ subtopictest.id }}</td>
+          <td><a href="{% url 'course:testsubtopic_detail' course_slug=course_slug topic_id=topic.id subtopic_id=subtopictest.id %}">View</a></td>
+          
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="2">No subtopic tests found.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

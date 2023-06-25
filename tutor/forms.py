@@ -8,6 +8,8 @@ from django.forms.utils import ErrorList
 from .models import Course, Topic, SubTopic
 from accounts.models import User, Tutor
 from django.contrib.auth.forms import UserChangeForm
+from ckeditor_uploader.widgets import CKEditorUploadingWidget
+
 
 
 class CourseForm(forms.ModelForm):
@@ -48,18 +50,39 @@ TopicFormSet = inlineformset_factory(Course, Topic, fields=['title', 'descriptio
 
 
 class TutorUpdateForm(forms.ModelForm):
-    first_name = forms.CharField(max_length=100)
-    last_name = forms.CharField(max_length=100)
+    linkedin_link = forms.URLField(
+        label="LinkedIn",
+        required=False,
+        widget=forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'LinkedIn link'}),
+    )
 
+    twitter_link = forms.URLField(
+        label="Twitter",
+        required=False,
+        widget=forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'Twitter link'}),
+    )
+    picture = forms.ImageField(
+        label='Profile Image',
+        required=False,
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control file-upload-info', 'placeholder': 'Picture' })
+    )
+    github_link = forms.URLField(
+        label="LinkedIn",
+        required=False,
+        widget=forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'LinkedIn link'}),
+    )
+    
     class Meta:
         model = Tutor
-        fields = ['first_name', 'last_name', 'picture', 'github_link', 'linkedin_link', 'twitter_link']
+        fields = ['picture', 'github_link', 'linkedin_link', 'twitter_link']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.instance.user:
-            self.fields['first_name'].initial = self.instance.user.first_name
-            self.fields['last_name'].initial = self.instance.user.last_name
+            self.fields['github_link'].initial = self.instance.user.github_link
+            self.fields['linkedin_link'].initial = self.instance.user.linkedin_link
+            self.fields['twitter_link'].initial = self.instance.user.twitter_link
+
            
 
     def clean_github_link(self):
@@ -86,3 +109,11 @@ class TutorUpdateForm(forms.ModelForm):
                 raise forms.ValidationError("Invalid Twitter link format.")
         return twitter_link
 
+
+class SubtopicForm(forms.ModelForm):
+    class Meta:
+        model = SubTopic
+        fields = ['details']
+        widgets = {
+            'details': CKEditorUploadingWidget(),
+        }

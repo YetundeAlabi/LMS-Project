@@ -20,6 +20,7 @@ from .views import HomePage
 from django.conf.urls.static import static
 from django.conf import settings
 from lms_admin import views
+from ckeditor_uploader import views as ckeditor_views
 
 
 urlpatterns = [
@@ -31,6 +32,8 @@ urlpatterns = [
     path('tutor/', include('tutor.urls', namespace="course")),
     path('LMS/admin/', include('lms_admin.urls', namespace="lms_admin")),
     path('student/', include('student.urls',namespace='student')),
+    path('ckeditor/upload/', ckeditor_views.upload, name='ckeditor_upload'),
+    path('ckeditor/browse/', ckeditor_views.browse, name='ckeditor_browse'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

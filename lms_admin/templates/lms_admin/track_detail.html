@@ -10,7 +10,7 @@
 <div class="content-wrapper" style="background-color: #EBEBEC;">
 
     <div class="row">
-        <div class="col-md-12 grid-margin">
+        <div class="col-md-12">
             <div class="row">
                 <div class="col-12 col-xl-8 mb-4 mb-xl-0">
                     <h2 class=""><strong>{{ track.name }}</strong></h2>
@@ -21,8 +21,8 @@
         </div>
     </div>
 
-    <a class="btn btn-primary mt-4 mb-4" href="{% url 'lms_admin:track_update' slug=track.slug %}">Update Track Details</a>
-    <a class="btn btn-danger mt-4 mb-4" href="{% url 'lms_admin:track_confirm_delete' slug=track.slug %}">Delete Track </a>
+    <a class="btn btn-success mt-2 mb-4" href="{% url 'lms_admin:track_update' slug=track.slug %}">Update Track Details</a>
+    <a class="btn btn-danger mt-2 mb-4" href="{% url 'lms_admin:track_confirm_delete' slug=track.slug %}">Delete Track </a>
 
     
     <div class="row">
@@ -61,7 +61,7 @@
                       </tr>
                     {% empty %}
                       <tr>
-                        <td>There are no registered students under this track.</td>
+                        <td colspan="5">There are no registered students under this track.</td>
                       <tr>
                     {% endfor %}
                   </tbody>
@@ -72,7 +72,6 @@
         </div>
       </div>
       
-      <a href="{% url 'lms_admin:track_list' %}" class="btn btn-danger">Return To Tracks List</a>
 </div>
 
 {% endblock %}

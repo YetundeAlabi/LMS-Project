@@ -16,7 +16,7 @@
                 <p class="card-description">
                     Enter details to create a Tutor
                 </p>
-                <form method="POST" class="forms-sample">
+                <form method="POST" class="forms-sample" enctype="multipart/form-data">
   
                     {% csrf_token %}
                     {% if form.errors %}
@@ -53,8 +53,38 @@
                         {{ form.track.label_tag }}
                         {{ form.track }}
                     </div>
+
+                    <div class="form-group">
+                      {{ form.gender.label_tag }}
+                      {{ form.gender }}
+                    </div>
+
+                    <div class="form-group">
+                      {{ form.picture.label_tag }}
+                      {{ form.picture }}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.github_link.label_tag }}
+                        {{ form.github_link }}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.twitter_link.label_tag }}
+                        {{ form.twitter_link }}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.linkedin_link.label_tag }}
+                        {{ form.linkedin_link }}
+                    </div>
+
+                    <div class="form-group">
+                      {{ form.address.label_tag }}
+                      {{ form.address }}
+                  </div>
                     
-                    <input class="btn btn-primary mr-2" value="Submit" type="submit">
+                    <input class="btn btn-submit mr-2" value="Submit" type="submit">
                     <a href="{% url 'lms_admin:tutor_list' %}" class="btn btn-danger">Cancel</a>
   
                     

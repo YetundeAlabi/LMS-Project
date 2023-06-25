@@ -1,88 +1,17 @@
+import re
+
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, SetPasswordForm, PasswordChangeForm
-from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model, password_validation
-from django.core.exceptions import ValidationError
-from lms_admin.models import Cohort, Track
+from django.contrib.auth.forms import (PasswordChangeForm, SetPasswordForm,)
 
 from .models import Student, Tutor
+from lms_admin.models import Track
+# from account.models import Use
 
 User = get_user_model()
 
 
-class SignUpForm(UserCreationForm):
-    
-    first_name = forms.CharField(max_length=100, help_text='First Name')
-    last_name = forms.CharField(max_length=100, help_text='Last Name')
-    email = forms.EmailField(max_length=150, help_text='Email')
-    
-    class Meta:
-        model = User
-        fields = ("first_name", "last_name", 'password1', 'password2')
-
-
-""" Tutor sign uo form"""
-class UserForm(forms.ModelForm):
-    first_name = forms.CharField(max_length=100,
-                                 widget=forms.TextInput(attrs={'class': 'form-control form-control-lg', 'placeholder': 'First Name'}))
-    last_name = forms.CharField(max_length=100,
-                                 widget=forms.TextInput(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Last Name'}))
-    email = forms.EmailField(max_length=150,
-                              widget=forms.EmailInput(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Email'}))
-    track = forms.ModelMultipleChoiceField(
-        queryset= Track.objects.all(),
-        widget = forms.SelectMultiple(attrs={"class": "form-control"})
-    )
-    password = forms.CharField(label="Password",
-        widget=forms.PasswordInput(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Enter Password'}))
-    password2 = forms.CharField(label="Password confirmation",
-        widget=forms.PasswordInput(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Enter Password'}))
-    
-
-    class Meta:
-        model = User
-        fields = ("first_name", "last_name", "email", 'password', 'password2', "track")
-
-    def clean_password2(self):
-        print(self.cleaned_data)
-        password = self.cleaned_data.get("password")
-        password2 = self.cleaned_data.get("password2")
-        if password != password2:
-            raise ValidationError("Passwords don't match")
-        return password
-
-    def save(self, commit=True):
-        user = User.objects.create_user(
-            first_name = self.cleaned_data["first_name"],
-            last_name = self.cleaned_data["last_name"],
-            email = self.cleaned_data["email"],
-            password = self.cleaned_data["password"]
-        )
-
-        tutor = Tutor.objects.create(
-            user=user,
-            track=self.cleaned_data["track"])
-        
-        return tutor
-
-
 class StudentForm(forms.ModelForm):
-
-    cohort = forms.ModelChoiceField(
-        label="Cohort",
-        queryset=Cohort.objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Cohort'}))
-    
-    track = forms.ModelChoiceField(
-        label="Track",
-        queryset=Track.active_objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Track'}))
-    
-    gender = forms.ChoiceField(
-        label='Gender',
-        choices=Student.GENDER_CHOICES,
-        widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Gender'}))
-    
     email = forms.EmailField(
         label='Email',
         widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}))
@@ -94,58 +23,108 @@ class StudentForm(forms.ModelForm):
     last_name = forms.CharField(
         label='Last Name',
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}))
+
+    gender = forms.ChoiceField(
+        label='Gender',
+        choices=User.GENDER_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'}))
     
-    picture = forms.ImageField(
-        label='Profile Image',
-        required=False,
-        widget=forms.ClearableFileInput(attrs={'class': 'form-control file-upload-info', 'placeholder': 'Picture' }))
+    address = forms.CharField(
+        label='Home Address',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Home Address'}))
     
     phone_number = forms.CharField(
         label='Phone Number',
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number'}),
-    )
-    address = forms.CharField(
-        label='Home Address',
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Home Address'}),
-    )
-
-
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number'}))
+    
+    
     class Meta:
-        model = User
-        fields = ["email", "first_name", "last_name", "cohort", "track", "gender", "picture", "address", "phone_number"]
+        model = Student
+        fields = ["email", "first_name", "last_name", "cohort", "track", "gender", "address", 
+                  "phone_number"]
+        widgets = {
+            'track': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Track'}),
+            'cohort': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Cohort'})
+        }
 
 
 """ Tutor creation form """
 class TutorForm(forms.ModelForm):
-    track = forms.ModelChoiceField(
-        label="Track",
-        queryset=Track.active_objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Track'}))
     email = forms.EmailField(
         label='Email',
-        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}))
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'})
+    )
     first_name = forms.CharField(
         label='First Name',
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}))
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'})
+    )
     last_name = forms.CharField(
         label='Last Name',
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}))
-    
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'})
+    )
+    github_link = forms.URLField(
+        label="Github",
+        required=False,
+        widget=forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'Github link'}),
+    )
+    gender = forms.ChoiceField(
+        label='Gender',
+        choices=User.GENDER_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    linkedin_link = forms.URLField(
+        label="LinkedIn",
+        required=False,
+        widget=forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'LinkedIn link'}),
+    )
+
+    twitter_link = forms.URLField(
+        label="Twitter",
+        required=False,
+        widget=forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'Twitter link'}),
+    )
+
+    picture = forms.ImageField(
+        label="Profile picture",
+        required=False,
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control file-upload-info',})
+    )
+
     
     class Meta:
-        model = User
-        fields = ["email", "first_name", "last_name", "track"]
+        model = Tutor
+        fields = ["email", "first_name", "last_name", "track", 
+                  "picture", "github_link", "twitter_link", "linkedin_link", "gender"]
+        labels = {
+            'track': 'Track'
+        }
+        widgets = {
+            'track': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Track'})
+        }
 
+    def clean_github_link(self):
+        github_link = self.cleaned_data.get('github_link')
+        if github_link:
+            github_pattern = r'^https?://(www\.)?github\.com/[\w-]+/?$'
+            if not re.match(github_pattern, github_link):
+                raise forms.ValidationError("Invalid GitHub link format.")
+        return github_link
 
-    # def save(self, commit=True):
-    #     user = User.objects.create_user(
-    #         email=self.cleaned_data['email'], 
-    #         first_name=self.cleaned_data['first_name'],
-    #         last_name=self.cleaned_data['last_name'])
-        
-    #     tutor = Tutor.objects.create(user=user, 
-    #                                     track=self.cleaned_data['track'])
-    #     return tutor
+    def clean_linkedin_link(self):
+        linkedin_link = self.cleaned_data.get('linkedin_link')
+        if linkedin_link:
+            linkedin_pattern = r'^https?://(www\.)?linkedin\.com/in/[\w-]+/?$'
+            if not re.match(linkedin_pattern, linkedin_link):
+                raise forms.ValidationError("Invalid LinkedIn link format.")
+        return linkedin_link
+
+    def clean_twitter_link(self):
+        twitter_link = self.cleaned_data.get('twitter_link')
+        if twitter_link:
+            twitter_pattern = r'^https?://(www\.)?twitter\.com/[\w-]+/?$'
+            if not re.match(twitter_pattern, twitter_link):
+                raise forms.ValidationError("Invalid Twitter link format.")
+        return twitter_link
 
      
 class LoginForm(forms.Form):
@@ -192,56 +171,20 @@ class CustomPasswordChangeForm(PasswordChangeForm):
         label="Old password",
         strip=False,
         widget=forms.PasswordInput(
-            attrs={"class": " form-control", "placeholder": "Enter your old password"}
-        ),
+            attrs={"class": " form-control", "placeholder": "Enter your old password"}),
     )
     new_password1 = forms.CharField(
         label="New password",
         widget=forms.PasswordInput(
-            attrs={"class": " form-control", "placeholder": "Enter your new password"}),
+            attrs={"class": "form-control", "placeholder": "Enter your new password"}),
         strip=False,
     )
     new_password2 = forms.CharField(
         label="New password confirmation",
         strip=False,
         widget=forms.PasswordInput(
-            attrs={"class": " form-control", "placeholder": "Confirm your new password"}),
+            attrs={"class": "form-control", "placeholder": "Confirm your new password"}),
     )
 
     field_order = ["old_password", "new_password1", "new_password2"]
 
-
-class TutorUpdateForm(forms.ModelForm):
-    track = forms.ModelChoiceField(
-        label="Track",
-        queryset=Track.objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Track'}))
-    email = forms.EmailField(
-        label='Email',
-        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}))
-    first_name = forms.CharField(
-        label='First Name',
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}))
-    last_name = forms.CharField(
-        label='Last Name',
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}))
-    
-    # def __init__(self, *args, **kwargs):
-    #     kwargs.pop("instance")
-    #     super().__init__(*args, **kwargs)
-
-    model = User
-    fields = ["email", "first_name", "last_name", "track"]
-
-class StudentUpdateForm(forms.ModelForm):
-
-    class Meta:
-        model = Student
-        exclude = ("cohort", "is_verified", "is_suspended")
-
-
-class ProfilePictureForm(forms.ModelForm):
-    picture = forms.CharField(
-        label="Profile picture",
-        widget=forms.ClearableFileInput(attrs={'class': 'form_control'})
-    )

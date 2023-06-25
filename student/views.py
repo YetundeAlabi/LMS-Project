@@ -1,38 +1,36 @@
-from typing import List
-from django.shortcuts import render
-from django.contrib.auth.mixins import (LoginRequiredMixin,
-                                        PermissionRequiredMixin)
-from .models import StudentCourse, StudentTopic, StudentSubTopic
-from django.views import View
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView
-from django.views.generic import TemplateView
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponseRedirect
-from django.urls import reverse_lazy
-from django.shortcuts import redirect
+from accounts.models import Student
 from django.contrib import messages
-from accounts.models import Student 
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views import View
+from django.views.generic import (DetailView, TemplateView, UpdateView)
+
 from .forms import ProfileUpdateForm
+from .models import StudentCourse, StudentSubTopic, StudentTopic
 
 # Create your views here.
 
 class StudentProfileDetailView(LoginRequiredMixin, DetailView):
     model = Student
-    template_name = 'student/profile.html'
+    template_name = 'student/profile_detail.html'
     context_object_name = 'profile'
 
-    def get_object(self):
-        return self.request.user.students
-
+    def get_object(self, queryset=None):
+        students = Student.objects.filter(user=self.request.user)
+        student = students.first()
+        return student
+    
 
 class StudentProfileUpdateView(LoginRequiredMixin, UpdateView):
-    
+    model = Student
     form_class = ProfileUpdateForm
-    template_name = 'student/update_profile.html'
-    success_url = reverse_lazy('profile')
+    template_name = 'student/profile_update.html'
+    success_url = '/student/profile/'
 
-    def get_object(self):
-        return self.request.user.students
+    def get_object(self, queryset=None):
+        students = Student.objects.filter(user=self.request.user)
+        student = students.first()
+        return student
 
 
 class StudentActiveCourseListView(TemplateView):
@@ -100,11 +98,11 @@ class StudentSubtopicRedirectView(View):
         student_topic = get_object_or_404(StudentTopic, slug=student_topic_slug)
         student_subtopic = StudentSubTopic.objects.filter(student_topic=student_topic)
         
-        if student_subtopic.exists():
-            if student_subtopic.filter(progress_level=100.0).exists():
-                student_subtopic = student_subtopic.filter(progress_level=100.0).last()
-            else:
-                student_subtopic = student_subtopic.filter(progress_level=0.0).first()
+        if student_subtopic.filter(progress_level=100.0).exists():
+            student_subtopic = student_subtopic.filter(progress_level=100.0).last()
+        else:
+            student_subtopic = student_subtopic.filter(progress_level=0.0).first()
+        if student_subtopic is not None:
             return redirect('student:student_subtopic_detail', student_course_slug=student_course_slug, pk=self.kwargs['pk'], student_topic_slug=student_topic_slug, student_subtopic_id=student_subtopic.id)
         messages.info(request, 'No subtopic available')
         return redirect('student:topic_list', student_course_slug=student_course_slug, pk =self.kwargs['pk'])

@@ -43,6 +43,13 @@
                 {{ form.title.label_tag }}
                 {{ form.title }}
               </div>
+              
+
+              <div class="form-group">
+                {{ form.details.label_tag }}
+                {{ form.details }}
+              </div>
+
 
               <div class="form-group">
                 {{ form.description.label_tag }}
@@ -64,7 +71,7 @@
                 {{ form.text }}
               </div>
 
-              <input class="btn btn-primary mr-2" value="Submit" type="submit">
+              <input class="btn btn-success mr-2" value="Submit" type="submit">
               <a href="{% url 'course:tutor_dashboard_view' %}" class="btn btn-danger">Cancel</a>
             </form>
           </div>

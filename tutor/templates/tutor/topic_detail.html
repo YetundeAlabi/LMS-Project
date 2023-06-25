@@ -1,103 +1,82 @@
 {% extends 'base.html' %}
 
-
 {% block navbar %}
-        {% include 'tutor/tutor_nav_bar.html' %}
+    {% include 'tutor/tutor_nav_bar.html' %}
 {% endblock %} 
 
 {% block content %}
-<div class="content-wrapper" style="background-color: #EBEBEC">
-    <div class="row">
-        <a class="btn btn-secondary btn-sm mb-4" href="{% url 'course:course_detail' topic.course.slug %}"><i class="fas fa-arrow-left ml-2 mr-2"></i></a>
-    </div>
+    <div class="content-wrapper" style="background-color: #EBEBEC">
+        <div class="row">
+            <a class="btn btn-secondary btn-sm mb-4" href="{% url 'course:course_detail' topic.course.slug %}"><i class="fas fa-arrow-left ml-2 mr-2"></i></a>
+        </div>
 
-    <div class="row">
-        <div class="col-md-12 ">
-            <div class="col-12">
-                <h3>TOPIC {{ topic.order|add:1 }}</h3>
-                <h2>{{ topic.title }}</h2>
-                <p class="text-muted">Topic Description: {{ topic.description }} </small></p>
-                <p class="text-muted">Created at: {{ topic.created_at }} </small></p>
+        <div class="row">
+            <div class="col-md-12 ">
+                <div class="col-12">
+                    <h3>TOPIC {{ topic.order|add:1 }}</h3>
+                    <h2>{{ topic.title }}</h2>
+                    <p class="text-muted">Topic Description: {{ topic.description }} </p>
+                    <p class="text-muted">Created at: {{ topic.created_at }} </p>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="mt-3 mb-5">
-        <a class="btn btn-success" href="{% url 'course:update_topic' topic.course.slug topic.id %}">Update</a>
-        <a class="btn btn-danger" href="{% url 'course:delete_topic' topic.course.slug topic.id %}">Delete</a>
-    </div>
-
-    <div class="row">
-        <div class="col-md mt-5 mb-4">
-            <h3 class="mb-3">Choose format to add new Lesson </h3>
-            <a class="btn btn-sm btn-info" href="{% url 'course:create_subtopic' topic.course.slug topic.id 'text' %}">
-            <i class="fas fa-file-alt menu-icon"></i>
-            Text</a>
-            <a class="btn btn-sm btn-info" href="{% url 'course:create_subtopic' topic.course.slug topic.id 'video' %}">
-            <i class="fas fa-video menu-icon"></i>
-            Video</a>
-            <a class="btn btn-sm btn-info" href="{% url 'course:create_subtopic' topic.course.slug topic.id 'file' %}">
-            <i class="fas fa-file-pdf menu-icon"></i>
-            PDF File</a>
-            <a class="btn btn-sm btn-info" href="{% url 'course:create_subtopic' topic.course.slug topic.id 'file' %}">
-            <i class="fas fa-file-image menu-icon"></i>
-            Image</a>
+        <div class="mt-3 mb-5">
+            <a class="btn btn-success" href="{% url 'course:update_topic' topic.course.slug topic.id %}">Update</a>
+            <a class="btn btn-danger" href="{% url 'course:delete_topic' topic.course.slug topic.id %}">Delete</a>
         </div>
-    </div>
 
-    <div class="row">
-        <div class="col-md-10 grid-margin stretch-card">
-            <div class="card">
-                <div class="card-body">
-                    <p class="card-title mb-0">Lessons</p>
-                    <div class="table-responsive">
-                        <table class="table table-striped-lms table-hover datatable">
-                            <thead>
-                                <tr>
-                                <th>S/N</th>
-                                <th>Title</th>
-                                <th>Content Type</th>
-                                </tr>
-                            </thead>
-                            <tbody id="subtopic">
-                                {% for subtopic in subtopics %}
-                                <tr data-id="{{ subtopic.id }}">
-                                <td>Lession {{ forloop.counter }}</td>
-                                <td>
-                                    <div data-id="{{ subtopic.id }}">{{ subtopic.item.title }}</div>
-                                </td>
-                                <td>
-                                    {% if subtopic.content_type.model == 'text' %}
-                                    <h5>Text</h5>
-                                    {% elif subtopic.content_type.model == 'file' %}
-                                    {% if subtopic.item.file.url %}
-                                        {% if subtopic.item.file.url|lower|slice:'-4:' == ".jpg" or subtopic.item.file.url|lower|slice:'-5:' == ".jpeg" or subtopic.item.file.url|lower|slice:'-4:' == ".png" %}
-                                        <h5>Image</h5>
-                                        {% else %}
-                                        <h5>pdf</h5>
-                                        {% endif %}
-                                    {% endif %}
-                                    {% elif subtopic.content_type.model == 'video' %}
-                                    <h5>Video</h5>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <a class="btn btn-rounded btn-sm btn-info" href="{% url 'course:subtopic_detail' course_slug=topic.course.slug topic_id=topic.id model_name=subtopic.content_type.model id=subtopic.id %}">View</a>
-                                </td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                <td colspan="4"> No subtopics under this topic yet </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+        <div class="row">
+            <div class="col-md mt-5 mb-4">
+                <h3 class="mb-3">Choose format to add new Lesson </h3>
+                <a class="btn btn-sm btn-info" href="{% url 'course:create_subtopic' topic.course.slug topic.id %}">
+                    <i class="fas fa-file-alt menu-icon"></i>Add Lesson
+                </a>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-10 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <p class="card-title mb-0">Lessons</p>
+                        <div class="table-responsive">
+                            <table class="table table-striped-lms table-hover datatable">
+                                <thead>
+                                    <tr>
+                                        <th>S/N</th>
+                                        <th>Title</th>
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody id="subtopic">
+                                    {% for subtopic in subtopics %}
+                                    <tr data-id="{{ subtopic.id }}">
+                                        <td>Lesson {{ forloop.counter }}</td>
+                                        <td>
+                                            <div data-id="{{ subtopic.id }}">{{ subtopic.topic.title }}</div>
+                                        </td>
+                                        <td>
+                                            
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-rounded btn-sm btn-info" href="{% url 'course:subtopic_detail' course_slug=topic.course.slug topic_id=topic.id id=subtopic.id %}">View</a>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="4"> No subtopics under this topic yet </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5sortable/0.13.3/html5sortable.min.js"></script>
     <script>
         var options = {
