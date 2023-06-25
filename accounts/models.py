@@ -2,7 +2,6 @@ from base import constants
 from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
                                         PermissionsMixin)
 from django.core.validators import RegexValidator
-
 from django.db import models
 from django.db.models.query import QuerySet
 from django.urls import reverse
@@ -58,7 +57,6 @@ class Student(DeletableBaseModel):
     FEMALE = constants.FEMALE
     MALE = constants.MALE
 
-
     GENDER_CHOICES =(
         ('F', FEMALE),
         ('M', MALE),
@@ -85,7 +83,6 @@ class Student(DeletableBaseModel):
 
     def get_absolute_url(self):
         return reverse('student_detail', args=[str(self.id)])
-
 
 class Tutor(DeletableBaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name="tutor")

@@ -25,7 +25,6 @@ class StudentCourse(models.Model):
         return f' {self.course.title} for {self.student.user.first_name}'
     
 
-
 class StudentTopic(models.Model):
     student_course = models.ForeignKey(StudentCourse, on_delete=models.CASCADE, related_name='student_topics')
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
