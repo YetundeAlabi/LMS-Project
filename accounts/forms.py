@@ -32,10 +32,9 @@ class StudentForm(forms.ModelForm):
     picture = forms.ImageField(
         label="Profile picture",
         required=False,
-        widget=forms.ClearableFileInput(attrs={'class': 'form-control file-upload-info',})
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control file-upload-info', 'placeholder': 'Picture' })
     )
 
-    
     address = forms.CharField(
         label='Home Address',
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Home Address'}))
@@ -49,7 +48,6 @@ class StudentForm(forms.ModelForm):
         required=False,
         widget=forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'Github link'}),
     )
-
 
     linkedin_link = forms.URLField(
         label="LinkedIn",

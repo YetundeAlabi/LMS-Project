@@ -7,7 +7,7 @@ class ProfileUpdateForm(forms.ModelForm):
     picture = forms.ImageField(
         label='Profile Image',
         required=False,
-        widget=forms.ClearableFileInput(attrs={'class': 'form-control file-upload-info', 'placeholder': 'Picture' })
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control file-upload-info', 'placeholder': 'Picture' }),
     )
 
     github_link = forms.URLField(
