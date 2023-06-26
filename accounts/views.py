@@ -20,7 +20,6 @@ class LoginView(generic.FormView):
         email = form.cleaned_data["email"]
         password = form.cleaned_data["password"]
         user = authenticate(email=email, password=password)
-        print(user, user.is_active)
         if user is not None:
             if not user.is_active:
                 messages.warning(self.request, "Your account has been suspended. Contact admin for more info.")

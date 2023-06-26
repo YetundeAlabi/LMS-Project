@@ -136,6 +136,8 @@ class StudentCreateView(LoginRequiredMixin, AdminUserRequiredMixin, CreateView):
                                                     picture=picture, phone_number=phone_number,
                                                     address=address, github_link=github_link,
                                                     linkedin_link=linkedin_link, twitter_link=twitter_link)
+        if not created:
+            user.students.filter(is_current=True).get().is_current = False
         student = Student.objects.create(user=user, cohort=cohort, track=track)
         
         self.object = student
@@ -205,8 +207,21 @@ class StudentUpdateView(LoginRequiredMixin, AdminUserRequiredMixin, UpdateView):
         return initial
 
     def form_valid(self, form):
+        student = self.get_object()
+        user = student.user
+        user.first_name = form.cleaned_data['first_name']
+        user.last_name = form.cleaned_data['last_name']
+        user.email = form.cleaned_data['email']
+        user.phone_number = form.cleaned_data['phone_number']
+        user.address = form.cleaned_data['address']
+        user.github_link = form.cleaned_data['github_link']
+        user.linkedin_link = form.cleaned_data['linkedin_link']
+        user.twitter_link = form.cleaned_data['twitter_link']
+        user.picture = form.cleaned_data['picture']
+        user.save()
+        student.save()
         messages.success(self.request, "Student information updated successfully")
-        return super().form_valid(form)
+        return HttpResponseRedirect(reverse('lms_admin:student_list'))
 
     
 class StudentDeleteView(LoginRequiredMixin, AdminUserRequiredMixin, DeleteView):
@@ -255,6 +270,11 @@ class StudentImportView(PasswordResetView, AdminUserRequiredMixin, FormView):
                                                         picture=picture, phone_number=phone_number,
                                                         address=address, github_link=github_link,
                                                         linkedin_link=linkedin_link, twitter_link=twitter_link)
+
+            
+            if  not created:
+                user.students.filter(is_current=True).get().is_current = False
+            print(track)
             track_obj = Track.active_objects.get(name=track.strip())
             student = Student.objects.create(user=user, cohort=cohort, track=track_obj)
             subject = 'Account Setup Instructions' if created else 'Login Instructions'
