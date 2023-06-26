@@ -95,7 +95,9 @@ class StudentSubtopicRedirectView(View):
         id = self.kwargs['pk']
         print(id)
         student_course_slug = self.kwargs['student_course_slug']
-        student_topic = get_object_or_404(StudentTopic, slug=student_topic_slug)
+        student=request.user.students.filter(is_current=True).get()
+        print(student)
+        student_topic = get_object_or_404(StudentTopic, student_course__student=student, slug=student_topic_slug)
         student_subtopic = StudentSubTopic.objects.filter(student_topic=student_topic)
         
         if student_subtopic.filter(progress_level=100.0).exists():
@@ -103,7 +105,7 @@ class StudentSubtopicRedirectView(View):
         else:
             student_subtopic = student_subtopic.filter(progress_level=0.0).first()
         if student_subtopic is not None:
-            return redirect('student:student_subtopic_detail', student_course_slug=student_course_slug, pk=self.kwargs['pk'], student_topic_slug=student_topic_slug, student_subtopic_id=student_subtopic.id)
+            return redirect('student:student_subtopic_detail', student_course_slug=student_course_slug, pk=self.kwargs['pk'], student_topic_slug=student_topic_slug, student_topic_id=student_subtopic.student_topic.id, student_subtopic_id=student_subtopic.id)
         messages.info(request, 'No subtopic available')
         return redirect('student:topic_list', student_course_slug=student_course_slug, pk =self.kwargs['pk'])
 
@@ -111,7 +113,9 @@ class StudentSubtopicRedirectView(View):
 class StudentSubtopicDetailView(View):
     def get(self, request, *args, **kwargs):
         student_topic_slug = self.kwargs['student_topic_slug']
-        student_topic = get_object_or_404(StudentTopic, slug=student_topic_slug)
+        student=request.user.students.filter(is_current=True).get()
+        
+        student_topic = get_object_or_404(StudentTopic, id=self.kwargs['student_topic_id'])
         student_subtopic_id = self.kwargs['student_subtopic_id']
 
         # Get subtopic queryset to render sidebar
