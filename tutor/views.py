@@ -427,7 +427,10 @@ class SubTopicCreateUpdateView(CreateView):
         topic_id= self.kwargs['topic_id']
         topic=get_object_or_404(Topic, id=topic_id)
         instance.topic=topic
-        instance.save
+        instance.save()
+        student_topics=StudentTopic.objects.filter(topic=topic)
+        for student_topic in student_topics:
+            StudentSubTopic.objects.create(student_topic=student_topic, sub_topic=instance)
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -442,13 +445,13 @@ class SubTopicList(TutorUserRequiredMixin, ListView):
     template_name = 'tutor/subtopictestlist.html'
 
     def get_queryset(self):
-        topic_id=self.kwargs['topic_id']
+        topic_id=self.kwargs['pk']
         return super().get_queryset().filter(topic__id=topic_id)
     
     def get_context_data(self, **kwargs):
         context=super().get_context_data(*kwargs)
         course_slug=self.kwargs['course_slug']
-        topic_id=self.kwargs['topic_id']
+        topic_id=self.kwargs['pk']
         context['topic'] =get_object_or_404(Topic, id =topic_id)
         context['course_slug']=course_slug
         context['course'] = get_object_or_404(Course, slug=course_slug)

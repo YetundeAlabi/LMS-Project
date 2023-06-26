@@ -30,7 +30,7 @@
                 <h5 class="card-title">{{completed_course.course.title}}</h5>
                 </div>
                 <div class="col-sm-6 d-flex justify-content-end mb-3">
-                    <a href="{% url 'student:topic_list' student_course_slug=completed_course.slug pk=completed_course.id %}" class="btn btn-info btn-sm">Continue</a>
+                    <a href="{% url 'student:topic_list' student_course_slug=completed_course.slug pk=completed_course.id %}" class="btn btn-success btn-sm">Review</a>
                 </div>
             </div>
             <div class="progress" style="height: 15px;">

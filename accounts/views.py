@@ -11,7 +11,6 @@ from .forms import (LoginForm, CustomPasswordChangeForm)
 
 User = get_user_model()
 
-
 class LoginView(generic.FormView):
     form_class = LoginForm
     template_name = 'accounts/login.html'

@@ -17,7 +17,7 @@
       {% for subtopictest in Subtopictests %}
         <tr>
           <td>{{ subtopictest.topic }}--{{ subtopictest.id }}</td>
-          <td><a href="{% url 'course:testsubtopic_detail' course_slug=course_slug topic_id=topic.id subtopic_id=subtopictest.id %}">View</a></td>
+          <td><a href="{% url 'course:subtopic_detail' course_slug=course_slug topic_id=topic.id subtopic_id=subtopictest.id %}">View</a></td>
           
         </tr>
       {% empty %}
