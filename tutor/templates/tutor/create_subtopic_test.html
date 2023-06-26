@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 
+{% block navbar %}
+    {% include 'tutor/tutor_nav_bar.html' %}
+{% endblock %} 
+
 {% block content %}
 
 <div class="content-wrapper" style="background-color: #EBEBEC">
@@ -7,7 +11,7 @@
     <div class="card">
       <div class="card-body">
         <h4 class="card-title">Create Lessson</h4>
-        <p class="card-description">Enter details to create Lesson</p>
+        <p class="card-description">Enter details to create lesson</p>
         <form method="POST" enctype="multipart/form-data">
           {% csrf_token %}
           {{ form.media }}

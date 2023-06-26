@@ -1,28 +1,28 @@
 <nav class="sidebar sidebar-offcanvas" id="sidebar">
     <ul class="nav">
       <li class="nav-item">
-        <a class="nav-link" href="{% url 'course:tutor_profile' %}">
+        <a class="nav-link side-nav-link" id="my-profile-link" href="{% url 'course:tutor_profile' %}">
           <i class="fas fa-user menu-icon"></i>
           <span class="menu-title">My Profile</span>
         </a>
       </li>
 
       <li class="nav-item">
-        <a class="nav-link" href="{% url 'course:tutor_dashboard_view' %}">
+        <a class="nav-link side-nav-link" id="dashboard-link" href="{% url 'course:tutor_dashboard_view' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">Dashboard</span>
         </a>
       </li>
       
       <li class="nav-item">
-        <a class="nav-link" href="{% url 'course:course_list' %}">
+        <a class="nav-link side-nav-link" id="courses-link" href="{% url 'course:course_list' %}">
           <i class="fas fa-graduation-cap menu-icon"></i>
           <span class="menu-title">Courses</span>
         </a>
       </li>
       
       <li class="nav-item">
-        <a class="nav-link" href="{% url 'accounts:change_password' %}">
+        <a class="nav-link side-nav-link" id="change-password-link" href="{% url 'accounts:change_password' %}">
           <i class="fas fa-key menu-icon"></i>
           <span class="menu-title">Change Password</span>
         </a>

@@ -98,6 +98,7 @@ class CourseAndTopicCreateView(TutorUserRequiredMixin, CreateView):
                 instance.course = course
                 instance.save()
                 topic=instance
+                student_course=get_object_or_404(StudentCourse, course=instance.course)
                 student_topic=StudentTopic.objects.create(student_course=student_course, topic= topic)
                 print(student_topic)
             return super().form_valid(form)
@@ -435,7 +436,7 @@ class SubTopicCreateUpdateView(CreateView):
 
     def get_success_url(self):
         course_slug = self.kwargs['course_slug']
-        return reverse_lazy('course:topic_list', kwargs={'course_slug': course_slug})
+        return reverse_lazy('course:topic_detail', kwargs={'course_slug': course_slug, 'pk':self.kwargs['topic_id']})
     
 
 class SubTopicList(TutorUserRequiredMixin, ListView):
