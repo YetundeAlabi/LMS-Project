@@ -62,7 +62,23 @@ class ApplicantChecklistForm(forms.Form):
 class StudentImportForm(forms.Form):
     csv_file = forms.FileField(label='csv_file')
     cohort = forms.ModelChoiceField(queryset=Cohort.objects.all(), label="cohort")
-    
+    picture = forms.ImageField( label=" Profile picture", 
+                               required= False,
+                               widget=forms.ClearableFileInput(attrs={'class': 'form-control file-upload-info',})
+    )
+    github_link = forms.URLField(label="Github", 
+                                required= False,
+                                widget=forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'Github link'}),
+    )
+    twitter_link = forms.URLField(label="Twitter", 
+                                required= False,
+                                widget=forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'Twitter link'}),
+    )
+    linkedin_link = forms.URLField(label="Linkedin", 
+                                required= False,
+                                widget=forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'Linkedin link'}),
+    )
+
     def process_csv(self):
         csv_file = self.cleaned_data['csv_file']
         students = []
@@ -80,6 +96,10 @@ class StudentImportForm(forms.Form):
                 'phone_number': row['phone_number'],
                 'address': row['address'],
                 'cohort': self.cleaned_data['cohort'], 
+                'picture': self.cleaned_data['picture'],
+                'github_link': self.cleaned_data['github_link'], 
+                'twitter_link': self.cleaned_data['twitter_link'], 
+                'linkedin_link': self.cleaned_data['linkedin_link'], 
                   
                 
             } # Add all student user attributes to student dictionary

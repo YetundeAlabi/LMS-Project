@@ -126,13 +126,16 @@ class StudentCreateView(LoginRequiredMixin, AdminUserRequiredMixin, CreateView):
         picture=form.cleaned_data.get('picture')
         phone_number=form.cleaned_data.get('phone_number')
         address=form.cleaned_data.get('address')
+        github_link =form.cleaned_data.get('github_link')
+        linkedin_link = form.cleaned_data('linkedin_link')
+        twitter_link = form.cleaned_data('twitter_link')
         
 
-        user, created = User.objects.get_or_create(email=email, 
-                                                    first_name=first_name, 
-                                                    last_name=last_name,
-                                                    gender=gender, picture=picture, 
-                                                    phone_number=phone_number, address=address)
+        user, created = User.objects.get_or_create(email=email, first_name=first_name, 
+                                                    last_name=last_name, gender=gender, 
+                                                    picture=picture, phone_number=phone_number,
+                                                    address=address, github_link=github_link,
+                                                    linkedin_link=linkedin_link, twitter_link=twitter_link)
         student = Student.objects.create(user=user, cohort=cohort, track=track)
         
         self.object = student
@@ -193,6 +196,12 @@ class StudentUpdateView(LoginRequiredMixin, AdminUserRequiredMixin, UpdateView):
         initial['first_name'] = student.user.first_name
         initial['last_name'] = student.user.last_name
         initial['email'] = student.user.email
+        initial['picture'] = student.user.picture
+        initial['phone_number'] = student.phone_number
+        initial['address']= student.user.address
+        initial['github_link'] = student.user.github_link
+        initial['linkedin_link'] = student.user.linkedin_link
+        initial['twitter_link']= student.user.twittwe_link
         return initial
 
     def form_valid(self, form):
@@ -236,17 +245,22 @@ class StudentImportView(PasswordResetView, AdminUserRequiredMixin, FormView):
             track = student['track']
             phone_number = student['phone_number']
             address = student['address']
-
-            user, created = User.objects.get_or_create(email=email,
-                                                        first_name=first_name,
-                                                        last_name=last_name,gender=gender,
-                                                        phone_number=phone_number, 
-                                                        address=address)
-            print(track)
-            track_obj = Track.active_objects.get(name=track.strip())
-            student = Student.objects.create(user=user, cohort=cohort, track=track_obj)
-            subject = 'Account Setup Instructions' if created else 'Login Instructions'
-            context = {
+            picture = student['picture']
+            github_link = student['github_link']
+            twitter_link = student['twitter_link']
+            linkedin_link = student['linkedin_link']
+            
+            user, created = User.objects.get_or_create(email=email, first_name=first_name, 
+                                                    last_name=last_name, gender=gender, 
+                                                    picture=picture, phone_number=phone_number,
+                                                    address=address, github_link=github_link,
+                                                    linkedin_link=linkedin_link, twitter_link=twitter_link)
+        student = Student.objects.create(user=user, cohort=cohort, track=track)
+        print(track)
+        track_obj = Track.active_objects.get(name=track.strip())
+        student = Student.objects.create(user=user, cohort=cohort, track=track_obj)
+        subject = 'Account Setup Instructions' if created else 'Login Instructions'
+        context = {
                     'first_name': first_name,
                     'verification_url': self.get_password_reset_url(user) if created else self._get_login_url(),
                }
