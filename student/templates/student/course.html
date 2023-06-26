@@ -7,9 +7,9 @@
 {%block content%}
 <style>
     .active {
-      background-color: blue;
-      color: white;
+      background-color: #e1261c;
     }
+    
   </style>
   
 <div class="content-wrapper" style="background-color: #EBEBEC;">
@@ -18,8 +18,8 @@
    </div>
    
    <div class="mb-5">
-     <a href="{% url 'student:course_list' %}" class="btn" id="activeBtn"><strong>Active Learning</strong></a>
-     <a href="{% url 'student:completed_course_list' %}" class="btn" id="completedBtn"><strong>Completed</strong></a>
+     <a href="{% url 'student:course_list' %}" class="btn active" id="activeBtn" onclick="toggleActive('activeBtn')" ><strong>Active Learning</strong></a>
+     <a href="{% url 'student:completed_course_list' %}" class="btn" id="completedBtn" onclick="toggleActive('completedBtn')"><strong>Completed</strong></a>
      <hr class="line mt-0">
    </div>
    {% if student_courses %}
@@ -44,31 +44,12 @@
     {%else%}
     <div class="card text-center">
         <div class="card-body">
-          <h4 class="card-title">No completed Course yet</h4>
-          <h6 class="card-title">Work Towards Your Learning Goals</h6>
-          <p class="card-text">Programs you've completed will show up here.</p>
+          <h4 class="card-title">Program has not yet started.</h4>
+          <h6 class="card-title">No courses available yet.</h6>
+          
         </div>
     </div>
     {%endif%}
 </div>
-<script>
-    // Get the buttons
-    const activeBtn = document.getElementById('activeBtn');
-    const completedBtn = document.getElementById('completedBtn');
-  
-    // Add click event listeners to the buttons
-    activeBtn.addEventListener('click', function(event) {
-      
-      activeBtn.classList.add('active');
-      completedBtn.classList.remove('active');
-    });
-  
-    completedBtn.addEventListener('click', function(event) {
-      
-      completedBtn.classList.add('active');
-      activeBtn.classList.remove('active');
-    });
-  </script>
- 
   
 {% endblock %}

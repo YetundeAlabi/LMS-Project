@@ -25,8 +25,6 @@ from .forms import TutorUpdateForm, SubtopicForm
 # from accounts.forms import TutorUpdateForm
 
 
-
-
 class TutorUserRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.tutor

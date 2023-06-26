@@ -45,7 +45,7 @@ class StudentActiveCourseListView(TemplateView):
     
 
 class StudentCompletedCourseListView(TemplateView):
-    template_name = "student/course.html"
+    template_name = "student/completed_courses.html"
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
