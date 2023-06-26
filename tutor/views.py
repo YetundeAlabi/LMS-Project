@@ -159,7 +159,7 @@ class CourseUpdateView(TutorUserRequiredMixin, SuccessMessageMixin, UpdateView):
     slug_url_kwarg= 'course_slug'
     success_url = reverse_lazy('course:course_list')
     success_message = "Course Updated Successfully"
-    template_name ='tutor/course_create_update.html'
+    template_name ='tutor/course_update.html'
     form_class = CourseForm
 
     def dispatch(self, request, *args, **kwargs):

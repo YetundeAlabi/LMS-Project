@@ -2,7 +2,6 @@ from base import constants
 from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
                                         PermissionsMixin)
 from django.core.validators import RegexValidator
-
 from django.db import models
 from django.db.models.query import QuerySet
 from django.urls import reverse
@@ -93,7 +92,6 @@ class Student(DeletableBaseModel):
         return f'{self.user.first_name} {self.user.last_name}'
 
     
-
 
 class Tutor(DeletableBaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="tutor")
