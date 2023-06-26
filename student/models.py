@@ -71,11 +71,11 @@ def student_topic_slug(sender, instance, created, **kwargs):
         instance.slug = slug
         instance.save()
 
-@receiver(post_save, sender=StudentSubTopic)
-def student_subtopic_slug(sender, instance, created, **kwargs):
-    if created and not instance.slug:
-        slug = slugify(instance.sub_topic.title)
-        instance.slug = slug
-        instance.save()
+# @receiver(post_save, sender=StudentSubTopic)
+# def student_subtopic_slug(sender, instance, created, **kwargs):
+#     if created and not instance.slug:
+#         slug = slugify(instance.topic.title)
+#         instance.slug = slug
+#         instance.save()
 
 

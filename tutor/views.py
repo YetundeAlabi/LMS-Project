@@ -25,8 +25,6 @@ from .forms import TutorUpdateForm, SubtopicForm
 # from accounts.forms import TutorUpdateForm
 
 
-
-
 class TutorUserRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.tutor
@@ -438,7 +436,10 @@ class SubTopicCreateUpdateView(CreateView):
         topic_id= self.kwargs['topic_id']
         topic=get_object_or_404(Topic, id=topic_id)
         instance.topic=topic
-        instance.save
+        instance.save()
+        student_topics=StudentTopic.objects.filter(topic=topic)
+        for student_topic in student_topics:
+            StudentSubTopic.objects.create(student_topic=student_topic, sub_topic=instance)
         return super().form_valid(form)
 
     def get_success_url(self):
