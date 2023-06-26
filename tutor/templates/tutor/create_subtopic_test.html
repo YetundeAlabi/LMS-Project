@@ -1,13 +1,17 @@
 {% extends 'base.html' %}
 
+{% block navbar %}
+    {% include 'tutor/tutor_nav_bar.html' %}
+{% endblock %} 
+
 {% block content %}
 
 <div class="content-wrapper" style="background-color: #EBEBEC">
   <div class="col-12 grid-margin stretch-card">
     <div class="card">
       <div class="card-body">
-        <h4 class="card-title">Update Topic</h4>
-        <p class="card-description">Enter details to update the topic</p>
+        <h4 class="card-title">Create Lessson</h4>
+        <p class="card-description">Enter details to create lesson</p>
         <form method="POST" enctype="multipart/form-data">
           {% csrf_token %}
           {{ form.media }}
@@ -25,11 +29,6 @@
               </ul>
             </div>
           {% endif %}
-    
-          <div class="form-group">
-            {{ form.topic.label_tag }}
-            {{ form.topic }}
-          </div>
           
           <div class="form-group">
             {{ form.details.label_tag }}
