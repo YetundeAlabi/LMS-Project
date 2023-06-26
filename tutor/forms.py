@@ -67,9 +67,9 @@ class TutorUpdateForm(forms.ModelForm):
         widget=forms.ClearableFileInput(attrs={'class': 'form-control file-upload-info', 'placeholder': 'Picture' })
     )
     github_link = forms.URLField(
-        label="LinkedIn",
+        label="Githublink",
         required=False,
-        widget=forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'LinkedIn link'}),
+        widget=forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'Github link'}),
     )
     
     class Meta:
@@ -84,7 +84,6 @@ class TutorUpdateForm(forms.ModelForm):
             self.fields['twitter_link'].initial = self.instance.user.twitter_link
 
            
-
     def clean_github_link(self):
         github_link = self.cleaned_data.get('github_link')
         if github_link:

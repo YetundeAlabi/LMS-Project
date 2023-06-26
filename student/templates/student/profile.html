@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block navbar %}
+    
+    {% include 'nav_bar.html' %}
+
+{% endblock %}
+
+{% block content %}
+<style>
+ 
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 0 solid transparent;
+    border-radius: .25rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 6px 0 rgb(218 218 253 / 65%), 0 2px 6px 0 rgb(206 206 238 / 54%);
+}
+.me-2 {
+    margin-right: .5rem!important;
+}
+</style>
+{% if student %}
+<div class="content-wrapper" style="background-color: #EBEBEC;">
+<div class="container">
+    <div class="main-body">
+        <div class="row">
+            <div class="col-lg-5">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex flex-column align-items-center text-center">
+                            {% if student.picture %}
+                                <img class="rounded-circle p-1 bg-primary" width="110" src="{{ student.picture.url }}" alt="Tutor">
+                            {% else %}
+                                <img class="rounded-circle p-1 bg-primary" width="110" src="{% static 'images/pi.png' %}" alt="Default Tutor Picture">
+                            {% endif %}
+                            <div class="mt-3">
+                                <h4>{{ student.first_name|title }} {{ student.last_name|title }}</h4>
+                                <p class="text-secondary mb-1">{{ student.track }} Developer</p>
+                                <p class="text-muted font-size-sm">AFEX, Ibadan</p>
+                                <!-- <button class="btn btn-primary">Follow</button>
+                                <button class="btn btn-outline-primary">Message</button> -->
+                            </div>
+                        </div>
+                        <hr class="my-4">
+                        <ul class="list-group list-group-flush">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+       
+            <div class="col-lg-7">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-sm-3">
+                                <h6 class="mb-0">Full Name:</h6>
+                            </div>
+                                <h6>{{ student.get_full_name }}</h6>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-sm-3">
+                                <h6 class="mb-0">Gender:</h6>
+                            </div>
+                            <h6>{{student.gender}}</h6>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-3">
+                                <h6 class="mb-0">Cohort:</h6>
+                            </div>
+                            <h6> {{ student.cohort }}</h6>
+            
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-3">
+                                <h6 class="mb-0">Track:</h6>
+                            </div>
+                            
+                            <h6>{{ student.track }}</h6>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-3">
+                                <h6 class="mb-0">Is_Verified:</h6>
+                            </div>
+                            
+                            <h6> {{ student.is_verified |yesno|title }}</h6>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-3">
+                                <h6 class="mb-0">Is_Suspended:</h6>
+                            </div>
+                            
+                            <h6><div class="row mb-3">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Is_Verified:</h6>
+                                </div>
+                                
+                                <h6> {{ student.is_suspended |yesno|title }}</h6>
+                            </div>
+                        </div>
+                        
+                        <a class="btn btn-primary mt-4 mb-4" href="{% url 'student:profile_update' %}">Update Profile Picture</a> 
+                       
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+       
+    </div>
+</div>
+</div>
+{% endif %}
+    {% else %}
+    <h>You are not a student </h>
+{% endif %}
+{% endblock %}
