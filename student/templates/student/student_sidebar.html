@@ -1,0 +1,17 @@
+<nav class="sidebar sidebar-offcanvas" id="sidebar">
+    <ul class="nav">
+      <li class="nav-item">
+        <a class="nav-link side-nav-link" id="student-courses-link" href="{% url 'student:course_list' %}">
+          <i class="fas fa-graduation-cap menu-icon"></i>
+          <span class="menu-title">Courses</span>
+        </a>
+      </li>
+      
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'accounts:change_password' %}">
+          <i class="fas fa-key menu-icon"></i>
+          <span class="menu-title">Change Password</span>
+        </a>
+      </li>
+    </ul>
+</nav>

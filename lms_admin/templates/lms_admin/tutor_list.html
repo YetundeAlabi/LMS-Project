@@ -10,7 +10,7 @@
 <div class="content-wrapper" style="background-color: #EBEBEC;">
   <div class="row">
     <div class="col-12 col-xl-8 mb-4 mb-xl-0">
-      <h1>Tutors</h1>
+      <h2>Tutors</h2>
     </div>
   </div>
   
@@ -46,11 +46,14 @@
                       <td> {{ tutor.user.last_name}}</td>
                       <td><span>{{ tutor.user.email }}</span> </td>
                       <td>{{ tutor.track.name }}</td>
-                      <td class="font-weight-medium"><a href="{% url 'lms_admin:tutor_toggle_suspend' pk=tutor.pk%}" class="btn btn-sm btn-rounded {%if not tutor.is_suspended %}
-                          btn-info"> Active</a></td>
-                          {% else %}
-                          btn-warning">Suspended</a></td>
-                          {%endif%}
+                      <td class="font-weight-medium">
+                        <form action="{% url 'lms_admin:tutor_toggle_suspend' pk=tutor.pk %}" method="POST" class="d-inline">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-sm btn-rounded {% if tutor.user.is_active %}btn-success{% else %}btn-warning{% endif %}">
+                            {% if tutor.user.is_active %}Active{% else %}Suspended{% endif %}
+                          </button>
+                        </form>
+                      </td>
                       <td><a class="btn btn-sm btn-info btn-rounded" href="{% url 'lms_admin:tutor_detail' pk=tutor.pk%}">View</a></td>
 
                     </tr>

@@ -1,22 +1,28 @@
+from typing import Any, Optional
+from braces.views import CsrfExemptMixin, JsonRequestResponseMixin
 from django.apps import apps
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.forms.models import modelform_factory
+from django.db import models
+from django.forms.models import BaseModelForm, modelform_factory
 from django.forms.widgets import TextInput, Textarea
-from django.http import Http404
-from django.http.response import HttpResponseRedirect
+from django.http import Http404, HttpResponse
+from django.http.response import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
+from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
-from django.views.generic.base import TemplateResponseMixin, View, ContextMixin
+from django.views.generic.base import TemplateResponseMixin, View, ContextMixin, TemplateView
 from accounts.models import Student, Tutor
-from accounts.forms import TutorUpdateForm
+# from .forms import TutorUpdateForm
 from .forms import CourseForm, TopicForm, TopicFormSet
 from .models import Course, Topic, SubTopic
-
-from braces.views import CsrfExemptMixin, JsonRequestResponseMixin
-from django.views import View
+from accounts.models import Student
+from student.models import StudentCourse, StudentTopic, StudentSubTopic
+from django.views.generic.base import TemplateResponseMixin
+from .forms import TutorUpdateForm, SubtopicForm
+# from accounts.forms import TutorUpdateForm
 
 
 class TutorUserRequiredMixin(UserPassesTestMixin):
@@ -52,6 +58,11 @@ class CourseDetail(TutorUserRequiredMixin, DetailView):
     slug_field= 'slug'
     slug_url_kwarg= 'course_slug'
     template_name = 'tutor/course_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['topics'] = Topic.objects.filter(course=self.get_object())
+        return context
    
    
 class CourseAndTopicCreateView(TutorUserRequiredMixin, CreateView):
@@ -71,6 +82,15 @@ class CourseAndTopicCreateView(TutorUserRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.course_tutor = self.request.user.tutor
         form.instance.track = self.request.user.tutor.track
+
+        course_students=Student.objects.filter(track=form.instance.track)
+
+        course=form.instance.save()
+
+        for student in course_students:
+            student_course=StudentCourse.objects.create(student=student, track=form.instance.track, course=form.instance)
+            print(student_course)
+
         context = self.get_context_data()
         topic_formset = context['topic_formset']
 
@@ -81,6 +101,14 @@ class CourseAndTopicCreateView(TutorUserRequiredMixin, CreateView):
             for instance in topic_formset:
                 instance.course = course
                 instance.save()
+                topic=instance
+                student_courses = instance.course.student_courses.all()
+                
+                for student_course in student_courses:
+                    student_topic=StudentTopic.objects.create(student_course=student_course, topic= topic)
+                # # student_course=get_object_or_404(StudentCourse, course=instance.course)
+                # student_course=instance.course
+                # print(student_topic)
             return super().form_valid(form)
         else:
             return self.form_invalid(form)
@@ -91,7 +119,6 @@ class CreateTopicView(TutorUserRequiredMixin, SuccessMessageMixin, CreateView):
     form_class = TopicForm
     success_message = 'Topic created successfully'
     template_name = 'tutor/topic_form.html'
-
 
     def form_valid(self, form):
         course_slug = self.kwargs['course_slug']
@@ -106,7 +133,7 @@ class CreateTopicView(TutorUserRequiredMixin, SuccessMessageMixin, CreateView):
 
     def get_success_url(self):
         course_slug = self.kwargs['course_slug']
-        return reverse('course:topic_list', kwargs={'course_slug': course_slug})
+        return reverse('course:course_detail', kwargs={'course_slug': course_slug})
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -120,6 +147,11 @@ class TopicDetailView(TutorUserRequiredMixin, DetailView):
     context_object_name = 'topic'
     template_name = 'tutor/topic_detail.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['subtopics'] = SubTopic.objects.filter(topic=self.get_object())
+        return context
+
 
 class CourseUpdateView(TutorUserRequiredMixin, SuccessMessageMixin, UpdateView):    
     model = Course
@@ -127,7 +159,7 @@ class CourseUpdateView(TutorUserRequiredMixin, SuccessMessageMixin, UpdateView):
     slug_url_kwarg= 'course_slug'
     success_url = reverse_lazy('course:course_list')
     success_message = "Course Updated Successfully"
-    template_name ='tutor/course_create_update.html'
+    template_name ='tutor/course_update.html'
     form_class = CourseForm
 
     def dispatch(self, request, *args, **kwargs):
@@ -187,11 +219,11 @@ class TopicUpdateView(TutorUserRequiredMixin, SuccessMessageMixin, UpdateView):
     
     def get_success_url(self):
         course_slug = self.object.course.slug
-        return reverse_lazy('course:topic_list', kwargs={'course_slug': course_slug})
+        return reverse_lazy('course:course_detail', kwargs={'course_slug': course_slug})
 
 
 class TopicDeleteView(TutorUserRequiredMixin, View):
-    
+
     def get_object(self):
         pk = self.kwargs['pk']
         return get_object_or_404(Topic, id=pk)
@@ -244,69 +276,73 @@ class TrackStudentDetailView(TutorUserRequiredMixin, DetailView):
         messages.success(request, "Student suspension status has been changed successfully.")
         return HttpResponseRedirect(reverse('course:track_student_detail', kwargs={'pk':student.id}))
 
-class SubTopicCreateUpdateView(TemplateResponseMixin, View):
-    topic = None
-    model = None
-    obj = None
-    template_name = 'tutor/subtopic.html'
+# class SubTopicCreateUpdateView(TemplateResponseMixin, View):
+#     topic = None
+#     model = None
+#     obj = None
+#     template_name = 'tutor/subtopic.html'
 
-    def get_model(self, model_name):
-        if model_name in ['text', 'video', 'file']:
-            return apps.get_model(app_label='tutor', model_name=model_name)
-        return None
+#     def get_model(self, model_name):
+#         if model_name in ['text', 'video', 'file']:
+#             return apps.get_model(app_label='tutor', model_name=model_name)
+#         return None
 
-    def get_form(self, model, *args, **kwargs):
-        Form = modelform_factory(model, exclude=[
-            'created_at',
-            'updated_at',
-            'is_active',
-        ])
+#     def get_form(self, model, *args, **kwargs):
+#         Form = modelform_factory(model, exclude=[
+#             'created_at',
+#             'updated_at',
+#             'is_active',
+#         ])
 
-        for field_name, field in Form.base_fields.items():
-            if isinstance(field.widget, TextInput) or isinstance(field.widget, Textarea):
-                field.widget.attrs['class'] = 'form-control form-control-lg'
-        return Form(*args, **kwargs)
+#         for field_name, field in Form.base_fields.items():
+#             if isinstance(field.widget, TextInput) or isinstance(field.widget, Textarea):
+#                 field.widget.attrs['class'] = 'form-control form-control-lg'
+#         return Form(*args, **kwargs)
 
-    def dispatch(self, request, course_slug, topic_id, model_name, id=None):
-        self.topic = get_object_or_404(
-            Topic,
-            id=topic_id,
-            course__slug=course_slug,
-            course__course_tutor=request.user.tutor
-        )
-        self.model = self.get_model(model_name)
-        if id:
-            try:
-                self.obj = self.model.objects.get(id=id)
-            except self.model.DoesNotExist:
-                raise Http404
-        return super().dispatch(request, course_slug, topic_id, model_name, id)
+#     def dispatch(self, request, course_slug, topic_id, model_name, id=None):
+#         self.topic = get_object_or_404(
+#             Topic,
+#             id=topic_id,
+#             course__slug=course_slug,
+#             course__course_tutor=request.user.tutor
+#         )
+#         self.model = self.get_model(model_name)
+#         if id:
+#             try:
+#                 self.obj = self.model.objects.get(id=id)
+#             except self.model.DoesNotExist:
+#                 raise Http404
+#         return super().dispatch(request, course_slug, topic_id, model_name, id)
 
-    def get(self, request, course_slug, topic_id, model_name, id=None):
-        form = self.get_form(self.model, instance=self.obj)
-        return self.render_to_response({'form': form, 'object': self.obj})
+#     def get(self, request, course_slug, topic_id, model_name, id=None):
+#         form = self.get_form(self.model, instance=self.obj)
+#         return self.render_to_response({'form': form, 'object': self.obj})
 
-    def post(self, request, course_slug, topic_id, model_name, id=None):
-        form = self.get_form(self.model, instance=self.obj, data=request.POST, files=request.FILES)
-        if form.is_valid():
-            if id:
-                obj = form.save(commit=False)
-                if 'file' in request.FILES:
-                    obj.file = request.FILES['file']
-                obj.save()
+#     def post(self, request, course_slug, topic_id, model_name, id=None):
+#         form = self.get_form(self.model, instance=self.obj, data=request.POST, files=request.FILES)
+#         if form.is_valid():
+#             if id:
+#                 obj = form.save(commit=False)
+#                 if 'file' in request.FILES:
+#                     obj.file = request.FILES['file']
+#                 obj.save()
 
-            if not id:
-                obj = form.save(commit=False)
-                if 'file' in request.FILES:
-                    obj.file = request.FILES['file']
-                obj.save()
-
-                subtopic = SubTopic(topic=self.topic, item=obj)
-                subtopic.title = form.cleaned_data['title']
-                subtopic.description = form.cleaned_data['description']
-                subtopic.save()
-            return HttpResponseRedirect(reverse('course:subtopic_list', kwargs={'course_slug': self.topic.course.slug, 'pk': topic_id}))
-        return self.render_to_response({'form': form, 'object': self.obj})
+#             if not id:
+#                 obj = form.save(commit=False)
+#                 if 'file' in request.FILES:
+#                     obj.file = request.FILES['file']
+#                 obj.save()
+#                 subtopic = SubTopic(topic=self.topic, item=obj)
+#                 subtopic.title = form.cleaned_data['title']
+#                 subtopic.description = form.cleaned_data['description']
+#                 subtopic.save()
+#                 students=Student.objects.filter(track=subtopic.topic.course.track)
+#                 student_topics=StudentTopic.objects.filter(topic=self.topic)
+#                 for student_topic in student_topics:
+#                     StudentSubTopic.objects.create(student_topic=student_topic, sub_topic=subtopic)
+#                 print(subtopic.topic.course.track)
+#             return HttpResponseRedirect(reverse('course:subtopic_list', kwargs={'course_slug': self.topic.course.slug, 'pk': topic_id}))
+#         return self.render_to_response({'form': form, 'object': self.obj})
 
 
 class SubTopicDeleteView(View):
@@ -322,29 +358,29 @@ class SubTopicDeleteView(View):
         return HttpResponseRedirect(reverse('course:subtopic_list', kwargs={'course_slug': sub_topic.topic.course.slug, 'pk':sub_topic.topic.id}))
     
     
-class SubTopicList(TutorUserRequiredMixin, ListView):
-    model=SubTopic
-    queryset =SubTopic.active_objects.all()
-    context_object_name = 'subtopics'
-    template_name = 'tutor/subtopic_list.html'
+# class SubTopicList(TutorUserRequiredMixin, ListView):
+#     model=SubTopic
+#     queryset =SubTopic.active_objects.all()
+#     context_object_name = 'subtopics'
+#     template_name = 'tutor/subtopic_list.html'
 
-    def get_queryset(self):
-        topic_id=self.kwargs['pk']
-        course_slug=self.kwargs['course_slug']
-        return super().get_queryset().filter(topic=get_object_or_404(Topic, id=topic_id))
+#     def get_queryset(self):
+#         topic_id=self.kwargs['pk']
+#         course_slug=self.kwargs['course_slug']
+#         return super().get_queryset().filter(topic=get_object_or_404(Topic, id=topic_id))
     
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        topic_id = self.kwargs['pk']
-        context['topic'] = get_object_or_404(Topic, id=topic_id)
-        return context
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         topic_id = self.kwargs['pk']
+#         context['topic'] = get_object_or_404(Topic, id=topic_id)
+#         return context
     
 
-class SubTopicDetailView(TutorUserRequiredMixin, DetailView):
-    model = SubTopic
-    context_object_name='subtopic'
-    template_name = 'tutor/subtopic_detail.html'
-    pk_url_kwarg ='id'
+# class SubTopicDetailView(TutorUserRequiredMixin, DetailView):
+#     model = SubTopic
+#     context_object_name='subtopic'
+#     template_name = 'tutor/subtopic_detail.html'
+#     pk_url_kwarg ='id'
 
 
 class TopicOrderView(CsrfExemptMixin, JsonRequestResponseMixin, View):
@@ -352,6 +388,7 @@ class TopicOrderView(CsrfExemptMixin, JsonRequestResponseMixin, View):
         for id, order in self.request_json.items():
             Topic.active_objects.filter(id=id, course__course_tutor=request.user.tutor).update(order=order)
         return self.render_json_response({'saved': 'OK'})
+    
 
 class SubTopicOrderView(CsrfExemptMixin, JsonRequestResponseMixin, View):
     def post(self, request):
@@ -364,4 +401,79 @@ class SubTopicOrderView(CsrfExemptMixin, JsonRequestResponseMixin, View):
         return self.render_json_response({'saved': 'OK'})
   
 
-        
+class TutorProfileView(TemplateView):
+    template_name = 'tutor/tutor_profile.html'
+
+
+class TutorUpdateView(UpdateView):
+    model = Tutor
+    form_class = TutorUpdateForm
+    template_name = 'tutor/tutor_update.html'
+    success_url = reverse_lazy('course:tutor_profile')
+
+    def form_valid(self, form):
+        tutor = form.instance
+        user = tutor.user
+        user.github_link = form.cleaned_data['github_link']
+        user.linkedin_link = form.cleaned_data['linkedin_link']
+        user.twitter_link = form.cleaned_data['twitter_link']
+        user.picture = form.cleaned_data['picture']
+        user.save()
+        return super().form_valid(form)
+    
+
+
+class SubTopicCreateUpdateView(CreateView):
+    model = SubTopic
+    form_class = SubtopicForm
+    success_message = 'Subtopic created successfully'
+    template_name = 'tutor/create_subtopic_test.html'
+    pk_url_kwarg = 'pk'
+
+
+    def form_valid(self, form):
+        instance= form.save(commit=False)
+        topic_id= self.kwargs['topic_id']
+        topic=get_object_or_404(Topic, id=topic_id)
+        instance.topic=topic
+        instance.save()
+        student_topics=StudentTopic.objects.filter(topic=topic)
+        for student_topic in student_topics:
+            StudentSubTopic.objects.create(student_topic=student_topic, sub_topic=instance)
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        course_slug = self.kwargs['course_slug']
+        return reverse_lazy('course:topic_detail', kwargs={'course_slug': course_slug, 'pk':self.kwargs['topic_id']})
+    
+
+class SubTopicList(TutorUserRequiredMixin, ListView):
+    model=SubTopic
+    queryset =SubTopic.objects.all()
+    context_object_name = 'Subtopictests'
+    template_name = 'tutor/subtopictestlist.html'
+
+    def get_queryset(self):
+        topic_id=self.kwargs['pk']
+        return super().get_queryset().filter(topic__id=topic_id)
+    
+    def get_context_data(self, **kwargs):
+        context=super().get_context_data(*kwargs)
+        course_slug=self.kwargs['course_slug']
+        topic_id=self.kwargs['pk']
+        context['topic'] =get_object_or_404(Topic, id =topic_id)
+        context['course_slug']=course_slug
+        context['course'] = get_object_or_404(Course, slug=course_slug)
+        return context
+
+
+class SubTopicDetailView(DetailView):
+    model = SubTopic
+    queryset = SubTopic.objects.all()
+    context_object_name = 'subtopic'
+    template_name = 'tutor/subtopictestdetail.html'
+
+    def get_object(self, queryset=None):
+        subtopictest_id = self.kwargs['id']
+        subtopic = get_object_or_404(SubTopic, id=subtopictest_id)
+        return subtopic

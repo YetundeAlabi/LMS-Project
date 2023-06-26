@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% load embed_video_tags %}
+
+{% block navbar %}
+  {% include 'student/side_bar.html' %}
+{% endblock %} 
+
+{% block content %}
+  <div class="content-wrapper" style="background-color: #EBEBEC">
+    <div class="row">
+      <div class="col-md">
+        <h3>Topic: {{ student_subtopic.student_topic.topic.title }}</h3>
+        <hr>
+        
+        
+        {{ student_subtopic.sub_topic.details|safe }}
+        
+        <div>
+          {% for link in student_subtopic.sub_topic.details|safe|extract_links %}
+            {% if link|is_video_url %}
+              {% with link|embed_video as embed_code %}
+                {{ embed_code|safe }}
+              {% endwith %}
+            {% endif %}
+          {% endfor %}
+        </div>
+        <div class="navigation-buttons">
+            {% if previous_subtopic %}
+                <a href="{% url 'student:student_subtopic_detail' student_course_slug=student_course_slug pk=student_course.id student_topic_slug=student_topic_slug student_subtopic_id=previous_subtopic.id %}" class="btn btn-primary mt-3">Previous</a>
+            {% endif %}
+            {% if next_subtopic %}
+                <a href="{% url 'student:student_subtopic_detail' student_course_slug=student_course_slug pk=student_course.id student_topic_slug=student_topic_slug student_subtopic_id=next_subtopic.id %}" class="btn btn-primary mt-3">Next</a>
+            {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+

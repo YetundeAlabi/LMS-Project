@@ -1,5 +1,11 @@
+
 {% extends 'base.html' %}
+{% load custom_filters %}
 {% load embed_video_tags %}
+
+
+
+
 
 {% block navbar %}
   {% include 'tutor/tutor_nav_bar.html' %}
@@ -7,42 +13,66 @@
 
 {% block content %}
 
-<div class="row">
-  <div class="col-md">
-    <h3>Subtopic Detail</h3>
-    <hr>
-    <h3>Topic: {{ subtopic.topic }}</h3>
-    <h4>Subtopic Title: {{ subtopic.item.title }}</h4>
 
-    {% if subtopic.content_type.model == 'text' %}
-      <h5>Content Type: Text</h5>
-      <p>{{ subtopic.item.text }}</p>
-    {% elif subtopic.content_type.model == 'file' %}
-      {% if subtopic.item.file.url %}
-        {% if subtopic.item.file.url|lower|slice:'-4:' == ".jpg" or subtopic.item.file.url|lower|slice:'-5:' == ".jpeg" or subtopic.item.file.url|lower|slice:'-4:' == ".png" %}
-          <h5>Content Type: Image/PDF</h5>
-          <object type="application/pdf" data="{{ subtopic.item.get_file_url }}" width="100%" height="100%" frameborder="0" scrolling="auto"></object>
-        {% else %}
-          <h5>Content Type: PDF</h5>
-          <p>
-            <a href="{{ subtopic.item.get_file_url }}" class="button">View File</a>
-          </p>
-          <iframe src="{{ subtopic.item.get_file_url }}" width="100%" height="500px" frameborder="0" scrolling="auto"></iframe>
-          <p>Unable to display PDF file. <a href="{{ subtopic.item.get_file_url }}">Download</a> instead.</p>
+<div class="content-wrapper" style="background-color: #EBEBEC">
+    
+  <div class="row">
+    <div class="col-md">
+      <h3>Subtopic Detail</h3>
+      <hr>
+      <h3>Topic: {{ subtopic.topic.title }}</h3>
+      <h4>Lesson Title: {{ subtopic.item.title }}</h4>
+
+      {% if subtopic.content_type.model == 'text' %}
+        <h5>Content Type: Text</h5>
+        <p>{{ subtopic.item.text }}</p>
+        <p>{{ subtopic.details|safe }}</p>
+
+        
+        <div>
+          {% for link in subtopic.details|safe|extract_links %}
+            {% if link|is_image %}
+              <img src="{{ link }}" alt="Image" style="display: inline-block; max-width: 20%; height: auto;">
+            {% elif link|is_video_url %}
+              {% with link|embed_video as embed_code %}
+                {{ embed_code|safe }}
+              {% endwith %}
+            {% elif link|is_pdf %}
+              <embed src="{{ link }}" type="application/pdf" width="500" height="600">
+            {% else %}
+              <a href="{{ link }}">{{ link }}</a>
+            {% endif %}
+          {% endfor %}
+        </div>
+        
+      
+
+      {% elif subtopic.content_type.model == 'file' %}
+        {% if subtopic.item.file.url %}
+          {% if subtopic.item.file.url|lower|slice:'-4:' == ".jpg" or subtopic.item.file.url|lower|slice:'-5:' == ".jpeg" or subtopic.item.file.url|lower|slice:'-4:' == ".png" %}
+            <h5>Content Type: Image/PDF</h5>
+            <object type="application/pdf" data="{{ subtopic.item.get_file_url }}" width="100%" height="100%" frameborder="0" scrolling="auto"></object>
+          {% else %}
+            <h5>Content Type: PDF</h5>
+            <p>
+              <a href="{{ subtopic.item.get_file_url }}" class="button">View File</a>
+            </p>
+            <iframe src="{{ subtopic.item.get_file_url }}" width="100%" height="500px" frameborder="0" scrolling="auto"></iframe>
+            <p>Unable to display PDF file. <a href="{{ subtopic.item.get_file_url }}">Download</a> instead.</p>
+          {% endif %}
         {% endif %}
+      {% elif subtopic.content_type.model == 'video' %}
+        <h5>Content Type: Video</h5>
+        {% video subtopic.item.url "small" %}
       {% endif %}
-    {% elif subtopic.content_type.model == 'video' %}
-      <h5>Content Type: Video</h5>
-      {% video subtopic.item.url "small" %}
-    {% endif %}
 
 
-    <hr>
- 
-    <a class="btn btn-success mt-4 mb-4" href="{% url 'course:update_subtopic' subtopic.topic.course.slug subtopic.topic.id subtopic.content_type.model subtopic.item.id %}">Update</a>
-    <a class="btn btn-danger mt-4 mb-4" href="{% url 'course:delete_subtopic' subtopic.item.id %}">Delete</a>
-    <a class="btn btn-primary mt-4 mb-4" href="{% url 'course:subtopic_list' subtopic.topic.course.slug subtopic.topic.id %}">Back</a>
+      <hr>
+  
+      <a class="btn btn-success mt-4 mb-4" href="{% url 'course:update_subtopic' subtopic.topic.course.slug subtopic.topic.id subtopic.content_type.model subtopic.item.id %}">Update</a>
+      <a class="btn btn-danger mt-4 mb-4" href="{% url 'course:delete_subtopic' subtopic.item.id %}">Delete</a>
+      <a class="btn btn-primary mt-4 mb-4" href="{% url 'course:subtopic_list' subtopic.topic.course.slug subtopic.topic.id %}">Back</a>
+    </div>
   </div>
 </div>
-
 {% endblock content %}

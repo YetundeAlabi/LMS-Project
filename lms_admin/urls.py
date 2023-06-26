@@ -3,7 +3,8 @@ from django.urls import path
 app_name = 'lms_admin'
 
 from .views import (CohortCreateFormView, CohortListView, CohortDetailView, TutorListView, TutorCreateFormView, 
-                    TutorDetailView, TutorDeleteView, TutorUpdateView, ToggleTutorSuspendView, ApplicantListView,AllApplicantListView, ApplicantThankYouView)
+                    TutorDetailView, TutorDeleteView, TutorUpdateView, ToggleTutorSuspendView, ApplicantListView,
+                    AllApplicantListView, ApplicantThankYouView, TutorConfirmDeleteView)
 
 from lms_admin import views
 
@@ -16,6 +17,7 @@ urlpatterns = [
     path("tutor/<int:pk>/", TutorDetailView.as_view(), name="tutor_detail"),
     path("tutor/<int:pk>/update/", TutorUpdateView.as_view(), name="tutor_update"),
     path("tutor/<int:pk>/delete/", TutorDeleteView.as_view(), name="tutor_delete"),
+    path("tutor/<int:pk>/confirm_delete/", TutorConfirmDeleteView.as_view(), name="tutor_confirm_delete"),
     path("tutor/<int:pk>/togglesuspend/",
          ToggleTutorSuspendView.as_view(), name="tutor_toggle_suspend"),
     path("cohort/", CohortListView.as_view(), name="cohort_list"),
@@ -33,7 +35,6 @@ urlpatterns = [
     path("student/<int:pk>/delete/", views.StudentDeleteView.as_view(), name="student_delete"),
     path("student/<int:pk>/togglesuspend/", views.ToggleStudentSuspendView.as_view(), name="student_toggle_suspend"),
     path('import_students/', views.StudentImportView.as_view(), name='import_students'),
-    path('apply/', views.ApplicantCreateView.as_view(), name="apply"),
     path('applicants_approval/', views.ApplicantApprovalFormView.as_view(), name="applicants_approval"),
     path('approved_applicants_export/', views.ExportApprovedApplicantsCSVView.as_view(), name="export_approved_applicants"),
     path('applicant_list/', ApplicantListView.as_view(), name='applicant_list'),

@@ -1,6 +1,7 @@
 from django.urls import path, include
 from . import views
-from django_pdfkit import PDFView
+
+
 
 app_name= "course"
 urlpatterns = [
@@ -16,22 +17,32 @@ urlpatterns = [
     path('course/<slug:course_slug>/topics/create', views.CreateTopicView.as_view(), name='create_topic'),
     path('courses/<slug:course_slug>/topic/<uuid:pk>/', views.TopicDetailView.as_view(), name='topic_detail'),
     path('courses/<slug:course_slug>/topic/<uuid:pk>/subtopic/create', views.TopicUpdateView.as_view(), name='update_topic'),
-    path('courses/<slug:course_slug>/topics/<uuid:pk>/subtopic/create', views.TopicUpdateView.as_view(), name='update_topic'),
+    # path('courses/<slug:course_slug>/topics/<uuid:pk>/subtopic/create', views.TopicUpdateView.as_view(), name='update_topic'),
     path('courses/<slug:course_slug>/topics/<uuid:pk>/subtopic/list', views.SubTopicList.as_view(), name='subtopic_list'),
     path('courses/<slug:course_slug>/topics', views.TopicList.as_view(), name='topic_list'),
     path('courses/<slug:course_slug>/topics/<int:id>/delete', views.TopicDeleteView.as_view(), name='create_topic'),
     path('subtopic/<int:id>/delete', views.SubTopicDeleteView.as_view(), name='delete_subtopic'),
-    path('courses/<slug:course_slug>/topics/<uuid:topic_id>/subtopic/<str:model_name>/create', views.SubTopicCreateUpdateView.as_view(), name='create_subtopic'),
-    path('courses/<slug:course_slug>/topics/<uuid:topic_id>/subtopic/<str:model_name>/<int:id>/update', views.SubTopicCreateUpdateView.as_view(), name='update_subtopic'),
-    path('courses/<slug:course_slug>/topics/<uuid:topic_id>/subtopic/<str:model_name>/<int:id>/detail', views.SubTopicDetailView.as_view(), name='subtopic_detail'),
+    path('courses/<slug:course_slug>/topics/<uuid:topic_id>/subtopic/create', views.SubTopicCreateUpdateView.as_view(), name='create_subtopic'),
+    
+    # path('courses/<slug:course_slug>/topics/<uuid:topic_id>/sub', views.SubTopicCreateUpdateView.as_view(), name='create_subtopic'),
+    # path('courses/<slug:course_slug>/topics/<uuid:topic_id>/sub/list', views.SubtopicTestListView.as_view(), name='testsubtopic_list'),
+    # path('courses/<slug:course_slug>/topics/<uuid:topic_id>/sub/list/<int:subtopic_id>', views.SubtopicTestDetailView.as_view(), name='testsubtopic_detail'),
+
+
+    # path('courses/<slug:course_slug>/topics/<uuid:topic_id>/subtopic/<str:model_name>/<int:id>/update', views.SubTopicCreateUpdateView.as_view(), name='update_subtopic'),
+    path('courses/<slug:course_slug>/topics/<uuid:topic_id>/subtopic/<int:id>/detail', views.SubTopicDetailView.as_view(), name='subtopic_detail'),
 
     path('track/students/', views.TrackStudentListView.as_view(), name='track_student_list'),
     path('track/students/<int:pk>/', views.TrackStudentDetailView.as_view(), name='track_student_detail'),
-    # path('lession/pdf/view', PDFView.as_view(template_name='tutor/subtopic_detail.html'), name='my_pdf')
-    # path('track/tutor_detail/', views.TutorProfileView.as_view(), name='tutor_profile'),
     path('topic/order/',  views.TopicOrderView.as_view(), name='topic_order'),
     path('subtopic/order/', views.SubTopicOrderView.as_view(), name='subtopic_order'),
+    path('tutor/profile', views.TutorProfileView.as_view(), name='tutor_profile'),
+    path('tutor/update/<int:pk>', views.TutorUpdateView.as_view(), name='tutor_update'),
+    
+
+    
 ]
+
 
 
  

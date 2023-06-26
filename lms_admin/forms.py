@@ -1,11 +1,11 @@
 import csv
 from io import TextIOWrapper
-
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-from lms_admin.models import Track
 
+from lms_admin.models import Track
+from phonenumber_field.formfields import PhoneNumberField
 from .models import Applicant, Cohort
 
 
@@ -25,56 +25,42 @@ class TrackForm(forms.ModelForm):
         name = self.cleaned_data.get('name')
         if self.instance is not None: 
             if Track.objects.filter(name__iexact=name).exclude(pk=self.instance.pk).exists():
-                raise ValidationError()
+                raise ValidationError('A track with the same name already exists.')
         return name
 
 
-
-
 class ApplicantForm(forms.ModelForm):
-    def __init__(self, company, *args, **kwargs):
-        self.company = company
-        super().__init__(*args, **kwargs)
-        self.fields['track'].queryset = Track.objects.filter(company_id=company.id)
 
     class Meta:
         model = Applicant
         exclude = ("is_approved", "cohort")
+        labels = {
+            'address': "Home Address",
+            'picture': "Profile Picture",
+        }
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}),
+            'email': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
+            'track': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Track'}),
+            'gender': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Gender'}),
+            'picture': forms.ClearableFileInput(attrs={'class': 'form-control file-upload-info', 'placeholder': 'Picture'}),
+            'phone_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number'}),
+            'address': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Home Address'}),
+        }
 
-    first_name = forms.CharField(
-        label='First Name',
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'})
-    )
-    last_name = forms.CharField(
-        label='Last Name',
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'})
-    )
-    email = forms.EmailField(
-        label='Email',
-        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'})
-    )
-    gender = forms.ChoiceField(
-        label='Gender',
-        choices=Applicant.GENDER_CHOICES,
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
-    track = forms.ModelChoiceField(
-        label='Track',
-        queryset=Track.objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
 
 
 class ApplicantChecklistForm(forms.Form):
     applicants = forms.ModelMultipleChoiceField(
-        queryset=Applicant.not_approved.filter(cohort__year=timezone.now().year),
+        queryset=Applicant.unapproved.filter(cohort__year=timezone.now().year),
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-control form-control-lg'}),
     )
 
 
 class StudentImportForm(forms.Form):
     csv_file = forms.FileField(label='csv_file')
-    cohort = forms.ModelChoiceField(queryset=Cohort.objects.all(), label="Cohort")
+    cohort = forms.ModelChoiceField(queryset=Cohort.objects.all(), label="cohort")
     
     def process_csv(self):
         csv_file = self.cleaned_data['csv_file']
@@ -90,6 +76,8 @@ class StudentImportForm(forms.Form):
                 'last_name': row['last_name'],
                 'gender': row['gender'],
                 'track': row['track'],
+                'phone_number': row['phone_number'],
+                'address': row['address'],
                 'cohort': self.cleaned_data['cohort'], 
                   
                 

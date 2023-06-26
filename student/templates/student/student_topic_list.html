@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block navbar %}
+  {% include 'student/student_sidebar.html' %}
+{% endblock %} 
+
+{% block content %}
+
+<style>
+  .topic-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+  }
+
+  .card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+  }
+  
+  .card-body {
+    padding: 0;
+    margin: 0;
+  }
+  
+  .card-title {
+    margin: 0;
+    padding: 10px;
+  }
+
+  a:hover{
+    text-decoration: none!important;
+  }
+</style>
+
+<div class="content-wrapper">
+<div class="row">
+    <div class="col-sm-10">
+        <div class="topic-cards" >
+            <div class="card">
+              <h3 style="margin-top: 4%;">{{student_course.course.title}}</h3>
+                <!-- <div class="card-header"> -->
+                  <p>{% if student_topics %}</p>
+                  
+                  <br>
+                  <ul>
+                    <span style="margin-left: 3%; font-size: large;"><b>Topics</b></span>
+                    {% for student_topic in student_topics %}
+                    <a href="{% url 'student:subtopic_redirect' student_course_slug=student_course_slug student_topic_slug=student_topic.slug pk=student_course.id %}">
+                    <div class="topic-cards">
+                        <div class="card" >
+                            <div class="card-header" style="border-radius: 20px; box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2);">
+                                <h5 class="card-title">
+                                    {{ student_topic.topic.title }}
+                                    <span style="float: right;"><h6>{{ student_topic.progress_level }}%</h6></span>
+                                </h5>
+                                <p>{{ student_topic.topic.description }}</p>
+                                <div class="progress" style="height: 5px;">
+                                  <div class="progress-bar" role="progressbar" aria-label="Basic example" style="width: {{student_topic.progress_level}}%" aria-valuenow="{{student_topic.progress_level}}" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  </a>
+                {% endfor %}
+                
+                  </ul>
+                  {% else %}
+                  <p>No topics found for this student course.</p>
+                  {% endif %}
+                </div>
+            <!-- </div> -->
+        </div>
+    </div>
+    <!-- <div class="col-sm-2"></div> -->
+</div>
+</div>
+
+{% endblock %}

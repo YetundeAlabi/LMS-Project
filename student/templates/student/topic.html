@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{%block content%}
+
+<div class="content-wrapper" style="background-color: #EBEBEC;">
+   <div class="mb-5 px-3" >
+    <h3><strong>Track: {{student_track}} </strong></h3>
+   </div>
+{% if student_topics %}
+    <div class="mb-5">
+        <a href="#" class="btn">Active Learning</a>
+        <a href="#" class="btn">Completed</a>
+    </div>
+
+    {% for student_topic in student_topics %}
+            <div class="card p-3 mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-6">
+                        <h5 class="card-title"><li>{{ student_topic.slug }} <a href="{% url 'student:subtopic_redirect' student_course_slug=student_course_slug student_topic_slug=topic.slug %}">View</a></li>
+                        </h5>
+                    </div>
+                    <div class="progress" style="height: 15px;">
+                        <div class="progress-bar" role="progressbar" aria-label="Basic example" style="width: {{student_course.progress_level}}%" aria-valuenow="{{student_course.progress_level}}" aria-valuemin="0" aria-valuemax="100">{{student_course.progress_level|floatformat:1}}%</div>
+                    </div>
+                </div>
+            </div>
+        {%endfor%}
+    {% else %}
+        <p>No topics found for this student course.</p>
+{%endif%}
+
+{% endblock %}

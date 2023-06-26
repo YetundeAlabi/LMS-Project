@@ -1,5 +1,4 @@
 {% extends 'base.html' %} 
-
 {% block navbar %}
     
     {% include 'nav_bar.html' %}
@@ -12,7 +11,7 @@
   <div class="row justify-content-end mb-3">
     <div class="col-sm-2 card d-flex ">
       <div class="card-body p-2" style="color: #000080;">
-        <strong> {{cohort}} </strong>
+        <strong> {{cohort.year}} Cohort</strong>
       </div>
     </div>
   </div>
@@ -80,7 +79,9 @@
       </div>
     </div>
   </div>
+
   <div class="row mt-5">
+
     <div class="col-lg-6">
       <div class="card chart mt-5">
         <div class="card-body dashboard-card-body" style="color: #00008b;">
@@ -89,6 +90,7 @@
         </div>
       </div>
     </div>
+
     <div class="col-lg-6">
       <div class="card mt-5">
         <div class="card-body dashboard-card-body">
@@ -97,6 +99,7 @@
         </div>
       </div>
     </div>
+
   </div>
 
 <!--Student track barchart -->
@@ -105,7 +108,7 @@
     <div class="card-body dashboard-card-body">
       <p class="card-title mb-4" style="color: #00008b;"> Tutors</p>
       <div class="table-responsive">
-        <table class="table table-striped-lms table-hover" style="width: 100%;">
+        <table class="table table-striped-lms table-hover datatable" style="width: 100%;">
           <thead>
             <tr>
               <th>S/N</th>
@@ -122,10 +125,10 @@
               <td> {{ tutor.user.first_name}} {{ tutor.user.last_name}} </td>
               <td><span>{{ tutor.user.email }}</span> </td>
               <td>{{ tutor.track.name }}</td>
-              <td class="font-weight-medium"><a href="{% url 'lms_admin:tutor_toggle_suspend' pk=tutor.pk%}" class="btn {%if not tutor.is_suspended %}
-                  btn-info"> Active</a></td>
+              <td class="font-weight-medium"><div class="badge {% if not tutor.is_suspended %}
+                  badge-success"> Active</div></td>
                   {% else %}
-                  btn-warning">Inactive</a></td>
+                  badge-warning">Suspended</div></td>
                   {%endif%}
             </tr>
             {% empty %}
@@ -144,7 +147,7 @@
 </div>
 {%endblock%}
 
-{%block script%}
+{%block script %}
 
       <!-- Bar Chart -->
     

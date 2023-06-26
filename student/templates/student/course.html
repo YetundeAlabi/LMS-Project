@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block navbar %}
+  {% include 'student/student_sidebar.html' %}
+{% endblock %} 
+
+{%block content%}
+<style>
+    .active {
+      background-color: #e1261c;
+    }
+    
+  </style>
+  
+<div class="content-wrapper" style="background-color: #EBEBEC;">
+   <div class="mb-5 px-3" >
+    <h3><strong>Track: {{student_track}} </strong></h3>
+   </div>
+   
+   <div class="mb-5">
+     <a href="{% url 'student:course_list' %}" class="btn active" id="activeBtn" onclick="toggleActive('activeBtn')" ><strong>Active Learning</strong></a>
+     <a href="{% url 'student:completed_course_list' %}" class="btn" id="completedBtn" onclick="toggleActive('completedBtn')"><strong>Completed</strong></a>
+     <hr class="line mt-0">
+   </div>
+   {% if student_courses %}
+   {% for student_course in student_courses %}
+    <div class="card p-3 mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-6">
+                <h5 class="card-title">{{student_course.course.title}}</h5>
+                </div>
+                <div class="col-sm-6 d-flex justify-content-end mb-3">
+                    <a href="{% url 'student:topic_list' student_course_slug=student_course.slug pk=student_course.id %}" class="btn btn-info btn-sm">Continue</a>
+                </div>
+            </div>
+            <div class="topic-cards mt-3">
+              <div class="card" >
+                  <div class="card-header" style="border-radius: 20px; box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2);">
+                      <h5 class="card-title">
+                          <span style="float: right;"><h6>{{ student_course.progress_level }}%</h6></span>
+                      </h5>
+                      <div class="progress" style="height: 5px;">
+                        <div class="progress-bar" role="progressbar" aria-label="Basic example" style="width: {{student_course.progress_level}}%" aria-valuenow="{{student_course.progress_level}}" aria-valuemin="0" aria-valuemax="100"></div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+            
+        </div>
+    </div>
+    
+    {%endfor%}
+    {%else%}
+    <div class="card text-center">
+        <div class="card-body">
+          <h4 class="card-title">Program has not yet started.</h4>
+          <h6 class="card-title">No courses available yet.</h6>
+          
+        </div>
+    </div>
+    {%endif%}
+</div>
+  
+{% endblock %}
