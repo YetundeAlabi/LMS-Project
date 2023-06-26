@@ -28,7 +28,13 @@ class StudentForm(forms.ModelForm):
         label='Gender',
         choices=User.GENDER_CHOICES,
         widget=forms.Select(attrs={'class': 'form-control'}))
-    
+
+    picture = forms.ImageField(
+        label="Profile picture",
+        required=False,
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control file-upload-info', 'placeholder': 'Picture' })
+    )
+
     address = forms.CharField(
         label='Home Address',
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Home Address'}))
@@ -36,16 +42,65 @@ class StudentForm(forms.ModelForm):
     phone_number = forms.CharField(
         label='Phone Number',
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number'}))
+
+    github_link = forms.URLField(
+        label="LinkedIn",
+        required=False,
+        widget=forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'Github link'}),
+    )
+
+    linkedin_link = forms.URLField(
+        label="LinkedIn",
+        required=False,
+        widget=forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'LinkedIn link'}),
+    )
+
+    twitter_link = forms.URLField(
+        label="Twitter",
+        required=False,
+        widget=forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'Twitter link'}),
+    )
     
     
     class Meta:
         model = Student
-        fields = ["email", "first_name", "last_name", "cohort", "track", "gender", "address", 
-                  "phone_number"]
+        fields = ["email", "first_name", "last_name", "cohort", "track", "gender", "picture",
+                  "address", "phone_number", "github_link", "twitter_link", "linkedin_link",]
+
+        labels = {
+            'track': 'Track',
+            'cohort': 'Cohort'
+        }
         widgets = {
             'track': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Track'}),
             'cohort': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Cohort'})
+
         }
+
+
+    def clean_github_link(self):
+        github_link = self.cleaned_data.get('github_link')
+        if github_link:
+            github_pattern = r'^https?://(www\.)?github\.com/[\w-]+/?$'
+            if not re.match(github_pattern, github_link):
+                raise forms.ValidationError("Invalid GitHub link format.")
+        return github_link
+
+    def clean_linkedin_link(self):
+        linkedin_link = self.cleaned_data.get('linkedin_link')
+        if linkedin_link:
+            linkedin_pattern = r'^https?://(www\.)?linkedin\.com/in/[\w-]+/?$'
+            if not re.match(linkedin_pattern, linkedin_link):
+                raise forms.ValidationError("Invalid LinkedIn link format.")
+        return linkedin_link
+
+    def clean_twitter_link(self):
+        twitter_link = self.cleaned_data.get('twitter_link')
+        if twitter_link:
+            twitter_pattern = r'^https?://(www\.)?twitter\.com/[\w-]+/?$'
+            if not re.match(twitter_pattern, twitter_link):
+                raise forms.ValidationError("Invalid Twitter link format.")
+        return twitter_link
 
 
 """ Tutor creation form """

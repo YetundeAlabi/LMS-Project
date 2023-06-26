@@ -1,8 +1,10 @@
 from accounts.models import Student
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, redirect, render 
 from django.views import View
+from django.urls import reverse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import (DetailView, TemplateView, UpdateView)
 
 from .forms import ProfileUpdateForm
@@ -25,12 +27,32 @@ class StudentProfileUpdateView(LoginRequiredMixin, UpdateView):
     model = Student
     form_class = ProfileUpdateForm
     template_name = 'student/profile_update.html'
-    success_url = '/student/profile/'
 
     def get_object(self, queryset=None):
         students = Student.objects.filter(user=self.request.user)
         student = students.first()
         return student
+
+    def get_initial(self):
+        initial = super().get_initial()
+        student = self.get_object()
+        initial['github_link'] = student.user.github_link
+        initial['linkedin_link'] = student.user.linkedin_link
+        initial['twitter_link']= student.user.twitter_link
+        initial['picture'] = student.user.picture
+        return initial
+
+    def form_valid(self, form):
+        student = self.get_object()
+        user = student.user
+        user.github_link = form.cleaned_data['github_link']
+        user.linkedin_link = form.cleaned_data['linkedin_link']
+        user.twitter_link = form.cleaned_data['twitter_link']
+        user.picture = form.cleaned_data['picture']
+        user.save()
+        student.save()
+        messages.success(self.request, "Student information updated successfully")
+        return HttpResponseRedirect(reverse('student:profile_detail'))
 
 
 class StudentActiveCourseListView(TemplateView):

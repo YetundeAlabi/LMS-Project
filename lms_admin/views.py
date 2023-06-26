@@ -126,14 +126,17 @@ class StudentCreateView(LoginRequiredMixin, AdminUserRequiredMixin, CreateView):
         picture=form.cleaned_data.get('picture')
         phone_number=form.cleaned_data.get('phone_number')
         address=form.cleaned_data.get('address')
+        github_link=form.cleaned_data.get('github_link')
+        linkedin_link=form.cleaned_data.get('linkedin_link')
+        twitter_link=form.cleaned_data.get('twitter_link')
         
 
-        user, created = User.objects.get_or_create(email=email, 
-                                                    first_name=first_name, 
-                                                    last_name=last_name,
-                                                    gender=gender, picture=picture, 
-                                                    phone_number=phone_number, address=address)
-        if created:
+        user, created = User.objects.get_or_create(email=email, first_name=first_name, 
+                                                    last_name=last_name, gender=gender, 
+                                                    picture=picture, phone_number=phone_number,
+                                                    address=address, github_link=github_link,
+                                                    linkedin_link=linkedin_link, twitter_link=twitter_link)
+        if not created:
             user.students.filter(is_current=True).get().is_current = False
         student = Student.objects.create(user=user, cohort=cohort, track=track)
         
@@ -195,11 +198,30 @@ class StudentUpdateView(LoginRequiredMixin, AdminUserRequiredMixin, UpdateView):
         initial['first_name'] = student.user.first_name
         initial['last_name'] = student.user.last_name
         initial['email'] = student.user.email
+        initial['picture'] = student.user.picture
+        initial['phone_number'] = student.user.phone_number
+        initial['address']= student.user.address
+        initial['github_link'] = student.user.github_link
+        initial['linkedin_link'] = student.user.linkedin_link
+        initial['twitter_link']= student.user.twitter_link
         return initial
 
     def form_valid(self, form):
+        student = self.get_object()
+        user = student.user
+        user.first_name = form.cleaned_data['first_name']
+        user.last_name = form.cleaned_data['last_name']
+        user.email = form.cleaned_data['email']
+        user.phone_number = form.cleaned_data['phone_number']
+        user.address = form.cleaned_data['address']
+        user.github_link = form.cleaned_data['github_link']
+        user.linkedin_link = form.cleaned_data['linkedin_link']
+        user.twitter_link = form.cleaned_data['twitter_link']
+        user.picture = form.cleaned_data['picture']
+        user.save()
+        student.save()
         messages.success(self.request, "Student information updated successfully")
-        return super().form_valid(form)
+        return HttpResponseRedirect(reverse('lms_admin:student_list'))
 
     
 class StudentDeleteView(LoginRequiredMixin, AdminUserRequiredMixin, DeleteView):
@@ -238,26 +260,31 @@ class StudentImportView(PasswordResetView, AdminUserRequiredMixin, FormView):
             track = student['track']
             phone_number = student['phone_number']
             address = student['address']
-
-            user, created = User.objects.get_or_create(email=email,
-                                                        first_name=first_name,
-                                                        last_name=last_name,gender=gender,
-                                                        phone_number=phone_number, 
-                                                        address=address)
+            picture = student['picture']
+            github_link = student['github_link']
+            twitter_link = student['twitter_link']
+            linkedin_link = student['linkedin_link']
             
-            if created:
+            user, created = User.objects.get_or_create(email=email, first_name=first_name, 
+                                                        last_name=last_name, gender=gender, 
+                                                        picture=picture, phone_number=phone_number,
+                                                        address=address, github_link=github_link,
+                                                        linkedin_link=linkedin_link, twitter_link=twitter_link)
+
+            
+            if  not created:
                 user.students.filter(is_current=True).get().is_current = False
             print(track)
             track_obj = Track.active_objects.get(name=track.strip())
             student = Student.objects.create(user=user, cohort=cohort, track=track_obj)
             subject = 'Account Setup Instructions' if created else 'Login Instructions'
             context = {
-                    'first_name': first_name,
-                    'verification_url': self.get_password_reset_url(user) if created else self._get_login_url(),
-               }
-        message = get_template('lms_admin/email_template.html').render(context)
-        recipient = [user.email]
-        send_verification_mail.delay(subject, recipient, message)
+                        'first_name': first_name,
+                        'verification_url': self.get_password_reset_url(user) if created else self._get_login_url(),
+                }
+            message = get_template('lms_admin/email_template.html').render(context)
+            recipient = [user.email]
+            send_verification_mail.delay(subject, recipient, message)
         messages.success(self.request, "Multiple students created successfully")
         return HttpResponseRedirect(reverse('lms_admin:student_list'))  
     
