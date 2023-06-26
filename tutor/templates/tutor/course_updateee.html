@@ -1,16 +1,14 @@
 {% extends 'base.html' %}
-
 {% block navbar %}
         {% include 'tutor/tutor_nav_bar.html' %}
 {% endblock %} 
-
 {% block content %}
   <div class="content-wrapper" style="background-color: #EBEBEC">
     <div class="col-12 grid-margin stretch-card">
       <div class="card">
         <div class="card-body">
-          <h3 class="card-title">Add a New Course</h3>
-          <p class="card-description">Enter details to create a new Course</p>
+          <h4 class="card-title">Topic Creation Form</h4>
+          <p class="card-description">Enter details to add topic</p>
           <form method="POST" class="forms-sample">
             {% csrf_token %}
             {% if form.errors %}
@@ -35,38 +33,14 @@
               {{ form.description.label_tag }}
               {{ form.description }}
             </div>
-            <div id="topic-formset-wrapper" style="display: none;">
-              {{ topic_formset.management_form }}
-              {% for form in topic_formset %}
-                <h4 class="mb-3 mt-2">Add Topic</h4>
-                <div class="form-group">
-                  {{ form.title.label_tag }}
-                  {{ form.title }}
-                </div>
-                <div class="form-group">
-                  {{ form.description.label_tag }}
-                  {{ form.description }}
-                </div>
-              {% endfor %}
-              <div class="form-group">
-                <input class="btn btn-success mr-2" value="Submit" type="submit">
-                <a href="{% url 'course:course_list' %}" class="btn btn-danger">Cancel</a>
+                <input class="btn btn-primary mr-2" value="Submit" type="submit">
+                <a href="" class="btn btn-danger">Cancel</a>
               </div>
             </div>
-            <button class="btn btn-info mr-2" type="button" id="add-topics-button">Add Topics</button>
           </form>
         </div>
       </div>
     </div>
   </div>
 
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script>
-    $(document).ready(function() {
-      $('#add-topics-button').click(function() {
-        $('#topic-formset-wrapper').toggle();
-        $(this).hide();
-      });
-    });
-  </script>
 {% endblock %}

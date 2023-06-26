@@ -82,11 +82,15 @@ class CourseAndTopicCreateView(TutorUserRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.course_tutor = self.request.user.tutor
         form.instance.track = self.request.user.tutor.track
+
         course_students=Student.objects.filter(track=form.instance.track)
+
         course=form.instance.save()
+
         for student in course_students:
             student_course=StudentCourse.objects.create(student=student, track=form.instance.track, course=form.instance)
             print(student_course)
+
         context = self.get_context_data()
         topic_formset = context['topic_formset']
 
@@ -98,9 +102,13 @@ class CourseAndTopicCreateView(TutorUserRequiredMixin, CreateView):
                 instance.course = course
                 instance.save()
                 topic=instance
-                student_course=get_object_or_404(StudentCourse, course=instance.course)
-                student_topic=StudentTopic.objects.create(student_course=student_course, topic= topic)
-                print(student_topic)
+                student_courses = instance.course.student_courses.all()
+                
+                for student_course in student_courses:
+                    student_topic=StudentTopic.objects.create(student_course=student_course, topic= topic)
+                # # student_course=get_object_or_404(StudentCourse, course=instance.course)
+                # student_course=instance.course
+                # print(student_topic)
             return super().form_valid(form)
         else:
             return self.form_invalid(form)
@@ -151,7 +159,7 @@ class CourseUpdateView(TutorUserRequiredMixin, SuccessMessageMixin, UpdateView):
     slug_url_kwarg= 'course_slug'
     success_url = reverse_lazy('course:course_list')
     success_message = "Course Updated Successfully"
-    template_name ='tutor/course_create_update.html'
+    template_name ='tutor/course_update.html'
     form_class = CourseForm
 
     def dispatch(self, request, *args, **kwargs):

@@ -2,7 +2,6 @@ from base import constants
 from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
                                         PermissionsMixin)
 from django.core.validators import RegexValidator
-
 from django.db import models
 from django.db.models.query import QuerySet
 from django.urls import reverse
@@ -81,6 +80,7 @@ class Student(DeletableBaseModel):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='students')
     cohort = models.ForeignKey(Cohort, on_delete=models.SET_NULL, related_name='students', null=True)
     track = models.ForeignKey(Track, on_delete=models.SET_NULL, related_name="students", null=True)
+    is_current= models.BooleanField(default=True)
     
     def get_full_name(self) -> str:
         return f'{self.user.first_name} {self.user.last_name}'
@@ -92,7 +92,6 @@ class Student(DeletableBaseModel):
         return f'{self.user.first_name} {self.user.last_name}'
 
     
-
 
 class Tutor(DeletableBaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="tutor")

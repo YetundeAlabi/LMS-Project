@@ -11,7 +11,7 @@ from tutor.models import Course, SubTopic, Topic, Track
 class StudentCourse(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     track = models.ForeignKey(Track, on_delete=models.CASCADE, null=True, blank=True)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="student_courses")
     slug = models.SlugField()
     progress_level = models.FloatField(default=0.0)
 
@@ -24,7 +24,6 @@ class StudentCourse(models.Model):
     def __str__(self):
         return f' {self.course.title} for {self.student.user.first_name}'
     
-
 
 class StudentTopic(models.Model):
     student_course = models.ForeignKey(StudentCourse, on_delete=models.CASCADE, related_name='student_topics')
