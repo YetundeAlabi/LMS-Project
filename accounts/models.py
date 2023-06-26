@@ -81,6 +81,7 @@ class Student(DeletableBaseModel):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='students')
     cohort = models.ForeignKey(Cohort, on_delete=models.SET_NULL, related_name='students', null=True)
     track = models.ForeignKey(Track, on_delete=models.SET_NULL, related_name="students", null=True)
+    is_current= models.BooleanField(default=True)
     
     def get_full_name(self) -> str:
         return f'{self.user.first_name} {self.user.last_name}'
