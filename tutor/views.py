@@ -25,8 +25,6 @@ from .forms import TutorUpdateForm, SubtopicForm
 # from accounts.forms import TutorUpdateForm
 
 
-
-
 class TutorUserRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.tutor
@@ -100,6 +98,7 @@ class CourseAndTopicCreateView(TutorUserRequiredMixin, CreateView):
                 instance.course = course
                 instance.save()
                 topic=instance
+                student_course=get_object_or_404(StudentCourse, course=instance.course)
                 student_topic=StudentTopic.objects.create(student_course=student_course, topic= topic)
                 print(student_topic)
             return super().form_valid(form)
@@ -429,12 +428,15 @@ class SubTopicCreateUpdateView(CreateView):
         topic_id= self.kwargs['topic_id']
         topic=get_object_or_404(Topic, id=topic_id)
         instance.topic=topic
-        instance.save
+        instance.save()
+        student_topics=StudentTopic.objects.filter(topic=topic)
+        for student_topic in student_topics:
+            StudentSubTopic.objects.create(student_topic=student_topic, sub_topic=instance)
         return super().form_valid(form)
 
     def get_success_url(self):
         course_slug = self.kwargs['course_slug']
-        return reverse_lazy('course:topic_list', kwargs={'course_slug': course_slug})
+        return reverse_lazy('course:topic_detail', kwargs={'course_slug': course_slug, 'pk':self.kwargs['topic_id']})
     
 
 class SubTopicList(TutorUserRequiredMixin, ListView):
@@ -444,13 +446,13 @@ class SubTopicList(TutorUserRequiredMixin, ListView):
     template_name = 'tutor/subtopictestlist.html'
 
     def get_queryset(self):
-        topic_id=self.kwargs['topic_id']
+        topic_id=self.kwargs['pk']
         return super().get_queryset().filter(topic__id=topic_id)
     
     def get_context_data(self, **kwargs):
         context=super().get_context_data(*kwargs)
         course_slug=self.kwargs['course_slug']
-        topic_id=self.kwargs['topic_id']
+        topic_id=self.kwargs['pk']
         context['topic'] =get_object_or_404(Topic, id =topic_id)
         context['course_slug']=course_slug
         context['course'] = get_object_or_404(Course, slug=course_slug)
