@@ -97,7 +97,7 @@ class SubTopic(BaseContent):
     )
     object_id = models.PositiveIntegerField()
     item = GenericForeignKey('content_type', 'object_id')
-    order = OrderField(blank=True, for_fields=['topic'])
+    order = OrderField(blank=True, for_fields=['topic'], null=True)
 
   
     class Meta:

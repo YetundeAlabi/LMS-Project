@@ -38,8 +38,9 @@
       color: #fff;
     }
 
-    .card-red {
+    .card-red, .btn-primary {
       background: #e1261c;
+      border: none;
     }
 
     .card-brown {
@@ -183,8 +184,12 @@
     <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
     <!-- endinject -->
     <!-- Plugin js for this page -->
-    <script src="{% static 'assets/js/dataTables.select.min.js' %}"></script>
+   
+    {% comment %} <script src="{% static 'assets/js/dataTables.select.min.js' %}"></script> {% endcomment %}
 
+    <script src="{% static 'assets/vendors/datatables.net/jquery.dataTables.js' %}"></script>
+    <script src="{% static 'assets/vendors/datatables.net-bs4/dataTables.bootstrap4.js' %}"></script>
+    
     <!-- End plugin js for this page -->
     <!-- inject:js -->
     <script src="{% static 'assets/js/template.js' %}"></script>
@@ -196,6 +201,12 @@
     <!-- Import Chart.js library -->
     <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.28.3/dist/apexcharts.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+      $(document).ready(function (){
+        $('.datatable').dataTable({});
+      })
+    </script>
 
 
     {% block script %} 

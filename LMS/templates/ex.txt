@@ -1,0 +1,56 @@
+[
+{'id': 1, 'name', 'url': 'https://www.com/1/detail', 'toggle_status_url': ''https://www.com/1/toggle-status'', 'delete_url': 'https://www.com/1/delete'},
+{'id': 2, 'name'},
+{'id': 3, 'name'},
+{'id': 4, 'name'},
+]
+
+
+{
+    'id', 'name', 'status', 'cohort', 'url': 'https://www.com/1/detail', 'toggle_status_url': ''https://www.com/1/toggle-status'', 'delete_url': 'https://www.com/1/delete'
+}
+
+
+delete_url = serializers.SerializerMethodField()
+
+
+def get_delete_url(self, object):
+    return reverse('products:delete_products', args=[object.id])
+
+
+
+
+class StudentListAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        students = Student.objects.all()
+        body = []
+        for student in students:
+            body.append(
+                {'name': student.name, 'class': student.class, 'created': student.created}
+            )
+        return Response(body)
+
+    def get(self, request, *args, **kwargs):
+        students = Student.objects.all()
+        data = Serializer(students).data
+        return Response(data)
+
+    def get(self, request, *args, **kwargs):
+        students = Student.objects.all()
+        data = Serializer(students).data
+        return Response({'status': True, 'data': data, 'message': 'Student list pulled successfully'})
+
+
+class StudentDetailAPIView(APIView)
+    def get(self, request, *args, **kwargs):
+        student_id = kwargs['id']
+        student = get_object_or_404(Student, pk=student_id)
+        body = {'name': student.name, 'class': student.class, 'created': student.created}
+        return Response(body)
+
+    def post(self, request, *args, **kwargs):
+        serializer = Serializer(request.data)
+        if serializer.is_valid():
+            ...
+            return Response({'status': True, 'message': "Student updated successfully", 'data': data})
+        return Response({'status': False, 'message': "One or more validation errors", 'errors': serializer.errors})
