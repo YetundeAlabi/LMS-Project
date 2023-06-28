@@ -128,11 +128,7 @@ class StudentCreateView(LoginRequiredMixin, AdminUserRequiredMixin, CreateView):
         address=form.cleaned_data.get('address')
         
 
-        user, created = User.objects.get_or_create(email=email, 
-                                                    first_name=first_name, 
-                                                    last_name=last_name,
-                                                    gender=gender, picture=picture, 
-                                                    phone_number=phone_number, address=address)
+        user, created = User.objects.get_or_create(email=email, first_name=first_name, last_name=last_name, gender=gender, picture=picture, phone_number=phone_number, address=address)
         student = Student.objects.create(user=user, cohort=cohort, track=track)
         
         self.object = student
@@ -153,9 +149,9 @@ class StudentCreateView(LoginRequiredMixin, AdminUserRequiredMixin, CreateView):
         return HttpResponseRedirect(reverse('lms_admin:student_list'))
 
     def get_password_reset_url(self, user):
-        # Generate the password reset URL for the user
-        token = default_token_generator.make_token(user) #generate token to ensure one time use of URL
-        uid = urlsafe_base64_encode(force_bytes(user.pk)) #encode user pk for security
+        
+        token = default_token_generator.make_token(user) 
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
         url = reverse('accounts:set_password', args=[uid, token])
         return self.request.build_absolute_uri(url)
 
