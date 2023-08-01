@@ -64,7 +64,7 @@ class StudentTopicListView(View):
         student = self.request.user.students.first()
         student_topics = StudentTopic.objects.filter(student_course__student=student, student_course=student_course)
        
-        context ={
+        context = {
             'student_course_slug':student_course_slug,
             'student_topics':student_topics,
             'student_course':student_course

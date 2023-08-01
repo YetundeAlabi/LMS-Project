@@ -133,7 +133,7 @@ class StudentCreateView(LoginRequiredMixin, AdminUserRequiredMixin, CreateView):
                                                     last_name=last_name,
                                                     gender=gender, picture=picture, 
                                                     phone_number=phone_number, address=address)
-        if created:
+        if not created:
             user.students.filter(is_current=True).get().is_current = False
         student = Student.objects.create(user=user, cohort=cohort, track=track)
         

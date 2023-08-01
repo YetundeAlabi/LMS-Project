@@ -105,7 +105,7 @@ class CourseAndTopicCreateView(TutorUserRequiredMixin, CreateView):
                 student_courses = instance.course.student_courses.all()
                 
                 for student_course in student_courses:
-                    student_topic=StudentTopic.objects.create(student_course=student_course, topic= topic)
+                    student_topic=StudentTopic.objects.create(student_course=student_course, topic=topic)
                 # # student_course=get_object_or_404(StudentCourse, course=instance.course)
                 # student_course=instance.course
                 # print(student_topic)

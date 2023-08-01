@@ -27,10 +27,10 @@
         </div>
         <div class="navigation-buttons">
             {% if previous_subtopic %}
-                <a href="{% url 'student:student_subtopic_detail' student_course_slug=student_course_slug pk=student_course.id student_topic_slug=student_topic_slug student_subtopic_id=previous_subtopic.id %}" class="btn btn-primary mt-3">Previous</a>
+                <a href="{% url 'student:student_subtopic_detail' student_course_slug=student_course_slug pk=student_course.id student_topic_slug=student_topic_slug student_topic_id=student_topic.id student_subtopic_id=previous_subtopic.id %}" class="btn btn-primary mt-3">Previous</a>
             {% endif %}
             {% if next_subtopic %}
-                <a href="{% url 'student:student_subtopic_detail' student_course_slug=student_course_slug pk=student_course.id student_topic_slug=student_topic_slug student_subtopic_id=next_subtopic.id %}" class="btn btn-primary mt-3">Next</a>
+                <a href="{% url 'student:student_subtopic_detail' student_course_slug=student_course_slug pk=student_course.id student_topic_slug=student_topic_slug student_topic_id=student_topic.id student_subtopic_id=next_subtopic.id %}" class="btn btn-primary mt-3">Next</a>
             {% endif %}
         </div>
       </div>
